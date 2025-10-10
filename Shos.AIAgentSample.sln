@@ -12,11 +12,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}"
 	ProjectSection(SolutionItems) = preProject
 		Documents\20251002.企画案.md = Documents\20251002.企画案.md
-		Documents\tutorial.00.md = Documents\tutorial.00.md
-		Documents\tutorial.01.md = Documents\tutorial.01.md
-		Documents\tutorial.02.md = Documents\tutorial.02.md
-		Documents\tutorial.03.md = Documents\tutorial.03.md
-		Documents\tutorial.04.md = Documents\tutorial.04.md
+		Documents\tutorial.0.1.md = Documents\tutorial.0.1.md
+		Documents\tutorial.0.2.md = Documents\tutorial.0.2.md
+		Documents\tutorial.1.1.md = Documents\tutorial.1.1.md
+		Documents\tutorial.1.2.md = Documents\tutorial.1.2.md
+		Documents\tutorial.1.3.md = Documents\tutorial.1.3.md
+		Documents\tutorial.2.1.md = Documents\tutorial.2.1.md
+		Documents\tutorial.2.2.md = Documents\tutorial.2.2.md
+		Documents\tutorial.3.1.md = Documents\tutorial.3.1.md
+		Documents\tutorial.3.2.md = Documents\tutorial.3.2.md
 		Documents\tutorial.md = Documents\tutorial.md
 	EndProjectSection
 EndProject
@@ -68,6 +72,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent3", "FCAIAgent3\FCAIAgent3.csproj", "{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent4", "FCAIAgent4\FCAIAgent4.csproj", "{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent5", "FCAIAgent5\FCAIAgent5.csproj", "{6F3155D4-A67B-5B9C-B7BE-6183E537CE8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -135,6 +141,10 @@ Global
 		{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F3155D4-A67B-5B9C-B7BE-6183E537CE8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F3155D4-A67B-5B9C-B7BE-6183E537CE8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F3155D4-A67B-5B9C-B7BE-6183E537CE8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F3155D4-A67B-5B9C-B7BE-6183E537CE8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

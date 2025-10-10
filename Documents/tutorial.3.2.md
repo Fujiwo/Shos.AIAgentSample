@@ -1,4 +1,12 @@
-﻿using System;
+## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
+
+### ■ AIエージェントでの MCP サーバーの利用 (複数)
+
+Program.cs を下記に書き換え
+
+```csharp
+// Program.cs
+using System;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
@@ -137,11 +145,11 @@ static IChatClient GetAzureOpenAIClient()
 
     static string GetEndPoint()
     {
-        const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
-        var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
-        if (string.IsNullOrEmpty(azureOpenAIEndPoint))
-            throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
-        return azureOpenAIEndPoint;
+        //const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
+        //var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
+        //if (string.IsNullOrEmpty(azureOpenAIEndPoint))
+        //    throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
+        //return azureOpenAIEndPoint;
 
         // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
         // [Azure OpenAI のエンドポイント] の部分は、実際のもので置き換えてください
@@ -150,11 +158,11 @@ static IChatClient GetAzureOpenAIClient()
 
     static string GetKey()
     {
-        const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
-        var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
-        if (string.IsNullOrEmpty(openAIApiKey))
-            throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
-        return openAIApiKey!;
+        //const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
+        //var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
+        //if (string.IsNullOrEmpty(openAIApiKey))
+        //    throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
+        //return openAIApiKey!;
 
         // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
         // [Azure OpenAI の APIキー] の部分は、実際のもので置き換えてください
@@ -188,13 +196,12 @@ static async Task<(McpClient, IEnumerable<McpClientTool>)> GetMcpServerTools()
 // MCP サーバー (STDIO) を使うためのクライアント生成
 // - STDIO 経由で MCP サーバー（Time ツール）に接続するためのトランスポート
 // - Command/Arguments を適切に設定して、MCP サーバー プロジェクトを起動
-// - 実際のプロジェクトパスは環境に合わせて更新してください
 static IClientTransport GetTimeToolClientTransport()
     => new StdioClientTransport(new() {
         Name      = "time"  ,
         Command   = "dotnet",
-        //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
-        Arguments = ["run", "--project", @"C:\DropBox\Dropbox\Source\GitHub\Repos\2025.10.AIAgentsSeminarSlide\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
+        // [MCPServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
+        Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
     });
 // 新: ここまで
 
@@ -204,3 +211,22 @@ enum ChatClientType
     AzureOpenAI,
     Ollama
 }
+```
+
+実行
+```console
+dotnet run
+```
+
+実行結果の例
+```console
+Agent: こんにちは。私はAIエージェントです。何を手伝いしましょうか？情報検索、要約、翻訳、文章作成、コードのヘルプ、スケジュール調整や時刻確認（特定のタイムゾーンの現在時刻も取得できます）など対応できます。具体的な内容や希望の形式（箇条書き、詳しい説明、短い回答など）を教えてください。
+
+(Interactive chat started. Type 'exit' to quit.)
+
+You: 現在時刻を教えて
+
+Agent: 現在の時刻は 2025年10月10日 15:04:57（日本標準時 JST / UTC+9）です。他のタイムゾーンや形式に変えますか？
+
+You: exit
+```

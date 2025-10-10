@@ -1,43 +1,34 @@
-﻿using System;
+## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
+
+### ■ AIエージェントの作成 (LLM利用) - 複数ターンのチャット
+
+Program.cs を下記のようにに書き換え
+
+```csharp
+// Program.cs
+using System;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
 // Azure OpenAI のクライアントを利用するための名前空間
 using Azure;
 using Azure.AI.OpenAI;
-// 新: MCP クライアントとツールを利用するための名前空間
-using ModelContextProtocol.Client;
-// 新: Debug.WriteLine を使うための名前空間
-using System.Diagnostics;
 
-// MCP サーバー (STDIO) を利用するAI エージェントの実行例
+// AI エージェントの実行例
 // - 指定されたチャットクライアント（Ollama / Azure OpenAI）を作成
 // - ChatClientAgent を使った対話を行う
-// - ChatClientAgent には、MCP サーバー (STDIO) のツールを渡して利用
-//
-// 主な流れ:
-// 1) 使用するチャットクライアントを作成
-// 2) STDIO 経由の MCP サーバーへ接続しツール一覧を取得
-// 3) 取得したツールを ChatClientAgent に渡してエージェントを作成
-// 4) AgentThread を使った複数ターン対話ループを実行
-// 5) 終了時に MCP クライアントを破棄
-//
-// 注意:
-// - セキュリティ上、実運用では API キーやエンドポイントは環境変数やシークレットストアから読み込むことが望ましい
-// - STDIO トランスポートはローカルプロセス間通信向け
 
 // エージェント名と指示
 const string agentName    = "AIエージェント";
 const string instructions = "あなたはAIエージェントです";
-// エージェントのシステムロールに与える文脈的な指示
+// 新: エージェントのシステムロールに与える文脈的な指示
 const string systemPrompt = "あなたはAIエージェントです";
+// 旧: ユーザーからのプロンプトの例
+//const string userPrompt   = "「AIエージェント」とはどのようなものですか?";
 
 // 使用するチャットクライアント種別
 const ChatClientType chatClientType = ChatClientType.AzureOpenAI;
 IChatClient chatClient = GetChatClient(chatClientType);
-
-// 新: MCP サーバー (STDIO) のツールを取得
-var (mcpClient, tools) = await GetMcpServerTools();
 
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
@@ -45,11 +36,16 @@ AIAgent agent = new ChatClientAgent(
     new ChatClientAgentOptions {
         Name         = agentName,
         Instructions = instructions
-        // 新: ツールをエージェントに渡す
-        , ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() }
     }
 );
 
+// 旧: ここから
+// エージェントを実行して結果を表示する
+//AgentRunResponse response = await agent.RunAsync(userPrompt);
+//Console.WriteLine(response.Text);
+// 旧: ここまで
+
+// 新: ここから
 // 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
 AgentThread thread = agent.GetNewThread();
 
@@ -67,9 +63,6 @@ for (; ;) {
         break;
     await RunAsync(agent, userMessage, thread);
 }
-
-// 新: 終了処理 MCP クライアントを破棄
-await mcpClient.DisposeAsync();
 
 // エージェントに ChatMessage を投げて応答を取得
 static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentThread? thread = null)
@@ -100,6 +93,7 @@ static (bool isValid, ChatMessage userMessage) GetUserMessage()
             : (isValid: true, userPrompt: userPrompt!);
     }
 }
+// 新: ここまで
 
 // Ollama を使う場合のクライアント生成（ローカルの Ollama サーバーに接続）
 static IChatClient GetOllamaClient()
@@ -137,11 +131,11 @@ static IChatClient GetAzureOpenAIClient()
 
     static string GetEndPoint()
     {
-        const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
-        var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
-        if (string.IsNullOrEmpty(azureOpenAIEndPoint))
-            throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
-        return azureOpenAIEndPoint;
+        //const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
+        //var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
+        //if (string.IsNullOrEmpty(azureOpenAIEndPoint))
+        //    throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
+        //return azureOpenAIEndPoint;
 
         // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
         // [Azure OpenAI のエンドポイント] の部分は、実際のもので置き換えてください
@@ -150,11 +144,11 @@ static IChatClient GetAzureOpenAIClient()
 
     static string GetKey()
     {
-        const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
-        var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
-        if (string.IsNullOrEmpty(openAIApiKey))
-            throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
-        return openAIApiKey!;
+        //const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
+        //var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
+        //if (string.IsNullOrEmpty(openAIApiKey))
+        //    throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
+        //return openAIApiKey!;
 
         // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
         // [Azure OpenAI の APIキー] の部分は、実際のもので置き換えてください
@@ -170,37 +164,16 @@ static IChatClient GetChatClient(ChatClientType chatClientType)
         _ => throw new NotSupportedException($"Chat client type '{chatClientType}' is not supported.")
     };
 
-// 新: ここから
-// MCP サーバー (STDIO) のツールを取得
-// - STDIO トランスポート経由で McpClient に接続し、ツール一覧を取得して返す
-// - 戻り値は (McpClient, IEnumerable<McpClientTool>) で、終了時に McpClient.DisposeAsync() を呼ぶ必要がある
-static async Task<(McpClient, IEnumerable<McpClientTool>)> GetMcpServerTools()
-{
-    IClientTransport clientTransport = GetTimeToolClientTransport();
-    McpClient client = await McpClient.CreateAsync(clientTransport);
-
-    IList<McpClientTool> tools = await client.ListToolsAsync();
-    foreach (var tool in tools)
-        Debug.WriteLine($"{tool.Name} ({tool.Description})");
-    return (client, tools);
-}
-
-// MCP サーバー (STDIO) を使うためのクライアント生成
-// - STDIO 経由で MCP サーバー（Time ツール）に接続するためのトランスポート
-// - Command/Arguments を適切に設定して、MCP サーバー プロジェクトを起動
-// - 実際のプロジェクトパスは環境に合わせて更新してください
-static IClientTransport GetTimeToolClientTransport()
-    => new StdioClientTransport(new() {
-        Name      = "time"  ,
-        Command   = "dotnet",
-        //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
-        Arguments = ["run", "--project", @"C:\DropBox\Dropbox\Source\GitHub\Repos\2025.10.AIAgentsSeminarSlide\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
-    });
-// 新: ここまで
-
 // チャットクライアントの種別
 enum ChatClientType
 {
     AzureOpenAI,
     Ollama
 }
+```
+
+動作確認
+
+```console
+dotnet run
+```
