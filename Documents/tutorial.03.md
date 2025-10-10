@@ -4,6 +4,7 @@
 
 Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」で、McpServer.Sse プロジェクトを作成
 
+パッケージをインストール
 ```console
 dotnet new web -n McpServer.Sse
 cd McpServer.Sse

@@ -4,6 +4,7 @@
 
 Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」で、McpServer.Con プロジェクトを作成
 
+パッケージをインストール
 ```console
 dotnet new console -n McpServer.Con
 cd McpServer.Con

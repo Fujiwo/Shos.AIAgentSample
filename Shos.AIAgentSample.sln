@@ -12,13 +12,37 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}"
 	ProjectSection(SolutionItems) = preProject
 		Documents\20251002.企画案.md = Documents\20251002.企画案.md
+		Documents\tutorial.00.md = Documents\tutorial.00.md
+		Documents\tutorial.01.md = Documents\tutorial.01.md
+		Documents\tutorial.02.md = Documents\tutorial.02.md
+		Documents\tutorial.03.md = Documents\tutorial.03.md
+		Documents\tutorial.04.md = Documents\tutorial.04.md
 		Documents\tutorial.md = Documents\tutorial.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{5D5D9900-AFD8-4070-A26A-0F3687F7CE41}"
 	ProjectSection(SolutionItems) = preProject
+		Documents\Images\azure_create_resource.png = Documents\Images\azure_create_resource.png
+		Documents\Images\azure_openai1.png = Documents\Images\azure_openai1.png
+		Documents\Images\azure_openai10.png = Documents\Images\azure_openai10.png
+		Documents\Images\azure_openai2.png = Documents\Images\azure_openai2.png
+		Documents\Images\azure_openai3.png = Documents\Images\azure_openai3.png
+		Documents\Images\azure_openai4.png = Documents\Images\azure_openai4.png
+		Documents\Images\azure_openai5.png = Documents\Images\azure_openai5.png
+		Documents\Images\azure_openai6.png = Documents\Images\azure_openai6.png
+		Documents\Images\azure_openai7.png = Documents\Images\azure_openai7.png
+		Documents\Images\azure_openai8.png = Documents\Images\azure_openai8.png
+		Documents\Images\azure_openai9.png = Documents\Images\azure_openai9.png
+		Documents\Images\azure_portal.png = Documents\Images\azure_portal.png
+		Documents\Images\download_dotnet.png = Documents\Images\download_dotnet.png
+		Documents\Images\download_nodejs.png = Documents\Images\download_nodejs.png
 		Documents\Images\download_ollama.png = Documents\Images\download_ollama.png
+		Documents\Images\install_dotnet.png = Documents\Images\install_dotnet.png
+		Documents\Images\install_ollama.png = Documents\Images\install_ollama.png
+		Documents\Images\nodejs_installer.png = Documents\Images\nodejs_installer.png
+		Documents\Images\ollama.png = Documents\Images\ollama.png
 		Documents\Images\signup_ollama.png = Documents\Images\signup_ollama.png
+		Documents\Images\vs_azure.png = Documents\Images\vs_azure.png
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureOpenAISample", "AzureOpenAISample\AzureOpenAISample.csproj", "{ABA9E859-6A89-FB4B-7038-8AEC0563C41E}"
@@ -42,6 +66,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent2", "FCAIAgent2\FCAIAgent2.csproj", "{77EA1AB3-B817-F94B-E4A7-FA9D841F36C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent3", "FCAIAgent3\FCAIAgent3.csproj", "{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent4", "FCAIAgent4\FCAIAgent4.csproj", "{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +131,10 @@ Global
 		{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
