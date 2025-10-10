@@ -2,10 +2,9 @@
 using Microsoft.Extensions.AI;
 using Microsoft.Agents.AI;
 using OllamaSharp;
-// 新: ここから Azure OpenAI のクライアントを利用するための名前空間
+// Azure OpenAI のクライアントを利用するための名前空間
 using Azure;
 using Azure.AI.OpenAI;
-// 新: ここまで
 
 // AI エージェントの実行例
 // - 指定されたチャットクライアント（Ollama / Azure OpenAI）を作成
@@ -15,12 +14,9 @@ const string agentName    = "AIエージェント";
 const string instructions = "あなたはAIエージェントです";
 const string userPrompt   = "「AIエージェント」とはどのようなものですか?";
 
-// 旧: IChatClient chatClient = GetOllamaClient();
-// 新: ここから
 // 使用するチャットクライアント種別
 const ChatClientType chatClientType = ChatClientType.AzureOpenAI;
 IChatClient chatClient = GetChatClient(chatClientType);
-// 新: ここまで
 
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
@@ -51,7 +47,7 @@ static IChatClient GetOllamaClient()
     return chatClient;
 }
 
-// 新: ここから Azure OpenAI を使う場合のクライアント生成
+// Azure OpenAI を使う場合のクライアント生成
 static IChatClient GetAzureOpenAIClient()
 {
     var azureOpenAIEndPoint     = GetEndPoint();
@@ -108,4 +104,3 @@ enum ChatClientType
     AzureOpenAI,
     Ollama
 }
-// 新: ここまで

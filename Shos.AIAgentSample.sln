@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent1", "FCAIAgent1\FC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent2", "FCAIAgent2\FCAIAgent2.csproj", "{77EA1AB3-B817-F94B-E4A7-FA9D841F36C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent3", "FCAIAgent3\FCAIAgent3.csproj", "{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{77EA1AB3-B817-F94B-E4A7-FA9D841F36C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77EA1AB3-B817-F94B-E4A7-FA9D841F36C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77EA1AB3-B817-F94B-E4A7-FA9D841F36C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4825ACB2-7C00-FFA9-715E-7CE7CDCC4B93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
