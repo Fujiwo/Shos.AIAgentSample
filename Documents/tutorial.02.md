@@ -1,4 +1,24 @@
-﻿// Model Context Protocol (MCP) サーバーの簡易なサンプル
+## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
+
+### ■ MCP サーバー (STDIO) の作成
+
+Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」で、McpServer.Con プロジェクトを作成
+
+```console
+dotnet new console -n McpServer.Con
+cd McpServer.Con
+dotnet add package Microsoft.Extensions.Hosting
+dotnet add package ModelContextProtocol --prerelease
+```
+
+Visual Studio の「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、McpServer.Con プロジェクトを追加
+
+Program.cs を下記に書き換え
+
+```csharp
+// Program.cs
+
+// Model Context Protocol (MCP) サーバーの簡易なサンプル
 // - アプリケーションホストを作成し、MCP サーバーを登録して起動
 // - 標準入出力（stdio）経由のサーバートランスポートを有効にし、同一アセンブリ内のツールを登録
 // - クライアントは標準入出力を通じて MCP プロトコルに従って通信可能
@@ -40,3 +60,10 @@ public static class TimeTools
         }
     }
 }
+```
+
+ビルド確認
+
+```console
+dotnet build
+```
