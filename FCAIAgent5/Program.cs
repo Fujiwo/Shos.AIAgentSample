@@ -5,22 +5,22 @@ using OllamaSharp;
 // Azure OpenAI のクライアントを利用するための名前空間
 using Azure;
 using Azure.AI.OpenAI;
-// 新: MCP クライアントとツールを利用するための名前空間
+// MCP クライアントとツールを利用するための名前空間
 using ModelContextProtocol.Client;
-// 新: Debug.WriteLine を使うための名前空間
+// Debug.WriteLine を使うための名前空間
 using System.Diagnostics;
 
 // MCP サーバー (STDIO) を利用するAI エージェントの実行例
 // - 指定されたチャットクライアント（Ollama / Azure OpenAI）を作成
 // - ChatClientAgent を使った対話を行う
-// - ChatClientAgent には、MCP サーバー (STDIO) のツールを渡して利用
+// - ChatClientAgent には、複数の MCP サーバーのツールを渡して利用
 //
 // 主な流れ:
 // 1) 使用するチャットクライアントを作成
-// 2) STDIO 経由の MCP サーバーへ接続しツール一覧を取得
+// 2) 複数の MCP サーバー (Time, Weather, FileSystem) へ接続してツールを取得
 // 3) 取得したツールを ChatClientAgent に渡してエージェントを作成
 // 4) AgentThread を使った複数ターン対話ループを実行
-// 5) 終了時に MCP クライアントを破棄
+// 5) 終了時に全ての MCP クライアントを破棄
 //
 // 注意:
 // - セキュリティ上、実運用では API キーやエンドポイントは環境変数やシークレットストアから読み込むことが望ましい
@@ -36,17 +36,20 @@ const string systemPrompt = "あなたはAIエージェントです";
 const ChatClientType chatClientType = ChatClientType.AzureOpenAI;
 IChatClient chatClient = GetChatClient(chatClientType);
 
-// 新: MCP サーバー (STDIO) のツールを取得
-var (mcpClient, tools) = await GetMcpServerTools();
+// MCP サーバー群のツールを取得
+// 旧:
+//var (mcpClient, tools) = await GetMcpServerTools();
+// 新:
+var (mcpClients, tools) = await GetAllMcpServerTools();
 
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
     chatClient,
     new ChatClientAgentOptions {
         Name         = agentName,
-        Instructions = instructions
-        // 新: ツールをエージェントに渡す
-        , ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() }
+        Instructions = instructions,
+        // ツールをエージェントに渡す
+        ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() }
     }
 );
 
@@ -68,8 +71,13 @@ for (; ;) {
     await RunAsync(agent, userMessage, thread);
 }
 
-// 新: 終了処理 MCP クライアントを破棄
-await mcpClient.DisposeAsync();
+// 終了処理 MCP クライアントを破棄
+// 旧:
+//await mcpClient.DisposeAsync();
+// 新: ここから
+foreach (var mcpClient in mcpClients)
+    await mcpClient.DisposeAsync();
+// 新: ここまで
 
 // エージェントに ChatMessage を投げて応答を取得
 static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentThread? thread = null)
@@ -145,7 +153,7 @@ static IChatClient GetAzureOpenAIClient()
 
         // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
         // [Azure OpenAI のエンドポイント] の部分は、実際のもので置き換えてください
-        return @"[Azure OpenAI のエンドポイント]";
+        //return @"[Azure OpenAI のエンドポイント]";
     }
 
     static string GetKey()
@@ -158,7 +166,7 @@ static IChatClient GetAzureOpenAIClient()
 
         // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
         // [Azure OpenAI の APIキー] の部分は、実際のもので置き換えてください
-        return @"[Azure OpenAI の APIキー]";
+        //return @"[Azure OpenAI の APIキー]";
     }
 }
 
@@ -170,13 +178,87 @@ static IChatClient GetChatClient(ChatClientType chatClientType)
         _ => throw new NotSupportedException($"Chat client type '{chatClientType}' is not supported.")
     };
 
+
+// 旧: ここから
+//// MCP サーバー (STDIO) のツールを取得
+//// - STDIO トランスポート経由で McpClient に接続し、ツール一覧を取得して返す
+//// - 戻り値は (McpClient, IEnumerable<McpClientTool>) で、終了時に McpClient.DisposeAsync() を呼ぶ必要がある
+//static async Task<(McpClient, IEnumerable<McpClientTool>)> GetMcpServerTools()
+//{
+//    IClientTransport clientTransport = GetTimeToolClientTransport();
+//    McpClient client = await McpClient.CreateAsync(clientTransport);
+
+//    IList<McpClientTool> tools = await client.ListToolsAsync();
+//    foreach (var tool in tools)
+//        Debug.WriteLine($"{tool.Name} ({tool.Description})");
+//    return (client, tools);
+//}
+
+//// MCP サーバー (STDIO) を使うためのクライアント生成
+//// - STDIO 経由で MCP サーバー（Time ツール）に接続するためのトランスポート
+//// - Command/Arguments を適切に設定して、MCP サーバー プロジェクトを起動
+//// - 実際のプロジェクトパスは環境に合わせて更新してください
+//static IClientTransport GetTimeToolClientTransport()
+//    => new StdioClientTransport(new() {
+//        Name = "time",
+//        Command = "dotnet",
+//        // [MCPServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
+//        //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
+//        Arguments = ["run", "--project", @"C:\DropBox\Dropbox\Source\GitHub\Repos\2025.10.AIAgentsSeminarSlide\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
+//    });
+// 旧: ここまで
+
 // 新: ここから
+// 複数の MCP サーバーのツールを取得
+// - 複数の McpClient に接続し、ツール一覧を取得して返す
+// - 戻り値は (IEnumerable<McpClient>, IEnumerable<McpClientTool>) で、終了時にすべての McpClient について DisposeAsync() を呼ぶ必要がある
+static async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetAllMcpServerTools()
+{
+    var (timeMcpClient      , timeTools      ) = await GetMcpServerTools(GetTimeToolClientTransport      );
+    var (weartherMcpClient  , weatherTools   ) = await GetMcpServerTools(GetWeatherToolClientTransport   );
+    var (fileSystemMcpClient, fileSystemTools) = await GetMcpServerTools(GetFileSystemToolClientTransport);
+
+    McpClient[]                mcpClients = [timeMcpClient, weartherMcpClient, fileSystemMcpClient];
+    IEnumerable<McpClientTool> tools      = [.. timeTools, .. weatherTools, .. fileSystemTools];
+
+    return (mcpClients, tools);
+
+    // MCP サーバー (STDIO) を使うためのクライアント生成
+    // - STDIO 経由で MCP サーバー（Time ツール）に接続するためのトランスポート
+    // - Command/Arguments を適切に設定して、MCP サーバー プロジェクトを起動
+    // - 実際のプロジェクトパスは環境に合わせて更新してください
+    static IClientTransport GetTimeToolClientTransport()
+        => new StdioClientTransport(new() {
+            Name = "time",
+            Command = "dotnet",
+            // [MCPServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
+            //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
+            Arguments = ["run", "--project", @"C:\DropBox\Dropbox\Source\GitHub\Repos\2025.10.AIAgentsSeminarSlide\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
+        });
+
+    // MCP サーバー (HTTP) を使うためのクライアント生成
+    static IClientTransport GetWeatherToolClientTransport()
+    {
+        const string endPoint = "http://localhost:3001/sse";
+        return new HttpClientTransport(new HttpClientTransportOptions { Endpoint = new Uri(endPoint) });
+    }
+
+    // ファイルシステム ツールを使うためのクライアント生成
+    static IClientTransport GetFileSystemToolClientTransport()
+        => new StdioClientTransport(new() {
+            Name      = "filesystem",
+            Command   = "npx"       ,
+            // アクセスさせるフォルダーを、仮に "/work" と指定
+            Arguments = ["-y", "@modelcontextprotocol/server-filesystem", "/work"]
+        });
+}
+
 // MCP サーバー (STDIO) のツールを取得
 // - STDIO トランスポート経由で McpClient に接続し、ツール一覧を取得して返す
 // - 戻り値は (McpClient, IEnumerable<McpClientTool>) で、終了時に McpClient.DisposeAsync() を呼ぶ必要がある
-static async Task<(McpClient, IEnumerable<McpClientTool>)> GetMcpServerTools()
+static async Task<(McpClient, IEnumerable<McpClientTool>)> GetMcpServerTools(Func<IClientTransport> getToolClientTransport)
 {
-    IClientTransport clientTransport = GetTimeToolClientTransport();
+    IClientTransport clientTransport = getToolClientTransport();
     McpClient client = await McpClient.CreateAsync(clientTransport);
 
     IList<McpClientTool> tools = await client.ListToolsAsync();
@@ -184,18 +266,6 @@ static async Task<(McpClient, IEnumerable<McpClientTool>)> GetMcpServerTools()
         Debug.WriteLine($"{tool.Name} ({tool.Description})");
     return (client, tools);
 }
-
-// MCP サーバー (STDIO) を使うためのクライアント生成
-// - STDIO 経由で MCP サーバー（Time ツール）に接続するためのトランスポート
-// - Command/Arguments を適切に設定して、MCP サーバー プロジェクトを起動
-// - 実際のプロジェクトパスは環境に合わせて更新してください
-static IClientTransport GetTimeToolClientTransport()
-    => new StdioClientTransport(new() {
-        Name      = "time"  ,
-        Command   = "dotnet",
-        //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
-        Arguments = ["run", "--project", @"C:\DropBox\Dropbox\Source\GitHub\Repos\2025.10.AIAgentsSeminarSlide\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
-    });
 // 新: ここまで
 
 // チャットクライアントの種別

@@ -200,12 +200,6 @@ static IClientTransport GetMcpClientTransport(McpServer mcpServer)
     Debug.WriteLine(clientTransport.Name);
     return clientTransport;
 
-    static IClientTransport GetWeatherToolClientTransport()
-    {
-        const string endPoint = "https://localhost:7052/sse";
-        return new HttpClientTransport(new HttpClientTransportOptions { Endpoint = new Uri(endPoint) });
-    }
-
     static IClientTransport GetTimeToolClientTransport()
         => new StdioClientTransport(new() {
             Name      = "time"  ,
@@ -213,6 +207,11 @@ static IClientTransport GetMcpClientTransport(McpServer mcpServer)
             Arguments = ["run", "--project", @"C:\DropBox\Dropbox\Source\GitHub\Repos\2025.10.AIAgentsSeminarSlide\Shos.AIAgentSample\MCPServer.Console\MCPServer.Console.csproj"]
         });
 
+    static IClientTransport GetWeatherToolClientTransport()
+    {
+        const string endPoint = "https://localhost:7052/sse";
+        return new HttpClientTransport(new HttpClientTransportOptions { Endpoint = new Uri(endPoint) });
+    }
 
     static IClientTransport GetFileSystemToolClientTransport()
         => new StdioClientTransport(new() {
