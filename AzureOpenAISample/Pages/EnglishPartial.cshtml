@@ -1,0 +1,26 @@
+﻿@page
+@model EnglishModel
+@{
+	Layout = null;
+}
+
+@if (Model?.Messages is not null) {
+	@foreach (var message in Model.Messages) {
+		@if (message.Owner == "User") {
+			<div class="talk_right">
+				<p>@Html.Raw(Html.Encode(message.Content).Replace("&#xA;", "<br>"))</p>
+			</div>
+		} else {
+			<div class="talk_left">
+				<p>@Html.Raw(Html.Encode(message.Content).Replace("&#xA;", "<br>"))</p>
+			</div>
+		}
+		<br>
+
+		<br>
+
+		<br>
+
+		<br>
+	}
+}

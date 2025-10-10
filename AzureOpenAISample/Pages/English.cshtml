@@ -1,0 +1,30 @@
+﻿@page
+@model EnglishModel
+@{
+	ViewData["Title"] = "English Teacher";
+}
+
+<div class="text-center">
+	<h1 class="display-4">English Teacher</h1>
+</div>
+
+<div class="talk1">
+	<div id="talkResult"></div>
+</div>
+
+<form id="form1" method="post">
+	<div class="mb-3">
+		<label for="userMessage" class="form-label">Your message</label>
+		<input type="text" class="form-control" id="userMessage" asp-for="UserMessage">
+		<span id="waiting" style="display: none;">.........</span>
+	</div>
+	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@section Scripts {
+    <script type="text/javascript">
+		$(function () {
+			initialize("/EnglishPartial");
+		});
+	</script>
+}

@@ -1,0 +1,111 @@
+html {
+    font-size: 14px;
+/*    font-size: small;
+*/}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+/*        font-size: medium;
+*/    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* 全体の枠 */
+.talk1 {
+    background-color: rgb(113,147,193); /* LINEっぽい背景色 */
+    padding: 1em;
+    overflow: auto;
+}
+
+/* 全体の枠 */
+.talk2 {
+    background-color: rgb(143,117,173); /* LINEっぽい背景色 */
+    padding: 1em;
+    overflow: auto;
+}
+
+/* 全体の枠 */
+.talk3 {
+    background-color: rgb(113,187,203); /* LINEっぽい背景色 */
+    padding: 1em;
+    overflow: auto;
+}
+
+/* 左のトークボックス */
+.talk_left:before { /* 左の丸アイコン */
+    content: '';
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    vertical-align: top;
+    border-radius: 50%;
+    background-size: cover;
+    background-image: url(icon_left.png); /* ←アイコンはここを変更 */
+}
+
+.talk_left p:before { /* 左ふきだしの左三角を描画 */
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: -20px;
+    border: 12px solid transparent;
+    border-right: 12px solid white;
+}
+
+.talk_left p { /* 左ふきだしの本体 */
+    display: inline-block;
+    position: relative;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 0 0 0 10px;
+}
+
+/* 右のトークボックス */
+.talk_right:after { /* 右の丸アイコン */
+    content: '';
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    vertical-align: top;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: -10px;
+    background-image: url(icon_right.png); /* ←アイコンはここを変更 */
+}
+
+.talk_right {
+    float: right; /* 右のふきだしは全体的に右寄せ */
+    margin-top: 1em;
+}
+
+.talk_right p:after { /* 右ふきだしの右三角を描画 */
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: -20px;
+    border: 12px solid transparent;
+    border-left: 12px solid #85e249;
+}
+
+.talk_right p { /* 右ふきだしの本体 */
+    display: inline-block;
+    position: relative;
+    background-color: #85e249;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 0 10px 0 0;
+}
