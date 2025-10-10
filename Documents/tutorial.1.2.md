@@ -1,6 +1,9 @@
 ## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
 
 ### ■ AIエージェントの作成 (LLM利用) - Azure OpenAIの利用
+![AIエージェントの作成 (LLM利用) - Azure OpenAIの利用](./Images/tutorial_banner_12.png)
+
+この手順では、LLM として Azure OpenAI も利用できるようにエージェントを改良していきます。
 
 パッケージを追加でインストール
 

@@ -1,6 +1,9 @@
 ## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
 
 ### ■ MCP サーバー (STDIO) の作成
+![MCP サーバー (STDIO) の作成](./Images/tutorial_banner_21.png)
+
+この手順では、AIエージェントから利用するための STDIO を利用する MCP サーバーを作成します。
 
 Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」で、McpServer.Con プロジェクトを作成
 

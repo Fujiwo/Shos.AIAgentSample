@@ -1,6 +1,8 @@
 
 ## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
 
+![AIエージェント](./Images/tutorial_banner_aiagent.png)
+
 - 0\. 準備
   - 0\.1 [インストール](./tutorial.0.0.md)
   - 0\.2 [Azure OpenAI](./tutorial.0.1.md)

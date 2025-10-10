@@ -1,6 +1,9 @@
 ## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
 
 ### ■ 準備 - Azure OpenAI
+![準備 - Azure OpenAI](./Images/tutorial_banner_02.png)
+
+この手順では、チュートリアルのための準備として、Azure OpenAI による LLM を作成します。
 
 #### 1\. Visual Studio Subscription の Azure 特典のアクティブ化
 
