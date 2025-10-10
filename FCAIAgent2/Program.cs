@@ -11,8 +11,10 @@ using Azure.AI.OpenAI;
 // - 指定されたチャットクライアント（Ollama / Azure OpenAI）を作成
 // - ChatClientAgent を作成して、簡単なプロンプトを投げる
 
+// エージェント名と指示
 const string agentName    = "AIエージェント";
 const string instructions = "あなたはAIエージェントです";
+// ユーザーからのプロンプトの例
 const string userPrompt   = "「AIエージェント」とはどのようなものですか?";
 
 // 旧: IChatClient chatClient = GetOllamaClient();

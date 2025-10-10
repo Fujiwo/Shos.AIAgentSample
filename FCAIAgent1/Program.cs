@@ -7,9 +7,11 @@ using OllamaSharp;
 // - 指定されたチャットクライアント（Ollama）を作成
 // - ChatClientAgent を作成して、簡単なプロンプトを投げる
 
-const string agentName = "AIエージェント";
+// エージェント名と指示
+const string agentName    = "AIエージェント";
 const string instructions = "あなたはAIエージェントです";
-const string userPrompt = "「AIエージェント」とはどのようなものですか?";
+// ユーザーからのプロンプトの例
+const string userPrompt   = "「AIエージェント」とはどのようなものですか?";
 
 // Ollama を使うためのクライアント生成
 IChatClient chatClient = GetOllamaClient();

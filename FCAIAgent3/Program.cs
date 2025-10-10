@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.Extensions.AI;
 using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 using OllamaSharp;
 // Azure OpenAI のクライアントを利用するための名前空間
 using Azure;
@@ -8,11 +8,15 @@ using Azure.AI.OpenAI;
 
 // AI エージェントの実行例
 // - 指定されたチャットクライアント（Ollama / Azure OpenAI）を作成
-// - ChatClientAgent を作成して、簡単なプロンプトを投げる
+// - ChatClientAgent を使った対話を行う
 
+// エージェント名と指示
 const string agentName    = "AIエージェント";
 const string instructions = "あなたはAIエージェントです";
-const string userPrompt   = "「AIエージェント」とはどのようなものですか?";
+// 新: エージェントのシステムロールに与える文脈的な指示
+const string systemPrompt = "あなたはAIエージェントです";
+// 旧: ユーザーからのプロンプトの例
+//const string userPrompt   = "「AIエージェント」とはどのようなものですか?";
 
 // 使用するチャットクライアント種別
 const ChatClientType chatClientType = ChatClientType.AzureOpenAI;
@@ -27,9 +31,61 @@ AIAgent agent = new ChatClientAgent(
     }
 );
 
+// 旧: ここから
 // エージェントを実行して結果を表示する
-AgentRunResponse response = await agent.RunAsync(userPrompt);
-Console.WriteLine(response.Text);
+//AgentRunResponse response = await agent.RunAsync(userPrompt);
+//Console.WriteLine(response.Text);
+// 旧: ここまで
+
+// 新: ここから
+// 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
+AgentThread thread = agent.GetNewThread();
+
+// システムメッセージを作成して最初に送信
+ChatMessage systemMessage = new(ChatRole.System, systemPrompt);
+await RunAsync(agent, systemMessage, thread);
+
+const string exitPrompt = "exit";
+Console.WriteLine($"(Interactive chat started. Type '{exitPrompt}' to quit.)\n");
+
+// 対話ループ: ユーザー入力を受け取り exit で終了
+for (; ;) {
+    var (isValid, userMessage) = GetUserMessage();
+    if (!isValid)
+        break;
+    await RunAsync(agent, userMessage, thread);
+}
+
+// エージェントに ChatMessage を投げて応答を取得
+static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentThread? thread = null)
+{
+    try {
+        var response = await agent.RunAsync(chatMessage, thread);
+        Console.WriteLine($"Agent: {response.Text ?? string.Empty}\n");
+    } catch (Exception ex) {
+        Console.WriteLine($"Error running agent: {ex.Message}");
+    }
+}
+
+// コンソールからユーザー入力を読み取り ChatMessage を返す
+static (bool isValid, ChatMessage userMessage) GetUserMessage()
+{
+    var (isValid, userPrompt) = GetUserPrompt();
+    return (isValid, new(ChatRole.User, userPrompt));
+
+    static (bool isValid, string userPrompt) GetUserPrompt()
+    {
+        Console.Write("You: ");
+        var userPrompt = Console.ReadLine();
+        Console.WriteLine();
+
+        return string.IsNullOrWhiteSpace(userPrompt) ||
+               string.Equals(userPrompt.Trim(), exitPrompt, StringComparison.OrdinalIgnoreCase)
+            ? (isValid: false, userPrompt: string.Empty)
+            : (isValid: true, userPrompt: userPrompt!);
+    }
+}
+// 新: ここまで
 
 // Ollama を使う場合のクライアント生成（ローカルの Ollama サーバーに接続）
 static IChatClient GetOllamaClient()
