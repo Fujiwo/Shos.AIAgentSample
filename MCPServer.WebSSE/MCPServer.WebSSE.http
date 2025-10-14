@@ -1,6 +1,0 @@
-@MCPServerLab_HostAddress = http://localhost:5025
-
-GET {{MCPServerLab_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
