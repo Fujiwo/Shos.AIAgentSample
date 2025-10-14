@@ -5,6 +5,7 @@ VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}"
 	ProjectSection(SolutionItems) = preProject
+		Documents\aiagentlog.md = Documents\aiagentlog.md
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
 		Documents\tutorial.0.1.md = Documents\tutorial.0.1.md
