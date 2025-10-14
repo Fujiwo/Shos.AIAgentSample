@@ -51,7 +51,6 @@
 
 ![Azure AI Foundry ポータルへ移動](./Images/azure_openai7.png)
 
-
 「チャット」を選び、「デプロイの作成」
 
 ![チャット](./Images/azure_openai8.png)

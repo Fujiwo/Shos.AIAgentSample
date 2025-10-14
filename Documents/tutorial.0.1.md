@@ -12,13 +12,13 @@
 ```console
 dotnet --version
 ```
-  9\.0以上であればOK
+  8\.0以上であればOK
 
-- 1\.2 (9\.0未満の場合) \.NET9\.0 のダウンロード
+- 1\.2 (8\.0未満の場合) \.NET9\.0 のダウンロード
 
 ![Download \.NET](./Images/download_dotnet.png)
 
-- 1\.3 (9\.0未満の場合) \.NET9\.0 のインストール
+- 1\.3 (8\.0未満の場合) \.NET9\.0 のインストール
 
 ![Install \.NET](./Images/install_dotnet.png)
 
@@ -26,6 +26,11 @@ dotnet --version
 
 ```console
 dotnet --version
+```
+
+実行例.
+```console
+10.0.100-rc.1.25451.107
 ```
 
 #### 2\. Node.js の Windows 版をインストール
@@ -46,8 +51,18 @@ dotnet --version
 node -v
 ```
 
+実行例
+```console
+v24.1.0
+```
+
 ```console
 npm -v
+```
+
+実行例
+```console
+11.3.0
 ```
 
 - 2\.3 npx のインストール
@@ -60,6 +75,11 @@ npm install -g npx
 
 ```console
 npx -v
+```
+
+実行例
+```console
+11.3.0
 ```
 
 #### 3\. Ollama の Windows 版をインストール
@@ -79,4 +99,8 @@ npx -v
 
 - 3\.4 動作確認
 
-![Ollama](./Images/ollama.png)
+![Ollama](./Images/ollama_1.png)
+
+- 3\.5 LLM の選択とダウンロード
+
+![Ollama](./Images/ollama_2.png)

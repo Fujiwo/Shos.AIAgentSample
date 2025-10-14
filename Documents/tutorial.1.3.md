@@ -104,7 +104,7 @@ static IChatClient GetOllamaClient()
     var uri    = new Uri("http://localhost:11434");
     var ollama = new OllamaApiClient(uri);
     // 使用するモデルを指定
-    ollama.SelectedModel = "gpt-oss:20b-cloud";
+    ollama.SelectedModel = "gpt-oss:20b-cloud"; // ここでは実行速度の都合でクラウドのものを選択しているが、ローカルLLMの場合は "gemma3:latest" など
 
     // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
     IChatClient chatClient = ollama;
