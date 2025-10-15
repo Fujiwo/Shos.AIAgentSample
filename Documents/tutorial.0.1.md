@@ -1,5 +1,10 @@
 ## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
 
+#### 開発環境
+
+- Visual Studio または Visual Studio Code (C# Dev Kit がインストールされていること)
+  - なるべく最新のもの
+
 ### ■ 準備 - インストール
 ![準備 - インストール](./Images/tutorial_banner_01.png)
 

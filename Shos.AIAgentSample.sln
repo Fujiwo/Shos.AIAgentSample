@@ -9,12 +9,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
 		Documents\tutorial.0.1.md = Documents\tutorial.0.1.md
+		Documents\tutorial.0.1.pdf = Documents\tutorial.0.1.pdf
 		Documents\tutorial.0.2.md = Documents\tutorial.0.2.md
+		Documents\tutorial.0.2.pdf = Documents\tutorial.0.2.pdf
 		Documents\tutorial.1.1.md = Documents\tutorial.1.1.md
 		Documents\tutorial.1.2.md = Documents\tutorial.1.2.md
 		Documents\tutorial.1.3.md = Documents\tutorial.1.3.md
 		Documents\tutorial.2.1.md = Documents\tutorial.2.1.md
 		Documents\tutorial.2.2.md = Documents\tutorial.2.2.md
+		Documents\tutorial.2.3.md = Documents\tutorial.2.3.md
 		Documents\tutorial.3.1.md = Documents\tutorial.3.1.md
 		Documents\tutorial.3.2.md = Documents\tutorial.3.2.md
 		Documents\tutorial.md = Documents\tutorial.md
@@ -41,8 +44,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{5D5D99
 		Documents\Images\install_ollama.png = Documents\Images\install_ollama.png
 		Documents\Images\nodejs_installer.png = Documents\Images\nodejs_installer.png
 		Documents\Images\ollama.png = Documents\Images\ollama.png
+		Documents\Images\ollama_1.png = Documents\Images\ollama_1.png
+		Documents\Images\ollama_2.png = Documents\Images\ollama_2.png
 		Documents\Images\signup_ollama.png = Documents\Images\signup_ollama.png
+		Documents\Images\tutorial_banner_01.png = Documents\Images\tutorial_banner_01.png
+		Documents\Images\tutorial_banner_02.png = Documents\Images\tutorial_banner_02.png
+		Documents\Images\tutorial_banner_11.png = Documents\Images\tutorial_banner_11.png
+		Documents\Images\tutorial_banner_12.png = Documents\Images\tutorial_banner_12.png
+		Documents\Images\tutorial_banner_13.png = Documents\Images\tutorial_banner_13.png
+		Documents\Images\tutorial_banner_21.png = Documents\Images\tutorial_banner_21.png
+		Documents\Images\tutorial_banner_22.png = Documents\Images\tutorial_banner_22.png
+		Documents\Images\tutorial_banner_31.png = Documents\Images\tutorial_banner_31.png
+		Documents\Images\tutorial_banner_32.png = Documents\Images\tutorial_banner_32.png
+		Documents\Images\tutorial_banner_aiagent.png = Documents\Images\tutorial_banner_aiagent.png
+		Documents\Images\vscode_mcp_1.png = Documents\Images\vscode_mcp_1.png
+		Documents\Images\vscode_mcp_2.png = Documents\Images\vscode_mcp_2.png
+		Documents\Images\vscode_mcp_3.png = Documents\Images\vscode_mcp_3.png
+		Documents\Images\vscode_mcp_4.png = Documents\Images\vscode_mcp_4.png
+		Documents\Images\vscode_mcp_5.png = Documents\Images\vscode_mcp_5.png
+		Documents\Images\vscode_mcp_6.png = Documents\Images\vscode_mcp_6.png
+		Documents\Images\vscode_mcp_7.png = Documents\Images\vscode_mcp_7.png
+		Documents\Images\vscode_mcp_8.png = Documents\Images\vscode_mcp_8.png
 		Documents\Images\vs_azure.png = Documents\Images\vs_azure.png
+		Documents\Images\vs_github_copilot_1.png = Documents\Images\vs_github_copilot_1.png
+		Documents\Images\vs_mcp_1.png = Documents\Images\vs_mcp_1.png
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "McpServer.Sse", "McpServer.Sse\McpServer.Sse.csproj", "{D246A719-46A4-B3BB-C4D8-182B38D63CBD}"
@@ -58,6 +83,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent4", "FCAIAgent4\FCAIAgent4.csproj", "{0399655E-ABBE-209A-46DA-F1B3BFBCF4C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent5", "FCAIAgent5\FCAIAgent5.csproj", "{6F3155D4-A67B-5B9C-B7BE-6183E537CE8F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}"
+	ProjectSection(SolutionItems) = preProject
+		.mcp.json = .mcp.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

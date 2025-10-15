@@ -1,0 +1,18 @@
+{
+	"servers": {
+		"McpServer.Con": {
+			"type": "stdio",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"C:\\DropBox\\Dropbox\\Source\\GitHub\\Repos\\2025.10.AIAgentsSeminarSlide\\Shos.AIAgentSample\\McpServer.Con\\McpServer.Con.csproj"
+			]
+		},
+		"McpServer.Sse": {
+			"url": "http://localhost:3001/sse",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
