@@ -1,10 +1,10 @@
 # Shos.AIAgentSample
 
-AIエージェント開発ハンズオンセミナー（開発者向け）のサンプルコードとチュートリアル
+AIエージェント開発ハンズオンセミナー(開発者向け)のサンプルコードとチュートリアル
 
 ## 概要
 
-このリポジトリは、Microsoft Agent Framework と Model Context Protocol (MCP) を使用した AI エージェント開発の実践的なチュートリアルを提供します。ローカル LLM（Ollama）や Azure OpenAI を利用した AI エージェントの作成から、MCP サーバーの実装、そしてエージェントと MCP サーバーの統合まで、段階的に学習できます。
+このリポジトリは、Microsoft Agent Framework と Model Context Protocol (MCP) を使用した AI エージェント開発の実践的なチュートリアルを提供します。ローカル LLM(Ollama)や Azure OpenAI を利用した AI エージェントの作成から、MCP サーバーの実装、そしてエージェントと MCP サーバーの統合まで、段階的に学習できます。
 
 ## 特徴
 
@@ -32,6 +32,7 @@ AIエージェント開発ハンズオンセミナー（開発者向け）のサ
 
 - [MCP サーバー (STDIO) の作成](./Documents/tutorial.2.1.md) - 標準入出力を使った MCP サーバーの実装
 - [MCP サーバー (SSE) の作成](./Documents/tutorial.2.2.md) - Server-Sent Events を使った MCP サーバーの実装
+- [MCP サーバーの動作確認](./Documents/tutorial.2.3.md) - MCP サーバーの動作確認手順
 
 ### 3. AI エージェントでの MCP サーバーの利用
 
@@ -42,12 +43,12 @@ AIエージェント開発ハンズオンセミナー（開発者向け）のサ
 
 ### 前提条件
 
-以下のツールがインストールされている必要があります：
+以下のツールがインストールされている必要があります:
 
-- .NET 8.0 以上（推奨: .NET 9.0）
-- Node.js（v24.0 以上推奨）
-- Ollama（ローカル LLM を使用する場合）
-- Visual Studio または Visual Studio Code
+- .NET 8.0 以上(推奨: .NET 9.0)
+- Node.js(v24.0 以上推奨)
+- Ollama(ローカル LLM を使用する場合)
+- Visual Studio と Visual Studio Code
 
 ### 実施手順
 
@@ -68,7 +69,7 @@ AIエージェント開発ハンズオンセミナー（開発者向け）のサ
 
 4. **サンプルプロジェクトの実行**
 
-   各プロジェクトは独立して実行できます：
+   各プロジェクトは独立して実行できます:
 
    ```bash
    # AI エージェントの例
@@ -82,7 +83,7 @@ AIエージェント開発ハンズオンセミナー（開発者向け）のサ
 
 ## プロジェクト構成
 
-- **FCAIAgent1-5** - AI エージェントのサンプル実装（段階的に機能を追加）
+- **FCAIAgent1-5** - AI エージェントのサンプル実装(段階的に機能を追加)
 - **McpServer.Con** - STDIO を使用した MCP サーバーの実装
 - **McpServer.Sse** - Server-Sent Events を使用した MCP サーバーの実装
 - **Documents** - チュートリアルドキュメントと画像
@@ -91,14 +92,14 @@ AIエージェント開発ハンズオンセミナー（開発者向け）のサ
 
 ### オペレーティングシステム
 
-- Windows 10/11
-- macOS（一部機能）
-- Linux（一部機能）
+- Windows 11
+- macOS (一部機能)
+- Linux (一部機能)
 
 ### 言語とランタイム
 
 - **言語**: C# 12.0
-- **ランタイム**: .NET 8.0 以上（推奨: .NET 9.0）
+- **ランタイム**: .NET 8.0 以上(推奨: .NET 9.0)
 - **IDE**: Visual Studio 2022 17.12 以降、または Visual Studio Code
 
 ### 主要な依存パッケージ
@@ -111,7 +112,7 @@ AIエージェント開発ハンズオンセミナー（開発者向け）のサ
 
 ## 技術用語の補足
 
-- **AI エージェント**: LLM（大規模言語モデル）を活用して、ユーザーの要求に応じた処理を自律的に実行するソフトウェアコンポーネント
+- **AI エージェント**: LLM(大規模言語モデル)を活用して、ユーザーの要求に応じた処理を自律的に実行するソフトウェアコンポーネント
 - **LLM (Large Language Model)**: 大規模言語モデル。自然言語を理解し生成する AI モデル
 - **MCP (Model Context Protocol)**: AI エージェントと外部ツールやデータソースを接続するための標準プロトコル
 - **Ollama**: ローカル環境で大規模言語モデルを実行するためのツール
@@ -130,7 +131,6 @@ Copyright (c) 2025 Fujio Kojima
 
 - **作者**: Fujio Kojima
 - **リポジトリ**: https://github.com/Fujiwo/Shos.AIAgentSample
-- **Issues**: バグ報告や機能要望は [GitHub Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) までお願いします
 
 ## 謝辞
 
