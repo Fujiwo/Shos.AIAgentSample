@@ -2,7 +2,7 @@
 
 #### 開発環境
 
-- Visual Studio または Visual Studio Code (C# Dev Kit がインストールされていること)
+- Visual Studio と Visual Studio Code
   - なるべく最新のもの
 
 ### ■ 準備 - インストール

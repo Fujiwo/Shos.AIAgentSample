@@ -2,52 +2,6 @@
 
 ### ■ MCP サーバーの動作確認
 
-#### Visual Studio の場合
-
-1. メニュー -「ツール」-「オプション」でオプション ダイアログを表示
-2. 「GitHub」-「Copilot」
-
-![Visual Studio MCP の設定](./Images/vs_mcp_1.png)
-
-3. ソリューション フォルダーに \"\.mcp\.json\" ファイルを作成
-
-[ソリューション フォルダー]\\\.mcp\.json
-```json
-{
-  "servers": {
-    "McpServer.Con": {
-      "type": "stdio",
-      "command": "dotnet",
-      "args": [
-        "run",
-        "--project",
-        "[MCPServer.Con.csprojのフルパス]"
-      ]
-    },
-    "McpServer.Sse": {
-      "url": "http://localhost:3001/sse"
-    },
-    "github": {
-      "url": "https://api.githubcopilot.com/mcp/"
-    },
-    "microsoft.docs.mcp": {
-      "type": "http",
-      "url": "https://learn.microsoft.com/api/mcp"
-    }
-  },
-  "inputs": []
-}
-
-```
-- [MCPServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換えてください<br>
-  (例. C:\\\\Source\\\\Shos.AIAgentSample\\\\MCPServer.Con\\\\MCPServer.Con.csproj)
-
-4. 「GitHub Copilot」-「チャット ウィンドウを開く」
-![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_1.png)
-
-![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_2.png)
-
-
 #### Visual Studio Code の場合
 
 1. メニュー -「表示」-「コマンド パレット」
@@ -101,8 +55,8 @@
       ]
     },
     "McpServer.Sse": {
-      "url": "http://localhost:3001/sse",
-      "type": "http"
+      "type": "http",
+      "url": "http://localhost:3001/sse"
     }
   },
   "inputs": []
@@ -110,8 +64,98 @@
 ```
 ※ [MCPServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換わります
 
-13. 「チャットを開く」
+13. ツールの確認
+
+- 予め McpServer\.Sse を実行しておく
+  - Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
+```console
+cd McpServer.Sse
+dotnet run
+```
+
 ![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_1.png)
+
+mcp\.json ファイルを開き、正常に起動していないものがあれば、起動
+
+[ソリューション フォルダー]\\\.vscode\\mcp\.json
+![Visual Studio Code mcp.json](./Images/vscode_mcp_json.png)
+
+14.  「チャットを開く」
 
 ![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_2.png)
 
+![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_3.png)
+
+15.  実行結果
+
+![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_4.png)
+
+![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_5.png)
+
+![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_6.png)
+
+![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_7.png)
+
+
+#### [参考] Visual Studio の場合
+
+1. メニュー -「ツール」-「オプション」でオプション ダイアログを表示
+2. 「GitHub」-「Copilot」
+
+![Visual Studio MCP の設定](./Images/vs_mcp_1.png)
+
+3. ソリューション フォルダーに \"\.mcp\.json\" ファイルを作成
+
+[ソリューション フォルダー]\\\.mcp\.json
+```json
+{
+  "servers": {
+    "McpServer.Con": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "[MCPServer.Con.csprojのフルパス]"
+      ]
+    },
+    "McpServer.Sse": {
+      "type": "http",
+      "url": "http://localhost:3001/sse"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "microsoft.docs.mcp": {
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp"
+    }
+  },
+  "inputs": []
+}
+
+```
+- [MCPServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換えてください<br>
+  (例. C:\\\\Source\\\\Shos.AIAgentSample\\\\MCPServer.Con\\\\MCPServer.Con.csproj)
+
+4. 「GitHub Copilot」-「チャット ウィンドウを開く」
+![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_1.png)
+
+![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_2.png)
+
+4. ツールの確認
+
+- 予め McpServer\.Sse を実行しておく
+  - Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
+```console
+cd McpServer.Sse
+dotnet run
+```
+
+![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_3.png)
+
+\.mcp\.json ファイルを開き、正常に起動していないものがあれば、起動
+
+[ソリューション フォルダー]\\\.mcp\.json
+![.mcp.json](./Images/vs_mcp_json.png)

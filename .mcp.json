@@ -10,10 +10,12 @@
       ]
     },
     "McpServer.Sse": {
+      "type": "http",
       "url": "http://localhost:3001/sse"
     },
     "github": {
-      "url": "https://api.githubcopilot.com/mcp/"
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp"
     },
     "microsoft.docs.mcp": {
       "type": "http",
