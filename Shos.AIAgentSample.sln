@@ -5,6 +5,7 @@ VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}"
 	ProjectSection(SolutionItems) = preProject
+		Documents\2025010.AIエージェント開発ハンズオンセミナー.pptx = Documents\2025010.AIエージェント開発ハンズオンセミナー.pptx
 		Documents\aiagentlog.md = Documents\aiagentlog.md
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
@@ -18,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		Documents\tutorial.2.3.md = Documents\tutorial.2.3.md
 		Documents\tutorial.3.1.md = Documents\tutorial.3.1.md
 		Documents\tutorial.3.2.md = Documents\tutorial.3.2.md
+		Documents\tutorial.4.1.md = Documents\tutorial.4.1.md
 		Documents\tutorial.md = Documents\tutorial.md
 	EndProjectSection
 EndProject
@@ -35,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{5D5D99
 		Documents\Images\azure_openai8.png = Documents\Images\azure_openai8.png
 		Documents\Images\azure_openai9.png = Documents\Images\azure_openai9.png
 		Documents\Images\azure_portal.png = Documents\Images\azure_portal.png
+		Documents\Images\delete_resource1.png = Documents\Images\delete_resource1.png
+		Documents\Images\delete_resource2.png = Documents\Images\delete_resource2.png
 		Documents\Images\download_dotnet.png = Documents\Images\download_dotnet.png
 		Documents\Images\download_nodejs.png = Documents\Images\download_nodejs.png
 		Documents\Images\download_ollama.png = Documents\Images\download_ollama.png
