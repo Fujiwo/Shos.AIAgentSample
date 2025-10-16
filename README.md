@@ -42,7 +42,7 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 - [MCP サーバーの利用 (単数)](./Documents/tutorial.3.1.md) - 単一の MCP サーバーとの連携
 - [MCP サーバーの利用 (複数)](./Documents/tutorial.3.2.md) - 複数の MCP サーバーとの連携
 
- ### 4. [後片付け](./tutorial.4.1.md)
+ ### 4. [後片付け](./Documents/tutorial.4.1.md)
 
 ## チュートリアルの実施方法
 
