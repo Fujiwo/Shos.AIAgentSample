@@ -22,8 +22,8 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 
 ### 0. 準備
 
-- [インストール](./Documents/tutorial.0.2.md) - .NET、Node.js、Ollama のセットアップ
-- [Azure OpenAI](./Documents/tutorial.0.1.md) - Azure OpenAI の設定
+- [インストール](./Documents/tutorial.0.1.md) - .NET、Node.js、Ollama のセットアップ
+- [Azure OpenAI](./Documents/tutorial.0.2.md) - Azure OpenAI の設定
 
 ### 1. AI エージェントの作成 (LLM 利用)
 
@@ -55,7 +55,7 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 以下のツールがインストールされている必要があります:
 
 - **.NET 8.0 以上** (推奨: .NET 9.0)
-  - [インストールガイド](./Documents/tutorial.0.2.md)を参照
+  - [インストールガイド](./Documents/tutorial.0.1.md)を参照
 - **Visual Studio 2022 (17.12 以降)** または **Visual Studio Code**
   - チュートリアルは Visual Studio を前提としていますが、Visual Studio Code でも実施可能です
 - **Node.js** (v24.0 以上推奨)
@@ -68,12 +68,12 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 - **Ollama** - ローカル LLM を使用する場合
   - 無料で利用可能
   - インターネット接続不要で動作
-  - [インストールガイド](./Documents/tutorial.0.2.md)を参照
+  - [インストールガイド](./Documents/tutorial.0.1.md)を参照
   
 - **Azure OpenAI アカウント** - Azure OpenAI を使用する場合
   - Microsoft Azure アカウントが必要
   - 課金が発生する可能性があります
-  - [設定ガイド](./Documents/tutorial.0.1.md)を参照
+  - [設定ガイド](./Documents/tutorial.0.2.md)を参照
 
 #### 推奨される前提知識
 
@@ -94,7 +94,7 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 
 2. **必要なツールのインストール**
 
-   [インストールガイド](./Documents/tutorial.0.2.md)に従って、必要なツールをインストールしてください。
+   [インストールガイド](./Documents/tutorial.0.1.md)に従って、必要なツールをインストールしてください.
 
 3. **ソリューションを開く**
 
@@ -105,8 +105,8 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 推奨される学習順序：
 
 1. **準備編**（所要時間：30分〜1時間）
-   - [0.2 インストール](./Documents/tutorial.0.2.md) - 開発環境のセットアップ
-   - [0.1 Azure OpenAI](./Documents/tutorial.0.1.md) - Azure OpenAI の設定（Azure OpenAI を使用する場合）
+   - [0.1 インストール](./Documents/tutorial.0.1.md) - 開発環境のセットアップ
+   - [0.2 Azure OpenAI](./Documents/tutorial.0.2.md) - Azure OpenAI の設定（Azure OpenAI を使用する場合）
 
 2. **基礎編**（所要時間：1〜2時間）
    - [1.1 ローカル LLM の利用](./Documents/tutorial.1.1.md) - 最初の AI エージェントを作成

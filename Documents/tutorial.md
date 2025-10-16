@@ -7,9 +7,9 @@
 >Microsoft Agent Framework は、今後のバージョンアップで内容が変わる可能性があります。
 
  0. 準備
-  - 0\.1 [インストール](./tutorial.0.2.md)
+  - 0\.1 [インストール](./tutorial.0.1.md)
 	- .NET、Node.js、Ollama のセットアップ
-  - 0\.2 [Azure OpenAI](./tutorial.0.1.md)
+  - 0\.2 [Azure OpenAI](./tutorial.0.2.md)
 	- Azure OpenAI の設定
 1. AIエージェントの作成 (LLM利用)
   - 1\.1 [ローカルLLMの利用](./tutorial.1.1.md)
