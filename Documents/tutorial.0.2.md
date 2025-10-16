@@ -5,11 +5,26 @@
 
 この手順では、チュートリアルのための準備として、Azure OpenAI による LLM を作成します。
 
-#### 1\. Visual Studio Subscription の Azure 特典のアクティブ化
+#### 1\. Microsoft Azure アカウントの準備
 
+##### 1\.1 Visual Studio Subscription の Azure 特典のアクティブ化
+
+※ Visual Studio Subscription で Professional 以上を契約している方限定
+
+Visual Studio Subscriptions Portal へ行く
 - [Visual Studio Subscriptions Portal](https://my.visualstudio.com)
 
+特典の「Azure」がアクティブ化されてなければ、アクティブ化
 ![Visual Studio Subscription 特典](./Images/vs_azure.png)
+
+##### 1\.2 Microsoft Azure アカウントを作成
+
+Microsoft Azure アカウントがまだない場合、下記を参考に作成
+
+- [Azure アカウントの作成 \- \.NET \| Microsoft Learn](https://learn.microsoft.com/ja-jp/dotnet/azure/create-azure-account)
+
+※ 注. 課金されることがある
+
 
 #### 2\. Azure OpenAI で LLM を作成
 
