@@ -7,9 +7,9 @@
 >Microsoft Agent Framework は、今後のバージョンアップで内容が変わる可能性があります。
 
  0. 準備
-  - 0\.1 [インストール](./tutorial.0.0.md)
+  - 0\.1 [インストール](./tutorial.0.1.md)
 	- .NET、Node.js、Ollama のセットアップ
-  - 0\.2 [Azure OpenAI](./tutorial.0.1.md)
+  - 0\.2 [Azure OpenAI](./tutorial.0.2.md)
 	- Azure OpenAI の設定
 1. AIエージェントの作成 (LLM利用)
   - 1\.1 [ローカルLLMの利用](./tutorial.1.1.md)
@@ -28,6 +28,6 @@
 3. AIエージェントでの MCP サーバーの利用
   - 3\.1 [MCP サーバーの利用 (単数)](./tutorial.3.1.md)
 	- 単一の MCP サーバーとの連携
-  - 3\.2 [MCP サーバーの利用 (複数)](./tutorial.3.1.md)
+  - 3\.2 [MCP サーバーの利用 (複数)](./tutorial.3.2.md)
 	- 複数の MCP サーバーとの連携
 4. [後片付け](./tutorial.4.1.md)
