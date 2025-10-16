@@ -5,6 +5,7 @@ VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}"
 	ProjectSection(SolutionItems) = preProject
+		Documents\2025010.AIエージェント開発ハンズオンセミナー.pdf = Documents\2025010.AIエージェント開発ハンズオンセミナー.pdf
 		Documents\2025010.AIエージェント開発ハンズオンセミナー.pptx = Documents\2025010.AIエージェント開発ハンズオンセミナー.pptx
 		Documents\aiagentlog.md = Documents\aiagentlog.md
 		LICENSE.txt = LICENSE.txt

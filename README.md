@@ -340,10 +340,24 @@ Copyright (c) 2025 Fujio Kojima
 
 詳細は [LICENSE.txt](./LICENSE.txt) を参照してください。
 
-## 連絡先
+## 作者
 
-- **作者**: Fujio Kojima
-- **リポジトリ**: https://github.com/Fujiwo/Shos.AIAgentSample
+**小島 富治雄** - ソフトウェア開発エンジニア
+
+### 経歴・実績
+- Microsoft MVP for Development Tools - Visual C# (Jul. 2005 - Dec. 2014)
+- Microsoft MVP for .NET (Jan. 2015 - Oct. 2015)
+- Microsoft MVP for Visual Studio and Development Technologies (Nov. 2015 - Jun. 2018)
+- Microsoft MVP for Developer Technologies (Nov. 2018 - Jun. 2026)
+
+### 連絡先・リンク
+- [MVP Profile](https://mvp.microsoft.com/en-us/PublicProfile/21482)
+- [ブログ (Japanese)](http://wp.shos.info)
+- [Webサイト (Japanese)](http://www.shos.info)
+- [X (Twitter)](https://x.com/Fujiwo)
+- [Instagram](https://www.instagram.com/fujiwo/)
+
+### **リポジトリ**: https://github.com/Fujiwo/Shos.AIAgentSample
 
 ## 謝辞
 
