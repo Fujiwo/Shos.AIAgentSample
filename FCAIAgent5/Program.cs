@@ -204,7 +204,7 @@ static IChatClient GetChatClient(ChatClientType chatClientType)
 //        Command = "dotnet",
 //        // [MCPServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
 //        //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
-//        Arguments = ["run", "--project", @"C:\DropBox\Dropbox\Source\GitHub\Repos\2025.10.AIAgentsSeminarSlide\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
+//        Arguments = ["run", "--project", @"C:\Source\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
 //    });
 // 旧: ここまで
 
@@ -233,7 +233,7 @@ static async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetAllMc
             Command = "dotnet",
             // [MCPServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
             //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
-            Arguments = ["run", "--project", @"C:\DropBox\Dropbox\Source\GitHub\Repos\2025.10.AIAgentsSeminarSlide\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
+            Arguments = ["run", "--project", @"C:\Source\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
         });
 
     // MCP サーバー (HTTP) を使うためのクライアント生成
