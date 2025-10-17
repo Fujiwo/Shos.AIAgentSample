@@ -4,6 +4,7 @@
 
 - Visual Studio と Visual Studio Code
   - なるべく最新のもの
+  - [ダウンロードはこちら](https://visualstudio.microsoft.com)
 
 ### ■ 準備 - インストール
 ![準備 - インストール](./Images/tutorial_banner_01.png)

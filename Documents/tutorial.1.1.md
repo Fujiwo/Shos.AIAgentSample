@@ -10,12 +10,14 @@
 任意のフォルダーでソリューションを作成し、コンソール アプリケーションを作成する
 
 >Visual Studio の代わりに Visual Studio Code でも開発できる。
->その場合は、Visual Studio Code に拡張機能の「C# Dev Kit」をインストールしておく
+>その場合は、Visual Studio Code に拡張機能の「C# Dev Kit」をインストールしておく。
+>
+>参考: [Visual Studio Code のインストールと構成 \- Training \| Microsoft Learn](https://learn.microsoft.com/ja-jp/training/modules/install-configure-visual-studio-code/)
 
 ※ Windows のターミナルなどで
 
 ```console
-cd [今回サンプルを作成するフォルダー]
+cd [予め用意した今回サンプルを作成するフォルダー]
 ```
 (例. cd C:\source)
 
