@@ -6,6 +6,9 @@
   - なるべく最新のもの
   - [ダウンロードはこちら](https://visualstudio.microsoft.com)
 
+- GitHub アカウントと GitHub へのサインインが必要
+
+
 ### ■ 準備 - インストール
 ![準備 - インストール](./Images/tutorial_banner_01.png)
 
