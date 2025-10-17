@@ -45,8 +45,7 @@ Microsoft Azure アカウントがまだない場合、下記を参考に作成
 ![リソース グループの新規作成 | Azure OpenAI の作成](./Images/azure_openai2.png)
 
 下記のように入力し、「次へ」を3回クリック
-※ 「202510azureopenai」の部分は、別のユニークな文字列とする
-※ この文字列はメモ
+※ 「名前」の部分は、ユニークな文字列とする
 
 ![Azure OpenAI の作成](./Images/azure_openai3.png)
 

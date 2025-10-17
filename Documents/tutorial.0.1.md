@@ -14,6 +14,8 @@
 
 - 1\.1 \.NET のバージョンの確認
 
+※ Windows の「ターミナル」などで
+
 ```console
 dotnet --version
 ```

@@ -7,12 +7,50 @@
 
 1.1 C#/.NET コンソール アプリケーションを作成
 
-Visual Studio で空のソリューションを作成し、
-メニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
+任意のフォルダーでソリューションを作成し、コンソール アプリケーションを作成する
+
+>Visual Studio の代わりに Visual Studio Code でも開発できる。
+>その場合は、Visual Studio Code に拡張機能の「C# Dev Kit」をインストールしておく
+
+※ Windows のターミナルなどで
 
 ```console
+cd [今回サンプルを作成するフォルダー]
+```
+(例. cd C:\source)
+
+```console
+md FCAIAgentSample
+cd FCAIAgentSample
+dotnet new sln
 dotnet new console -n FCAIAgent
 cd FCAIAgent
+```
+
+実行結果
+```console
+C:\>cd Source
+
+C:\Source>md FCAIAgentSample
+
+C:\Source>cd FCAIAgentSample
+
+C:\Source\FCAIAgentSample>dotnet new sln
+テンプレート "ソリューション ファイル" が正常に作成されました。
+
+
+C:\Source\FCAIAgentSample>dotnet new console -n FCAIAgent
+テンプレート "コンソール アプリ" が正常に作成されました。
+
+作成後の操作を処理しています...
+C:\Source\FCAIAgentSample\FCAIAgent\FCAIAgent.csproj を復元しています:
+正常に復元されました。
+
+
+
+C:\Source\FCAIAgentSample>cd FCAIAgent
+
+C:\Source\FCAIAgentSample\FCAIAgent>
 ```
 
 Microsoft Agent Framework パッケージをインストール
@@ -80,4 +118,20 @@ Ollama が起動していることを確認して、動作確認
 
 ```console
 dotnet run
+```
+
+AIエージェントとして、LLM からの応答が得られことを確認
+
+実行例
+```console
+## 「AIエージェント」とは
+
+### 1. 基本定義
+**AIエージェント** とは、環境（世界）を「知覚」し、その知覚をもとに「意思決定」し、最後に「行動」を実行する自律的な存在です。
+- **知覚（Perception）**：センサーや入力データ（画像、音声、テキスト、数値データなど）で環境情報を取得
+- **意思決定（Decision/Planning）**：入力を解釈し、目標を達成するための最適な行動を選択
+- **行動（Actuation/Action）**：選択した行動を環境に対して実行する（アクション・メカニズム）
+
+つまり、単に予測や分類を行う「モデル」ではなく、**“できること”** を行う「実践的な主体」なのです。
+……
 ```
