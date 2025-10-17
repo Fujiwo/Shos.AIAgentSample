@@ -5,18 +5,24 @@
 
 この手順では、AIエージェントから利用するための HTTP を利用する MCP サーバーを作成します。
 
-Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」で、McpServer.Sse プロジェクトを作成
+○ 新たなプロジェクト \"McpServer.Sse\" の作成
 
-パッケージをインストール
+Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
+または、ターミナルで**ソリューションのフォルダー** (例. C:\\Source\\FCAIAgentSample) に移動し、
+McpServer.Sse プロジェクトを作成
 ```console
 dotnet new web -n McpServer.Sse
 cd McpServer.Sse
+```
+
+Visual Studio の場合、Visual Studio の「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、McpServer.Sse プロジェクトを追加
+
+○ パッケージをインストール
+```console
 dotnet add package ModelContextProtocol.AspNetCore --prerelease
 ```
 
-Visual Studio の「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、McpServer.Sse プロジェクトを追加
-
-Program.cs を下記に書き換え
+○ Program.cs を下記に書き換え
 
 ```csharp
 // Program.cs
@@ -69,7 +75,7 @@ public static class WeatherForecastTool
 }
 ```
 
-ビルド確認
+○ ビルド確認
 
 ```console
 dotnet run

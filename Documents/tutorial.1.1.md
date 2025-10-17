@@ -5,21 +5,25 @@
 
 この手順では、ローカルLLM にプロンプトを投げて、返事を受け取るAIエージェントを作成します。
 
-1.1 C#/.NET コンソール アプリケーションを作成
+○ C#/.NET コンソール アプリケーションを作成
 
-任意のフォルダーでソリューションを作成し、コンソール アプリケーションを作成する
+- 任意のフォルダーでソリューション \"FCAIAgentSample\" を作成する
 
->Visual Studio の代わりに Visual Studio Code でも開発できる。
->その場合は、Visual Studio Code に拡張機能の「C# Dev Kit」をインストールしておく。
+>Visual Studio でも Visual Studio Code でも開発できる。<br>
+>Visual Studio Code の場合は、拡張機能の「C# Dev Kit」をインストールしておく。
 >
 >参考: [Visual Studio Code のインストールと構成 \- Training \| Microsoft Learn](https://learn.microsoft.com/ja-jp/training/modules/install-configure-visual-studio-code/)
 
-※ Windows のターミナルなどで
+Windows のターミナルなどで以下を実行
 
 ```console
-cd [予め用意した今回サンプルを作成するフォルダー]
+cd [予め用意した今回サンプルを作成するフォルダー 例. cd \source]
+md FCAIAgentSample
+cd FCAIAgentSample
+dotnet new sln
 ```
-(例. cd C:\source)
+
+- コンソール アプリケーション \"FCAIAgent\" を作成
 
 ```console
 md FCAIAgentSample
@@ -29,7 +33,7 @@ dotnet new console -n FCAIAgent
 cd FCAIAgent
 ```
 
-実行結果
+- 実行結果
 ```console
 C:\>cd Source
 
@@ -55,16 +59,16 @@ C:\Source\FCAIAgentSample>cd FCAIAgent
 C:\Source\FCAIAgentSample\FCAIAgent>
 ```
 
-Microsoft Agent Framework パッケージをインストール
+- Microsoft Agent Framework パッケージをインストール
 
 ```console
 dotnet add package Microsoft.Agents.AI --prerelease
 dotnet add package OllamaSharp
 ```
 
-Visual Studio の「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、FCAIAgent プロジェクトを追加
+- Visual Studio の場合、Visual Studio の「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、FCAIAgent プロジェクトを追加
 
-Program.cs を下記に書き換え
+○ Program.cs を下記に書き換え
 
 ```csharp
 // Program.cs
@@ -116,7 +120,7 @@ static IChatClient GetOllamaClient()
 }
 ```
 
-Ollama が起動していることを確認して、動作確認
+○ Ollama が起動していることを確認して、動作確認
 
 ```console
 dotnet run
@@ -124,7 +128,7 @@ dotnet run
 
 AIエージェントとして、LLM からの応答が得られことを確認
 
-実行例
+- 実行例
 ```console
 ## 「AIエージェント」とは
 

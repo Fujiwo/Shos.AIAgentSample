@@ -3,9 +3,9 @@
 ### ■ 後片付け
 ![後始末](./Images/tutorial_banner_02.png)
 
-- [Microsoft Azure Portal](https://portal.azure.com) へ行き、
+- [Microsoft Azure Portal](https://portal.azure.com) へ行く
 
-今回のチュートリアルで作成した Azure OpenAI が不要であれば、リソース グループを削除
+- 今回のチュートリアルで作成した Azure OpenAI が不要であれば、リソース グループを削除
 
 ![リソース グループの削除](./Images/delete_resource1.png)
 

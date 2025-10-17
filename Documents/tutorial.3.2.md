@@ -5,7 +5,7 @@
 
 この手順では、AIエージェントを改良し、複数の MCP サーバーを利用するようにします。
 
-Program.cs を下記に書き換え
+○ Program.cs を下記に書き換え
 
 ```csharp
 // Program.cs
@@ -285,26 +285,28 @@ enum ChatClientType
 }
 ```
 
-実行
+○ 実行
 
-- 予め "\\work" フォルダーを作成し、中にファイルを入れておく (sample1.txt, sample2.txt など)
+- 予め "\\work" フォルダーを作成し、中にファイルを入れておく (sample1\.txt, sample2\.txt など)
 
 - 予め McpServer\.Sse を実行しておく
-  - Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
+  
+Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
+または、ターミナルで**ソリューションのフォルダー** (例. C:\\Source\\FCAIAgentSample) に移動し、
 ```console
 cd McpServer.Sse
 dotnet run
 ```
 
-- Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
+- FCAIAgent の実行
 ```console
 cd FCAIAgent
 dotnet run
 ```
 
-実行結果の例
+- 実行結果の例
 
-FCAIAgent (AIエージェント側)
+・FCAIAgent (AIエージェント側)
 ```console
 Agent: こんにちは。AIエージェントです。何をお手伝いしましょうか？
 
@@ -337,7 +339,7 @@ Agent: C:\work のファイル一覧です：
 You:
 ```
 
-McpServer.Sse (MCPサーバー側)
+・McpServer\.Sse (MCPサーバー側)
 ```console
 info: ModelContextProtocol.Server.McpServer[570385771]
       Server (McpServer.Sse 1.0.0.0) method 'initialize' request handler called.

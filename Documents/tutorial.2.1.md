@@ -5,19 +5,26 @@
 
 この手順では、AIエージェントから利用するための STDIO を利用する MCP サーバーを作成します。
 
-Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」で、McpServer.Con プロジェクトを作成
+○ 新たなプロジェクト \"McpServer.Con\" の作成
 
-パッケージをインストール
+Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
+または、ターミナルで**ソリューションのフォルダー** (例. C:\\Source\\FCAIAgentSample) に移動し、
+McpServer.Con プロジェクトを作成
+
 ```console
 dotnet new console -n McpServer.Con
 cd McpServer.Con
+```
+
+Visual Studio の場合、「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、McpServer.Con プロジェクトを追加
+
+○ パッケージをインストール
+```console
 dotnet add package Microsoft.Extensions.Hosting
 dotnet add package ModelContextProtocol --prerelease
 ```
 
-Visual Studio の「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、McpServer.Con プロジェクトを追加
-
-Program.cs を下記に書き換え
+○ Program.cs を下記に書き換え
 
 ```csharp
 // Program.cs
@@ -66,7 +73,7 @@ public static class TimeTools
 }
 ```
 
-ビルド確認
+○ ビルド確認
 
 ```console
 dotnet build

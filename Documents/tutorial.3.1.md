@@ -5,16 +5,18 @@
 
 この手順では、AIエージェントを MCP クライアントにし、先に作成した MCP サーバーを利用するようにします。
 
-FCAIAgent に戻る
+○ FCAIAgent での作業に戻る
 
-Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」で、パッケージを追加インストール
+Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
+または、ターミナルで**ソリューションのフォルダー** (例. C:\\Source\\FCAIAgentSample) に移動し、
+FCAIAgent プロジェクトにパッケージを追加インストール
 
 ```console
 cd FCAIAgent
 dotnet add package ModelContextProtocol --prerelease
 ```
 
-Program.cs を下記に書き換え
+○ Program.cs を下記に書き換え
 
 ```csharp
 // Program.cs
@@ -225,12 +227,12 @@ enum ChatClientType
 }
 ```
 
-実行
+○ 実行
 ```console
 dotnet run
 ```
 
-実行結果の例
+- 実行結果の例
 ```console
 Agent: こんにちは。私はAIエージェントです。何を手伝いしましょうか？情報検索、要約、翻訳、文章作成、コードのヘルプ、スケジュール調整や時刻確認（特定のタイムゾーンの現在時刻も取得できます）など対応できます。具体的な内容や希望の形式（箇条書き、詳しい説明、短い回答など）を教えてください。
 

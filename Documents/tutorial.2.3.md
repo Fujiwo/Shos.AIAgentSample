@@ -2,7 +2,7 @@
 
 ### ■ 【参考】MCP サーバーの動作確認
 
-#### Visual Studio Code の場合
+#### ○ Visual Studio Code の場合
 
 1. Visual Studio Code への GitHub Copilot の設定
 
@@ -108,7 +108,7 @@ mcp\.json ファイルを開き、正常に起動していないものがあれ�
 ![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_7.png)
 
 
-#### [参考] Visual Studio の場合
+#### ○ Visual Studio の場合
 
 1. GitHub アカウントと GitHub へのサインインが必要
 
@@ -153,7 +153,7 @@ mcp\.json ファイルを開き、正常に起動していないものがあれ�
 
 ```
 - [MCPServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換えてください<br>
-  (例. C:\\\\Source\\\\Shos.AIAgentSample\\\\MCPServer.Con\\\\MCPServer.Con.csproj)
+  (例. C:\\\\Source\\\\FCAIAgentSample\\\\MCPServer.Con\\\\MCPServer.Con.csproj)
 
 5. 「GitHub Copilot」-「チャット ウィンドウを開く」
 ![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_1.png)
