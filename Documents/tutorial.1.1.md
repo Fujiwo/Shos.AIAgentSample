@@ -7,25 +7,17 @@
 
 ○ C#/.NET コンソール アプリケーションを作成
 
-- 任意のフォルダーでソリューション \"FCAIAgentSample\" を作成する
+- 任意のフォルダーで、ソリューション \"FCAIAgentSample\" とプロジェクト \"FCAIAgent\" を作成する
 
 >Visual Studio でも Visual Studio Code でも開発できる。<br>
 >Visual Studio Code の場合は、拡張機能の「C# Dev Kit」をインストールしておく。
 >
 >参考: [Visual Studio Code のインストールと構成 \- Training \| Microsoft Learn](https://learn.microsoft.com/ja-jp/training/modules/install-configure-visual-studio-code/)
 
-Windows のターミナルなどで以下を実行
+**Windows のコマンドプロンプトまたはターミナル**などで以下を実行
 
 ```console
 cd [予め用意した今回サンプルを作成するフォルダー 例. cd \source]
-md FCAIAgentSample
-cd FCAIAgentSample
-dotnet new sln
-```
-
-- コンソール アプリケーション \"FCAIAgent\" を作成
-
-```console
 md FCAIAgentSample
 cd FCAIAgentSample
 dotnet new sln
