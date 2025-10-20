@@ -94,6 +94,8 @@
 - **総変更行数**: 約 453 行（追加・削除含む）
 
 ### ファイル別の変更内容
+
+#### 修正されたファイル
 | ファイル | 変更内容 |
 |---------|---------|
 | `Documents/tutorial.0.1.md` | 画像パス修正、.NET バージョン記述統一 |
@@ -106,8 +108,12 @@
 | `Documents/tutorial.md` | 詳細なインデックスとして強化 |
 | `Documents/aiagentlog.md` | ヘッダーと説明を追加 |
 | `README.md` | ファイル構成の説明を修正 |
-| `Reviews/MarkdownReview.01.md` | **新規作成** - 包括的レビューレポート |
-| `Reviews/MarkdownReview.01.Summary.md` | **新規作成** - 修正サマリー（このファイル） |
+
+#### 新規作成されたファイル
+| ファイル | 内容 |
+|---------|------|
+| `Reviews/MarkdownReview.01.md` | 包括的レビューレポート |
+| `Reviews/MarkdownReview.01.Summary.md` | 修正サマリー（このファイル） |
 
 ---
 
