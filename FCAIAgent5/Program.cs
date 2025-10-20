@@ -10,19 +10,28 @@ using ModelContextProtocol.Client;
 // Debug.WriteLine を使うための名前空間
 using System.Diagnostics;
 
-// MCP サーバー (STDIO) を利用するAI エージェントの実行例
-// - 指定されたチャットクライアント（Ollama / Azure OpenAI）を作成
+// 【概要】
+// 複数の MCP サーバーを利用するAI エージェントの実行例
+// - 指定されたチャットクライアント(Ollama / Azure OpenAI)を作成
 // - ChatClientAgent を使った対話を行う
 // - ChatClientAgent には、複数の MCP サーバーのツールを渡して利用
 //
-// 主な流れ:
-// 1) 使用するチャットクライアントを作成
-// 2) 複数の MCP サーバー (Time, Weather, FileSystem) へ接続してツールを取得
-// 3) 取得したツールを ChatClientAgent に渡してエージェントを作成
-// 4) AgentThread を使った複数ターン対話ループを実行
-// 5) 終了時に全ての MCP クライアントを破棄
+// 【前提条件】
+// - Ollama がインストールされ、http://localhost:11434 で起動していること
+// - Ollama でモデル "gpt-oss:20b-cloud" が利用可能であること
+// - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
-// 注意:
+// 【実行方法】
+// dotnet run --project FCAIAgent5
+//
+// 【動作説明】
+// 1. 使用するチャットクライアントを作成
+// 2. 複数の MCP サーバー (Time, Weather, FileSystem) へ接続してツールを取得
+// 3. 取得したツールを ChatClientAgent に渡してエージェントを作成
+// 4. AgentThread を使った複数ターン対話ループを実行
+// 5. 終了時に全ての MCP クライアントを破棄
+//
+// 【注意】
 // - セキュリティ上、実運用では API キーやエンドポイントは環境変数やシークレットストアから読み込むことが望ましい
 // - STDIO トランスポートはローカルプロセス間通信向け
 
@@ -34,7 +43,7 @@ const string systemPrompt = "あなたはAIエージェントです";
 
 // 使用するチャットクライアント種別
 const ChatClientType chatClientType = ChatClientType.AzureOpenAI;
-IChatClient chatClient = GetChatClient(chatClientType);
+using IChatClient chatClient = GetChatClient(chatClientType);
 
 // MCP サーバー群のツールを取得
 // 旧:
@@ -109,13 +118,15 @@ static (bool isValid, ChatMessage userMessage) GetUserMessage()
     }
 }
 
-// Ollama を使う場合のクライアント生成（ローカルの Ollama サーバーに接続）
+// Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
 static IChatClient GetOllamaClient()
 {
     var uri    = new Uri("http://localhost:11434");
     var ollama = new OllamaApiClient(uri);
     // 使用するモデルを指定
-    ollama.SelectedModel = "gpt-oss:20b-cloud"; // ここでは実行速度の都合でクラウドのものを選択しているが、ローカルLLMの場合は "gemma3:latest" など
+    // クラウドベースのモデルを使用(実行速度の向上のため)
+    // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
+    ollama.SelectedModel = "gpt-oss:20b-cloud";
 
     // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
     IChatClient chatClient = ollama;
@@ -195,7 +206,7 @@ static IChatClient GetChatClient(ChatClientType chatClientType)
 //}
 
 //// MCP サーバー (STDIO) を使うためのクライアント生成
-//// - STDIO 経由で MCP サーバー（Time ツール）に接続するためのトランスポート
+//// - STDIO 経由で MCP サーバー(Time ツール)に接続するためのトランスポート
 //// - Command/Arguments を適切に設定して、MCP サーバー プロジェクトを起動
 //// - 実際のプロジェクトパスは環境に合わせて更新してください
 //static IClientTransport GetTimeToolClientTransport()
@@ -224,7 +235,7 @@ static async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetAllMc
     return (mcpClients, tools);
 
     // MCP サーバー (STDIO) を使うためのクライアント生成
-    // - STDIO 経由で MCP サーバー（Time ツール）に接続するためのトランスポート
+    // - STDIO 経由で MCP サーバー(Time ツール)に接続するためのトランスポート
     // - Command/Arguments を適切に設定して、MCP サーバー プロジェクトを起動
     // - 実際のプロジェクトパスは環境に合わせて更新してください
     static IClientTransport GetTimeToolClientTransport()

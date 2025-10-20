@@ -7,9 +7,24 @@ using Azure;
 using Azure.AI.OpenAI;
 // 新: ここまで
 
-// AI エージェントの実行例
-// - 指定されたチャットクライアント（Ollama / Azure OpenAI）を作成
-// - ChatClientAgent を作成して、簡単なプロンプトを投げる
+// 【概要】
+// Microsoft.Agents.AI フレームワークを使用した、AI エージェントの実装例
+// 指定されたチャットクライアント(Ollama / Azure OpenAI)を利用
+//
+// 【前提条件】
+// - Ollama がインストールされ、http://localhost:11434 で起動していること
+// - Ollama でモデル "gpt-oss:20b-cloud" が利用可能であること
+// - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
+//
+// 【実行方法】
+// dotnet run --project FCAIAgent2
+//
+// 【動作説明】
+// 1. チャットクライアント(Ollama / Azure OpenAI)を生成
+// 2. ChatClientAgent を作成(エージェント名と指示を設定)
+// 3. ユーザープロンプトを送信して応答を取得
+// 4. 応答内容をコンソールに出力
+
 
 // エージェント名と指示
 const string agentName    = "AIエージェント";
@@ -17,11 +32,11 @@ const string instructions = "あなたはAIエージェントです";
 // ユーザーからのプロンプトの例
 const string userPrompt   = "「AIエージェント」とはどのようなものですか?";
 
-// 旧: IChatClient chatClient = GetOllamaClient();
+// 旧: using IChatClient chatClient = GetOllamaClient();
 // 新: ここから
 // 使用するチャットクライアント種別
 const ChatClientType chatClientType = ChatClientType.AzureOpenAI;
-IChatClient chatClient = GetChatClient(chatClientType);
+using IChatClient chatClient = GetChatClient(chatClientType);
 // 新: ここまで
 
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
@@ -33,17 +48,23 @@ AIAgent agent = new ChatClientAgent(
     }
 );
 
-// エージェントを実行して結果を表示する
-AgentRunResponse response = await agent.RunAsync(userPrompt);
-Console.WriteLine(response.Text);
+try {
+    // エージェントを実行して結果を表示する
+    AgentRunResponse response = await agent.RunAsync(userPrompt);
+    Console.WriteLine(response.Text);
+} catch (Exception ex) {
+    Console.WriteLine($"Error running agent: {ex.Message}");
+}
 
-// Ollama を使う場合のクライアント生成（ローカルの Ollama サーバーに接続）
+// Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
 static IChatClient GetOllamaClient()
 {
     var uri    = new Uri("http://localhost:11434");
     var ollama = new OllamaApiClient(uri);
     // 使用するモデルを指定
-    ollama.SelectedModel = "gpt-oss:20b-cloud"; // ここでは実行速度の都合でクラウドのものを選択しているが、ローカルLLMの場合は "gemma3:latest" など
+    // クラウドベースのモデルを使用(実行速度の向上のため)
+    // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
+    ollama.SelectedModel = "gpt-oss:20b-cloud";
 
     // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
     IChatClient chatClient = ollama;
