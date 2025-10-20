@@ -130,7 +130,8 @@ static IChatClient GetOllamaClient()
     var uri    = new Uri("http://localhost:11434");
     var ollama = new OllamaApiClient(uri);
     // 使用するモデルを指定
-    ollama.SelectedModel = "gpt-oss:20b-cloud"; // 注意: このモデル名は例示用。実際の利用可能なモデルは ollama list で確認してください
+    // 推奨: 一般的に利用可能なモデルを使用 (ollama list で確認可能)
+    ollama.SelectedModel = "llama3:8b"; // 変更: より一般的なモデルに変更
 
     // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
     IChatClient chatClient = ollama;
@@ -574,7 +575,7 @@ var ollama = new OllamaApiClient(uri);
 //
 // Q: 応答が遅い
 // A: より軽量なモデルを使用してください
-//    → Program.cs の行 38 を "gemma:7b" などに変更
+//    → Program.cs の GetOllamaClient メソッド内の SelectedModel を "gemma:7b" などに変更
 //
 // 【関連ドキュメント】
 // - Microsoft.Agents.AI: https://learn.microsoft.com/ja-jp/dotnet/ai/
@@ -732,7 +733,7 @@ public record AgentConfiguration(
    - この表現により、クラウドAPIを使用していると誤解される可能性がある
 
 2. モデル名の一般性の問題
-   - "gpt-oss:20b-cloud" は特定のカスタムモデルである可能性が高く、一般ユーザーが利用できない可能性
+   - "gpt-oss:20b-cloud" は特定のカスタムモデルで、一般ユーザーが利用できない可能性があります
    - "gemma3:latest" も正確ではない（正しくは "gemma:7b" や "gemma2:9b" など）
 
 **修正案:**
