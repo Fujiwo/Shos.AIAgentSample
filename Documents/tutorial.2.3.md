@@ -2,6 +2,13 @@
 
 ### ■ 【参考】MCP サーバーの動作確認
 
+この手順では、作成した MCP サーバーが正しく動作するかを、Visual Studio Code または Visual Studio の GitHub Copilot を使って確認します。
+
+使用している IDE に応じて、該当するセクションを参照してください:
+
+Visual Studio Code を使用している場合 → 「Visual Studio Code の場合」
+Visual Studio を使用している場合 → 「Visual Studio の場合」
+
 #### ○ Visual Studio Code の場合
 
 1. Visual Studio Code への GitHub Copilot の設定

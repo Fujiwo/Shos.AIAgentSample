@@ -155,8 +155,8 @@ static IChatClient GetAzureOpenAIClient()
         return azureOpenAIEndPoint;
 
         // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
-        // [Azure OpenAI のエンドポイント] の部分は、実際のもので置き換えてください
-        //return @"[Azure OpenAI のエンドポイント]";
+        // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+        //return @"[Azure OpenAI のエンドポイント";
     }
 
     static string GetKey()
@@ -168,7 +168,7 @@ static IChatClient GetAzureOpenAIClient()
         return openAIApiKey!;
 
         // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
-        // [Azure OpenAI の APIキー] の部分は、実際のもので置き換えてください
+        //例: https://your-resource-name.openai.azure.com/
         //return @"[Azure OpenAI の APIキー]";
     }
 }

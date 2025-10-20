@@ -23,6 +23,18 @@ cd FCAIAgentSample
 dotnet new sln
 ```
 
+- 実行結果
+```console
+C:\>cd Source
+
+C:\Source>md FCAIAgentSample
+
+C:\Source>cd FCAIAgentSample
+
+C:\Source\FCAIAgentSample>dotnet new sln
+テンプレート "ソリューション ファイル" が正常に作成されました。
+```
+
 - コンソール アプリケーション \"FCAIAgent\" を作成
 
 ```console
@@ -35,16 +47,6 @@ cd FCAIAgent
 
 - 実行結果
 ```console
-C:\>cd Source
-
-C:\Source>md FCAIAgentSample
-
-C:\Source>cd FCAIAgentSample
-
-C:\Source\FCAIAgentSample>dotnet new sln
-テンプレート "ソリューション ファイル" が正常に作成されました。
-
-
 C:\Source\FCAIAgentSample>dotnet new console -n FCAIAgent
 テンプレート "コンソール アプリ" が正常に作成されました。
 
