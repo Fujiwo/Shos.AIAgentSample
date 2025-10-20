@@ -26,11 +26,10 @@ dotnet add package ModelContextProtocol.AspNetCore --prerelease
 
 ```csharp
 // Program.cs
-
 // Model Context Protocol (MCP) サーバーの簡易なサンプル
 // - WebApplication を使って MCP サーバーをホスト
 // - HTTP トランスポートを有効にすることで、SSE（Server-Sent Events）を使ったリアルタイム通信をサポート
-// - 同一アセンブリ内に定義された McpServer ツールを登録
+// - 同一アセンブリ内に定義された Mcp ツールを登録
 //
 // 1. このプログラムを実行するとローカルホストの http://localhost:3001 でサーバーが起動
 // 2. クライアントは MCP のプロトコルに従って HTTP エンドポイント経由で接続し、SSE でリアルタイム通信
@@ -62,7 +61,7 @@ public static class WeatherForecastTool
 {
     // 指定した場所の天気を予報します。
     // 引数 `location` には都道府県名などの文字列を渡します。
-    [McpServerTool, Description("指定した場所の天気を予報します")] // ツールとして公開し、説明を付与
+    [McpServerTool, Description("指定した場所の天気予報を取得")] // ツールとして公開し、説明を付与
     public static string GetWeatherForecast(
         [Description("天気を予報したい都道府県名")] // 引数に説明を付与
         string location) => location switch {

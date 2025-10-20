@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.AI;
 using Microsoft.Agents.AI;
 using OllamaSharp;
