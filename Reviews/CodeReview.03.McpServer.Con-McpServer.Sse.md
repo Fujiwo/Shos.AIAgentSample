@@ -16,13 +16,13 @@ McpServer.Con と McpServer.Sse は、Model Context Protocol (MCP) サーバー�
 ### 1.1 McpServer.Sse - 文字エンコーディングの問題（重大）
 
 **問題点:**
-McpServer.Sse/Program.cs が Shift-JIS エンコーディングで保存されており、コンパイルエラーが発生しています。
+McpServer.Sse/Program.cs が Shift-JIS エンコーディングで保存されているため、ビルド時にコンパイルエラーが発生する可能性があります。実際に `dotnet build` を実行した際に以下のエラーが確認されました：
 
 ```
 error CS1009: Unrecognized escape sequence
 ```
 
-C# ソースファイルは UTF-8（BOM なし）で保存する必要があります。現在のファイルは Shift-JIS で保存されているため、日本語の文字列リテラル内でエスケープシーケンスエラーが発生しています。
+C# ソースファイルは UTF-8（BOM なし）で保存することが推奨されます。現在のファイルは Shift-JIS で保存されているため、日本語の文字列リテラル内でバイトシーケンスがエスケープシーケンスとして誤認識される問題があります。
 
 **修正案:**
 ファイルを UTF-8（BOM なし）で再保存してください。Visual Studio、Visual Studio Code、または任意のテキストエディタで以下の手順を実行してください。
@@ -569,7 +569,7 @@ application.Run("http://localhost:3001");
 
 ### 6.2 McpServer.Sse - コメントの誤記
 
-**行 2-4（UTF-8 変換後）:**
+**行 2-4（※ファイルは現在 Shift-JIS で保存されているため、UTF-8 に変換後のコード）:**
 ```csharp
 // - WebApplication を使って MCP サーバーをホスト
 // - HTTP トランスポートを有効にすることで、SSE（Server-Sent Events）を使ったリアルタイム通信をサポート
@@ -588,7 +588,7 @@ application.Run("http://localhost:3001");
 
 ### 6.3 McpServer.Sse - デフォルトケースの表現
 
-**行 44（UTF-8 変換後）:**
+**行 44（※ファイルは現在 Shift-JIS で保存されているため、UTF-8 に変換後のコード）:**
 ```csharp
 _       => "晴か曇りか雨か雪か霙か霰か何か"
 ```
