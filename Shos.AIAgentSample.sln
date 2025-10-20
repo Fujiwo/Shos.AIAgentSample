@@ -103,6 +103,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目
 		.mcp.json = .mcp.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reviews", "Reviews", "{797B7EC8-F122-43AF-9DD6-19E0C4281E7A}"
+	ProjectSection(SolutionItems) = preProject
+		Reviews\CodeReview.00.md = Reviews\CodeReview.00.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
