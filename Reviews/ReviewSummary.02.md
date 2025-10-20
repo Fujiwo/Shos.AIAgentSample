@@ -226,10 +226,13 @@ Documents フォルダー内のすべての Markdown ファイルおよび READM
 
 ### 検証コマンド例
 ```bash
-# 文字列の閉じ括弧を確認
+# 修正済み: 文字列の閉じ括弧があることを確認
 grep -n 'Azure OpenAI のエンドポイント]' Documents/*.md
 
-# プロジェクト名の統一を確認
+# 未修正の箇所がないことを確認（何も出力されなければOK）
+grep -n '\[Azure OpenAI のエンドポイント"' Documents/*.md
+
+# プロジェクト名の統一を確認（何も出力されなければOK）
 grep -c "MCPServer" Documents/*.md | grep -v ":0"
 
 # 画像ファイルの存在確認

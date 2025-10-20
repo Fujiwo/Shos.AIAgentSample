@@ -132,7 +132,7 @@ macOS/Linux: `/Users/username/Source/FCAIAgentSample/McpServer.Con/McpServer.Con
 2. Azure Key Vault などのシークレット管理サービスを使用
 3. ユーザーシークレット機能を使用（開発環境）
 
-詳細: [Azure OpenAI のセキュリティベストプラクティス](リンク)
+詳細: [Azure OpenAI のセキュリティベストプラクティス](https://learn.microsoft.com/ja-jp/azure/ai-services/openai/how-to/security)
 ```
 
 ---
