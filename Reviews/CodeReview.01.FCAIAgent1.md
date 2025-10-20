@@ -71,7 +71,7 @@ catch (Exception ex)
 ### 1.3 リソース管理の問題
 
 **問題点:**
-`OllamaApiClient` および `IChatClient` が `IDisposable` を実装している可合、適切なリソース解放が行われていません。
+`OllamaApiClient` および `IChatClient` が `IDisposable` を実装している場合、適切なリソース解放が行われていません。
 
 **修正案:**
 `using` ステートメントを使用してリソースを適切に管理してください。
