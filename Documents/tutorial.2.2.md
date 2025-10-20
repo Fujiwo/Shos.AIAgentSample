@@ -26,6 +26,7 @@ dotnet add package ModelContextProtocol.AspNetCore --prerelease
 
 ```csharp
 // Program.cs
+//
 // Model Context Protocol (MCP) サーバーの簡易なサンプル
 // - WebApplication を使って MCP サーバーをホスト
 // - HTTP トランスポートを有効にすることで、SSE（Server-Sent Events）を使ったリアルタイム通信をサポート

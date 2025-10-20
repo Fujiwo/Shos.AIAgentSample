@@ -28,7 +28,7 @@ dotnet add package ModelContextProtocol --prerelease
 
 ```csharp
 // Program.cs
-
+//
 // Model Context Protocol (MCP) サーバーの簡易なサンプル
 // - アプリケーションホストを作成し、MCP サーバーを登録して起動
 // - 標準入出力（stdio）経由のサーバートランスポートを有効にし、同一アセンブリ内のツールを登録

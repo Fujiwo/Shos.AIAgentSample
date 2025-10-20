@@ -20,18 +20,7 @@ dotnet add package ModelContextProtocol --prerelease
 
 ```csharp
 // Program.cs
-using System;
-using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
-using OllamaSharp;
-// Azure OpenAI のクライアントを利用するための名前空間
-using Azure;
-using Azure.AI.OpenAI;
-// 新: MCP クライアントとツールを利用するための名前空間
-using ModelContextProtocol.Client;
-// 新: Debug.WriteLine を使うための名前空間
-using System.Diagnostics;
-
+//
 // 【概要】
 // MCP サーバー (STDIO) を利用するAI エージェントの実行例
 // - 指定されたチャットクライアント(Ollama / Azure OpenAI)を作成
@@ -56,6 +45,18 @@ using System.Diagnostics;
 // 【注意】
 // - セキュリティ上、実運用では API キーやエンドポイントは環境変数やシークレットストアから読み込むことが望ましい
 // - STDIO トランスポートはローカルプロセス間通信向け
+
+using System;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
+using OllamaSharp;
+// Azure OpenAI のクライアントを利用するための名前空間
+using Azure;
+using Azure.AI.OpenAI;
+// 新: MCP クライアントとツールを利用するための名前空間
+using ModelContextProtocol.Client;
+// 新: Debug.WriteLine を使うための名前空間
+using System.Diagnostics;
 
 // エージェント名と指示
 const string agentName    = "AIエージェント";

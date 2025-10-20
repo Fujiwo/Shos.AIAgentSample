@@ -72,11 +72,7 @@ dotnet add package OllamaSharp
 
 ```csharp
 // Program.cs
-using System;
-using Microsoft.Extensions.AI;
-using Microsoft.Agents.AI;
-using OllamaSharp;
-
+//
 // 【概要】
 // Microsoft.Agents.AI フレームワークを使用した、最もシンプルな AI エージェントの実装例
 //
@@ -93,6 +89,10 @@ using OllamaSharp;
 // 3. ユーザープロンプトを送信して応答を取得
 // 4. 応答内容をコンソールに出力
 
+using System;
+using Microsoft.Extensions.AI;
+using Microsoft.Agents.AI;
+using OllamaSharp;
 
 // エージェント名と指示
 const string agentName    = "AIエージェント";
