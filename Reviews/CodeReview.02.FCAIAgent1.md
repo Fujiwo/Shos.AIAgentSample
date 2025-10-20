@@ -101,8 +101,11 @@ catch (InvalidOperationException ex)
 {
     Console.Error.WriteLine("エラー: 指定されたモデルが見つからないか、利用できません。");
     Console.Error.WriteLine($"詳細: {ex.Message}");
-    Console.Error.WriteLine("\nモデルをダウンロードしてください:");
-    Console.Error.WriteLine("  ollama pull gpt-oss:20b-cloud");
+    Console.Error.WriteLine("\n利用可能なモデルを確認してください:");
+    Console.Error.WriteLine("  ollama list");
+    Console.Error.WriteLine("\nモデルをダウンロードする例:");
+    Console.Error.WriteLine("  ollama pull llama3:8b");
+    Console.Error.WriteLine("  ollama pull gemma:7b");
     Environment.Exit(1);
 }
 catch (TimeoutException ex)
@@ -127,7 +130,7 @@ static IChatClient GetOllamaClient()
     var uri    = new Uri("http://localhost:11434");
     var ollama = new OllamaApiClient(uri);
     // 使用するモデルを指定
-    ollama.SelectedModel = "gpt-oss:20b-cloud"; // ここでは実行速度の都合でクラウドのものを選択しているが、ローカルLLMの場合は "gemma3:latest" など
+    ollama.SelectedModel = "gpt-oss:20b-cloud"; // 注意: このモデル名は例示用。実際の利用可能なモデルは ollama list で確認してください
 
     // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
     IChatClient chatClient = ollama;
@@ -537,8 +540,12 @@ var ollama = new OllamaApiClient(uri);
 //    コマンド: ollama serve
 //
 // 4. 必要なモデルがダウンロードされていること
-//    コマンド: ollama pull gpt-oss:20b-cloud
-//    または: ollama pull gemma3:latest (ローカルLLMの場合)
+//    まず利用可能なモデルを確認: ollama list
+//    モデルのダウンロード例:
+//      ollama pull llama3:8b
+//      ollama pull gemma:7b
+//      ollama pull mistral:7b
+//    注意: コード内で指定したモデル名と一致させてください
 //
 // 【実行方法】
 // 1. Ollama サーバーを起動:
@@ -561,11 +568,13 @@ var ollama = new OllamaApiClient(uri);
 //
 // Q: "モデルが見つかりません" エラーが出る
 // A: モデルをダウンロードしてください
-//    → ollama pull gpt-oss:20b-cloud
+//    1. 利用可能なモデルを確認: ollama list
+//    2. モデルをダウンロード: ollama pull <model-name>
+//    例: ollama pull llama3:8b
 //
 // Q: 応答が遅い
 // A: より軽量なモデルを使用してください
-//    → Program.cs の行 38 を "gemma3:latest" に変更
+//    → Program.cs の行 38 を "gemma:7b" などに変更
 //
 // 【関連ドキュメント】
 // - Microsoft.Agents.AI: https://learn.microsoft.com/ja-jp/dotnet/ai/
@@ -601,12 +610,12 @@ Microsoft.Agents.AI フレームワークを使用した、最もシンプルな
 
 - .NET 9.0 SDK
 - Ollama (https://ollama.ai/)
-- モデル: gpt-oss:20b-cloud または gemma3:latest
+- 利用可能な Ollama モデル（例: llama3:8b, gemma:7b, mistral:7b）
 
 ## セットアップ
 
 1. Ollama をインストール
-2. モデルをダウンロード: `ollama pull gpt-oss:20b-cloud`
+2. モデルをダウンロード: `ollama pull llama3:8b`（または他の利用可能なモデル）
 3. Ollama サーバーを起動: `ollama serve`
 
 ## 実行方法
@@ -717,28 +726,37 @@ public record AgentConfiguration(
 ```
 
 **問題点:**
-1. 「クラウドのもの」という表現が曖昧
-   - "gpt-oss:20b-cloud" の "cloud" は、クラウドサービスではなくモデル名の一部の可能性
-   - Ollama は基本的にローカルで実行されるため、誤解を招く
+1. 「クラウドのもの」という表現が誤解を招く
+   - "gpt-oss:20b-cloud" の "cloud" は単にモデル名の一部であり、クラウドサービスを指していない
+   - Ollama は常にローカルで実行される（すべてのモデルがローカルLLM）
+   - この表現により、クラウドAPIを使用していると誤解される可能性がある
 
-2. 「など」の後に具体例がない
+2. モデル名の一般性の問題
+   - "gpt-oss:20b-cloud" は特定のカスタムモデルである可能性が高く、一般ユーザーが利用できない可能性
+   - "gemma3:latest" も正確ではない（正しくは "gemma:7b" や "gemma2:9b" など）
 
 **修正案:**
 ```csharp
-// より大きなモデル (gpt-oss:20b-cloud) を使用することで応答品質を向上させています。
-// 実行速度を優先する場合は、より軽量なモデルに変更してください。
-// 例: "gemma3:latest", "llama3:8b", "mistral:7b" など
+// 使用するモデルを指定
+// 注意: モデル名は実際に ollama list で確認してください
+// 一般的なモデル例:
+//   - llama3:8b (バランス型、推奨)
+//   - gemma:7b (軽量・高速)
+//   - mistral:7b (高品質)
+ollama.SelectedModel = "llama3:8b";
 ```
 
-または:
+または、より詳細な説明:
 
 ```csharp
 // 使用するモデルを指定 (モデルサイズと応答品質・速度のトレードオフを考慮)
-// 推奨モデル:
-//   - 高品質・低速: "gpt-oss:20b-cloud" (20B パラメータ)
-//   - バランス型: "gemma3:latest" (7B パラメータ)
-//   - 高速・軽量: "llama3:8b" (8B パラメータ)
-ollama.SelectedModel = "gpt-oss:20b-cloud";
+// Ollama で利用可能なモデルは https://ollama.com/library で確認できます
+// 推奨モデルの例:
+//   - llama3:8b (8B パラメータ、バランス型)
+//   - gemma:7b (7B パラメータ、軽量)
+//   - qwen2:7b (7B パラメータ、多言語対応)
+// 注意: 実行前に ollama pull <model-name> でダウンロードが必要です
+ollama.SelectedModel = "llama3:8b";
 ```
 
 **影響度: 低**  
@@ -812,16 +830,33 @@ const string userPrompt = "「AIエージェント」とはどのようなもの
 **問題の可能性:**
 `"gpt-oss:20b-cloud"` というモデル名が実際に存在するか、また一般的に利用可能かどうかは不明です。
 
+**重要な注意点:**
+- Ollama のモデル名は通常 `<model>:<size>` の形式（例: `llama3:8b`, `gemma:7b`）
+- "cloud" というサフィックスは標準的ではなく、カスタムモデルまたはプライベートモデルの可能性
+- 一般ユーザーがこのコードをそのまま実行すると、モデルが見つからないエラーが発生する可能性が高い
+
 **推奨される対応:**
-1. 実際に利用可能なモデル名を確認
-2. 複数の代替モデルをコメントで提示
+1. コード内で確実に動作する一般的なモデル名を使用する
+2. README やコメントで実際に利用可能なモデルを確認する手順を明記
 3. モデルが存在しない場合のエラーメッセージを改善
 
 **修正例:**
 ```csharp
 // 使用可能なモデルの一覧を確認: ollama list
-// 一般的なモデル: llama3, gemma3, mistral など
-ollama.SelectedModel = "gemma3:latest";  // より確実に動作するモデルに変更
+// Ollama の公式モデルライブラリ: https://ollama.com/library
+// 推奨される一般的なモデル:
+//   - llama3:8b (Meta の LLaMA 3, 8B パラメータ)
+//   - gemma:7b (Google の Gemma, 7B パラメータ)
+//   - mistral:7b (Mistral AI, 7B パラメータ)
+ollama.SelectedModel = "llama3:8b";  // より確実に動作する一般的なモデル
+```
+
+または、環境に応じて変更しやすいように:
+
+```csharp
+// モデル名を環境変数または設定ファイルから取得
+string modelName = Environment.GetEnvironmentVariable("OLLAMA_MODEL") ?? "llama3:8b";
+ollama.SelectedModel = modelName;
 ```
 
 **影響度: 中**  
