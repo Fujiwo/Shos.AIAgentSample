@@ -1,6 +1,8 @@
 // 【概要】
-// Microsoft.Agents.AI フレームワークを使用した、AI エージェントの実装例
-// 指定されたチャットクライアント(Ollama / Azure OpenAI)を利用し、複数ターン対話を実行
+// MCP サーバー (STDIO) を利用するAI エージェントの実行例
+// - 指定されたチャットクライアント(Ollama / Azure OpenAI)を作成
+// - ChatClientAgent を使った対話を行う
+// - ChatClientAgent には、MCP サーバー (STDIO) のツールを渡して利用
 //
 // 【前提条件】
 // - Ollama がインストールされ、http://localhost:11434 で起動していること
@@ -8,12 +10,18 @@
 // - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
 // 【実行方法】
-// dotnet run --project FCAIAgent3
+// dotnet run --project FCAIAgent4
 //
 // 【動作説明】
-// 1. チャットクライアント(Ollama / Azure OpenAI)を生成
-// 2. ChatClientAgent を作成(エージェント名と指示を設定)
-// 3. AgentThread を使った複数ターン対話ループを実行
+// 1. 使用するチャットクライアントを作成
+// 2. STDIO 経由の MCP サーバーへ接続しツール一覧を取得
+// 3. 取得したツールを ChatClientAgent に渡してエージェントを作成
+// 4. AgentThread を使った複数ターン対話ループを実行
+// 5. 終了時に MCP クライアントを破棄
+//
+// 【注意】
+// - セキュリティ上、実運用では API キーやエンドポイントは環境変数やシークレットストアから読み込むことが望ましい
+// - STDIO トランスポートはローカルプロセス間通信向け
 
 using System;
 using Microsoft.Agents.AI;
@@ -22,18 +30,23 @@ using OllamaSharp;
 // Azure OpenAI のクライアントを利用するための名前空間
 using Azure;
 using Azure.AI.OpenAI;
+// 新: MCP クライアントとツールを利用するための名前空間
+using ModelContextProtocol.Client;
+// 新: Debug.WriteLine を使うための名前空間
+using System.Diagnostics;
 
 // エージェント名と指示
 const string agentName    = "AIエージェント";
 const string instructions = "あなたはAIエージェントです";
-// 新: エージェントのシステムロールに与える文脈的な指示
+// エージェントのシステムロールに与える文脈的な指示
 const string systemPrompt = "あなたはAIエージェントです";
-// 旧: ユーザーからのプロンプトの例
-//const string userPrompt   = "「AIエージェント」とはどのようなものですか?";
 
 // 使用するチャットクライアント種別
 const ChatClientType chatClientType = ChatClientType.AzureOpenAI;
 using IChatClient chatClient = GetChatClient(chatClientType);
+
+// 新: MCP サーバー (STDIO) のツールを取得
+var (mcpClient, tools) = await GetMcpServerTools();
 
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
@@ -41,20 +54,11 @@ AIAgent agent = new ChatClientAgent(
     new ChatClientAgentOptions {
         Name         = agentName,
         Instructions = instructions
+        // 新: ツールをエージェントに渡す
+        , ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() }
     }
 );
 
-// 旧: ここから
-//try {
-//    // エージェントを実行して結果を表示する
-//    AgentRunResponse response = await agent.RunAsync(userPrompt);
-//    Console.WriteLine(response.Text);
-//} catch (Exception ex) {
-//    Console.WriteLine($"Error running agent: {ex.Message}");
-//}
-// 旧: ここまで
-
-// 新: ここから
 // 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
 AgentThread thread = agent.GetNewThread();
 
@@ -72,6 +76,9 @@ for (; ;) {
         break;
     await RunAsync(agent, userMessage, thread);
 }
+
+// 新: 終了処理 MCP クライアントを破棄
+await mcpClient.DisposeAsync();
 
 // エージェントに ChatMessage を投げて応答を取得
 static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentThread? thread = null)
@@ -102,7 +109,6 @@ static (bool isValid, ChatMessage userMessage) GetUserMessage()
             : (isValid: true, userPrompt: userPrompt!);
     }
 }
-// 新: ここまで
 
 // Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
 static IChatClient GetOllamaClient()
@@ -150,7 +156,7 @@ static IChatClient GetAzureOpenAIClient()
 
         // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
         // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-        //return @"[Azure OpenAI のエンドポイント]";
+        //return @"[Azure OpenAI のエンドポイント";
     }
 
     static string GetKey()
@@ -174,6 +180,35 @@ static IChatClient GetChatClient(ChatClientType chatClientType)
         ChatClientType.AzureOpenAI => GetAzureOpenAIClient(),
         _ => throw new NotSupportedException($"Chat client type '{chatClientType}' is not supported.")
     };
+
+// 新: ここから
+// MCP サーバー (STDIO) のツールを取得
+// - STDIO トランスポート経由で McpClient に接続し、ツール一覧を取得して返す
+// - 戻り値は (McpClient, IEnumerable<McpClientTool>) で、終了時に McpClient.DisposeAsync() を呼ぶ必要がある
+static async Task<(McpClient, IEnumerable<McpClientTool>)> GetMcpServerTools()
+{
+    IClientTransport clientTransport = GetTimeToolClientTransport();
+    McpClient client = await McpClient.CreateAsync(clientTransport);
+
+    IList<McpClientTool> tools = await client.ListToolsAsync();
+    foreach (var tool in tools)
+        Debug.WriteLine($"{tool.Name} ({tool.Description})");
+    return (client, tools);
+}
+
+// MCP サーバー (STDIO) を使うためのクライアント生成
+// - STDIO 経由で MCP サーバー(Time ツール)に接続するためのトランスポート
+// - Command/Arguments を適切に設定して、MCP サーバー プロジェクトを起動
+// - 実際のプロジェクトパスは環境に合わせて更新してください
+static IClientTransport GetTimeToolClientTransport()
+    => new StdioClientTransport(new() {
+        Name      = "time"  ,
+        Command   = "dotnet",
+        // [MCPServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
+        //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
+        Arguments = ["run", "--project", @"C:\Source\Shos.AIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
+    });
+// 新: ここまで
 
 // チャットクライアントの種別
 enum ChatClientType
