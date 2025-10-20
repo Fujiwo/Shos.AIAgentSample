@@ -248,8 +248,8 @@ Shos.AIAgentSample/
 ├── Documents/                   # チュートリアルとリソース
 │   ├── Images/                 # チュートリアル用画像
 │   ├── tutorial.md             # チュートリアルメインページ
-│   ├── tutorial.0.1.md         # Azure OpenAI セットアップ
-│   ├── tutorial.0.2.md         # インストールガイド
+│   ├── tutorial.0.1.md         # インストールガイド
+│   ├── tutorial.0.2.md         # Azure OpenAI セットアップ
 │   ├── tutorial.1.1.md         # ローカル LLM の利用
 │   ├── tutorial.1.2.md         # Azure OpenAI の利用
 │   ├── tutorial.1.3.md         # 複数ターンのチャット

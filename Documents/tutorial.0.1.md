@@ -47,7 +47,7 @@ dotnet --version
 
   - [Node\.js — Node\.js®をダウンロードする](https://nodejs.org/ja/download)
 
-![Download Node.js](./images/download_nodejs.png)
+![Download Node.js](./Images/download_nodejs.png)
 
 - 2\.2 Node.js のインストール
 
