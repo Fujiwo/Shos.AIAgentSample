@@ -20,7 +20,7 @@ Visual Studio を使用している場合 → 「Visual Studio の場合」
 Visual Studio Code を起動し、設定を開く
 
 \"chat.agent.enabled\" で検索し、チェックが入っていなければチェック
-![alt text](./Images/vscode_agentmode.png)
+![Visual Studio Code の設定画面で chat.agent.enabled オプションにチェックを入れる](./Images/vscode_agentmode.png)
 
 3. メニュー -「表示」-「コマンド パレット」
 
