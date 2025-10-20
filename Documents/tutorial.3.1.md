@@ -179,7 +179,7 @@ static IChatClient GetAzureOpenAIClient()
 
         // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
         // 例: https://your-resource-name.openai.azure.com/
-        return @"[Azure OpenAI のエンドポイント";
+        return @"[Azure OpenAI のエンドポイント]";
     }
 
     static string GetKey()
@@ -227,8 +227,8 @@ static IClientTransport GetTimeToolClientTransport()
     => new StdioClientTransport(new() {
         Name      = "time"  ,
         Command   = "dotnet",
-        // [MCPServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
-        Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
+        // [McpServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
+        Arguments = ["run", "--project", @"[McpServer.Con.csprojのフルパス]"]
     });
 // 新: ここまで
 

@@ -24,40 +24,40 @@ Visual Studio Code を起動し、設定を開く
 
 3. メニュー -「表示」-「コマンド パレット」
 
-1. 「MCP サーバーの追加」コマンドを実行
+4. 「MCP サーバーの追加」コマンドを実行
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_1.png)
 
-1. 「コマンド (stdio) MCP プロトコルを実装するローカル コマンドを実行する」を選択
+5. 「コマンド (stdio) MCP プロトコルを実装するローカル コマンドを実行する」を選択
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_2.png)
 
-1. 「コマンドの入力」では、「実行するコマンド」に \"dotnet  run --project [MCPServer\.Con\.csprojのフルパス]\" と入力して Enter
-- [MCPServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換えてください<br>
-  (例. C:\\\\Source\\\\Shos.AIAgentSample\\\\MCPServer.Con\\\\MCPServer.Con.csproj)
+6. 「コマンドの入力」では、「実行するコマンド」に \"dotnet  run --project [McpServer\.Con\.csprojのフルパス]\" と入力して Enter
+- [McpServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換えてください<br>
+  (例. C:\\\\Source\\\\Shos.AIAgentSample\\\\McpServer.Con\\\\McpServer.Con.csproj)
 
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_3.png)
 
 7. 「サーバー ID の入力」で \"McpServer.Con\" と入力して Enter
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_4.png)
 
-1. 「MCP サーバーをインストールする場所を選択する」では「ワークスペース このワークスペースで利用可能で、ローカルで実行されます」を選択
+8. 「MCP サーバーをインストールする場所を選択する」では「ワークスペース このワークスペースで利用可能で、ローカルで実行されます」を選択
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_5.png)
 
-1. 再度「MCP サーバーの追加」コマンドを実行
+9. 再度「MCP サーバーの追加」コマンドを実行
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_1.png)
 
-1. 「HTTP (HTTP またはサーバー送信イベント) MCP プロトコルを実装するリモート HTTP サーバーに接続する」を選択
+10. 「HTTP (HTTP またはサーバー送信イベント) MCP プロトコルを実装するリモート HTTP サーバーに接続する」を選択
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_6.png)
 
-1. 「サーバー URL の入力」では \"http://localhost:3001/sse\" と入力して Enter
+11. 「サーバー URL の入力」では \"http://localhost:3001/sse\" と入力して Enter
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_7.png)
 
-1. 「サーバー ID の入力」で \"McpServer.Sse\" と入力して Enter
+12. 「サーバー ID の入力」で \"McpServer.Sse\" と入力して Enter
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_8.png)
 
-1. 「MCP サーバーをインストールする場所を選択する」では「ワークスペース このワークスペースで利用可能で、ローカルで実行されます」を選択
+13. 「MCP サーバーをインストールする場所を選択する」では「ワークスペース このワークスペースで利用可能で、ローカルで実行されます」を選択
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_5.png)
 
-1. 次のファイルが作成される
+14. 次のファイルが作成される
 
 [ソリューション フォルダー]\\\.vscode\\mcp\.json
 ```json
@@ -69,7 +69,7 @@ Visual Studio Code を起動し、設定を開く
       "args": [
         "run",
         "--project",
-        "[MCPServer.Con.csprojのフルパス]"
+        "[McpServer.Con.csprojのフルパス]"
       ]
     },
     "McpServer.Sse": {
@@ -80,7 +80,7 @@ Visual Studio Code を起動し、設定を開く
   "inputs": []
 }
 ```
-※ [MCPServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換わります
+※ [McpServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換わります
 
 15. ツールの確認
 
@@ -139,7 +139,7 @@ mcp\.json ファイルを開き、正常に起動していないものがあれ�
       "args": [
         "run",
         "--project",
-        "[MCPServer.Con.csprojのフルパス]"
+        "[McpServer.Con.csprojのフルパス]"
       ]
     },
     "McpServer.Sse": {
@@ -159,8 +159,8 @@ mcp\.json ファイルを開き、正常に起動していないものがあれ�
 }
 
 ```
-- [MCPServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換えてください<br>
-  (例. C:\\\\Source\\\\FCAIAgentSample\\\\MCPServer.Con\\\\MCPServer.Con.csproj)
+- [McpServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換えてください<br>
+  (例. C:\\\\Source\\\\FCAIAgentSample\\\\McpServer.Con\\\\McpServer.Con.csproj)
 
 5. 「GitHub Copilot」-「チャット ウィンドウを開く」
 ![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_1.png)
