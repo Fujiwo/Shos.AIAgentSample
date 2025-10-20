@@ -47,13 +47,13 @@ dotnet --version
 
   - [Node\.js — Node\.js®をダウンロードする](https://nodejs.org/ja/download)
 
-![Download Node.js](./images/download_nodejs.png)
+![Download Node.js](./Images/download_nodejs.png)
 
 - 2\.2 Node.js のインストール
 
 ![Node\.js のインストール](./Images/nodejs_installer.png)
 
-- 2\.2 確認
+- 2\.3 確認
 
 ```console
 node -v
@@ -73,13 +73,13 @@ npm -v
 11.3.0
 ```
 
-- 2\.3 npx のインストール
+- 2\.4 npx のインストール
 
 ```console
 npm install -g npx
 ```
 
-- 2\.4 確認
+- 2\.5 確認
 
 ```console
 npx -v
