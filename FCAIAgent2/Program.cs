@@ -1,12 +1,3 @@
-using System;
-using Microsoft.Extensions.AI;
-using Microsoft.Agents.AI;
-using OllamaSharp;
-// 新: ここから Azure OpenAI のクライアントを利用するための名前空間
-using Azure;
-using Azure.AI.OpenAI;
-// 新: ここまで
-
 // 【概要】
 // Microsoft.Agents.AI フレームワークを使用した、AI エージェントの実装例
 // 指定されたチャットクライアント(Ollama / Azure OpenAI)を利用
@@ -25,6 +16,14 @@ using Azure.AI.OpenAI;
 // 3. ユーザープロンプトを送信して応答を取得
 // 4. 応答内容をコンソールに出力
 
+using System;
+using Microsoft.Extensions.AI;
+using Microsoft.Agents.AI;
+using OllamaSharp;
+// 新: ここから Azure OpenAI のクライアントを利用するための名前空間
+using Azure;
+using Azure.AI.OpenAI;
+// 新: ここまで
 
 // エージェント名と指示
 const string agentName    = "AIエージェント";
