@@ -32,7 +32,7 @@ Visual Studio Code を起動し、設定を開く
 
 6. 「コマンドの入力」では、「実行するコマンド」に \"dotnet  run --project [McpServer\.Con\.csprojのフルパス]\" と入力して Enter
 - [McpServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換えてください<br>
-  (例. C:\\\\Source\\\\Shos.AIAgentSample\\\\McpServer.Con\\\\McpServer.Con.csproj)
+  (例. C:\\\\Source\\\\FCAIAgentSample\\\\McpServer.Con\\\\McpServer.Con.csproj)
 
 ![Visual Studio Code MCP の設定](./Images/vscode_mcp_3.png)
 

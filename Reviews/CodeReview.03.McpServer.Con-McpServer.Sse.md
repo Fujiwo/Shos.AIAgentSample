@@ -698,7 +698,7 @@ _       => "指定された場所の天気情報は登録されていません"
 両プロジェクトで共通する設定やヘルパーメソッドがある場合、共有ライブラリに抽出することを検討してください。
 
 ```
-Shos.AIAgentSample/
+FCAIAgentSample/
 ├── McpServer.Con/
 ├── McpServer.Sse/
 ├── McpServer.Common/        # 共通ライブラリ（新規作成）

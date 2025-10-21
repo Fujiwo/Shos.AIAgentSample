@@ -91,8 +91,8 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 1. **リポジトリのクローン**
 
    ```bash
-   git clone https://github.com/Fujiwo/Shos.AIAgentSample.git
-   cd Shos.AIAgentSample
+   git clone https://github.com/Fujiwo/FCAIAgentSample.git
+   cd FCAIAgentSample
    ```
 
 2. **必要なツールのインストール**
@@ -101,7 +101,7 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 
 3. **ソリューションを開く**
 
-   Visual Studio で `Shos.AIAgentSample.sln` を開きます。
+   Visual Studio で `FCAIAgentSample.sln` を開きます。
 
 #### ステップ 2: チュートリアルの実施
 
@@ -202,7 +202,7 @@ dotnet run
 
 - **.mcp.json** - ルートディレクトリの MCP サーバー設定（サンプル）
 - **.vscode/mcp.json** - Visual Studio Code 用の MCP サーバー設定
-- **Shos.AIAgentSample.sln** - Visual Studio ソリューションファイル
+- **FCAIAgentSample.sln** - Visual Studio ソリューションファイル
 
 ## 実施環境
 
@@ -241,7 +241,7 @@ dotnet run
 ## ファイル・ディレクトリ構成
 
 ```
-Shos.AIAgentSample/
+FCAIAgentSample/
 ├── .mcp.json                    # MCP サーバー設定（ルート、サンプル）
 ├── .vscode/
 │   └── mcp.json                # Visual Studio Code 用 MCP 設定
@@ -283,7 +283,7 @@ Shos.AIAgentSample/
 ├── McpServer.Sse/              # HTTP/SSE MCP サーバー
 │   ├── Program.cs             # 天気予報ツール実装
 │   └── McpServer.Sse.csproj
-├── Shos.AIAgentSample.sln      # Visual Studio ソリューション
+├── FCAIAgentSample.sln      # Visual Studio ソリューション
 ├── LICENSE.txt                 # ライセンス情報
 └── README.md                   # このファイル
 ```
