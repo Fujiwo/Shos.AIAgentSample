@@ -16,7 +16,22 @@ dotnet new console -n McpServer.Con
 cd McpServer.Con
 ```
 
-Visual Studio の場合、「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、McpServer.Con プロジェクトを追加
+- 実行結果
+```console
+C:\Source\FCAIAgentSample>dotnet new console -n McpServer.Con
+テンプレート "コンソール アプリ" が正常に作成されました。
+
+作成後の操作を処理しています...
+C:\Source\FCAIAgentSample\McpServer.Con\McpServer.Con.csproj を復元しています:
+正常に復元されました。
+
+C:\Source\FCAIAgentSample>dotnet sln add ./McpServer.Con/McpServer.Con.csproj
+プロジェクト `McpServer.Con\McpServer.Con.csproj` をソリューションに追加しました。
+
+C:\Source\FCAIAgentSample>cd McpServer.Con
+
+C:\Source\FCAIAgentSample\McpServer.Con>
+```
 
 ○ パッケージをインストール
 ```console

@@ -25,7 +25,7 @@ dotnet new sln
 
 - 実行結果
 ```console
-C:\>cd Source
+C:\>cd \Source
 
 C:\Source>md FCAIAgentSample
 
@@ -38,10 +38,8 @@ C:\Source\FCAIAgentSample>dotnet new sln
 - コンソール アプリケーション \"FCAIAgent\" を作成
 
 ```console
-md FCAIAgentSample
-cd FCAIAgentSample
-dotnet new sln
 dotnet new console -n FCAIAgent
+dotnet sln add ./FCAIAgent/FCAIAgent.csproj
 cd FCAIAgent
 ```
 
@@ -54,7 +52,8 @@ C:\Source\FCAIAgentSample>dotnet new console -n FCAIAgent
 C:\Source\FCAIAgentSample\FCAIAgent\FCAIAgent.csproj を復元しています:
 正常に復元されました。
 
-
+C:\Source\FCAIAgentSample>dotnet sln add ./FCAIAgent/FCAIAgent.csproj
+プロジェクト `FCAIAgent\FCAIAgent.csproj` をソリューションに追加しました。
 
 C:\Source\FCAIAgentSample>cd FCAIAgent
 
@@ -67,8 +66,6 @@ C:\Source\FCAIAgentSample\FCAIAgent>
 dotnet add package Microsoft.Agents.AI --prerelease
 dotnet add package OllamaSharp
 ```
-
-- Visual Studio の場合、Visual Studio の「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、FCAIAgent プロジェクトを追加
 
 ○ Program.cs を下記に書き換え
 

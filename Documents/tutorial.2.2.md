@@ -12,10 +12,26 @@ Visual Studio のメニューの「ツール」-「コマンド ライン」-「
 McpServer.Sse プロジェクトを作成
 ```console
 dotnet new web -n McpServer.Sse
+dotnet sln add ./McpServer.Sse/McpServer.Sse.csproj
 cd McpServer.Sse
 ```
 
-Visual Studio の場合、Visual Studio の「ソリューション エクスプローラー」でソリューションを右クリックし、「追加」-「既存のプロジェクト」で、McpServer.Sse プロジェクトを追加
+- 実行結果
+```console
+C:\Source\FCAIAgentSample>dotnet new web -n McpServer.Sse
+テンプレート ""ASP.NET Core (空)" が正常に作成されました。
+
+作成後の操作を処理しています...
+C:\Source\FCAIAgentSample\McpServer.Sse\McpServer.Sse.csproj を復元しています:
+正常に復元されました。
+
+C:\Source\FCAIAgentSample>dotnet sln add ./McpServer.Sse/McpServer.Sse.csproj
+プロジェクト `McpServer.Sse\McpServer.Sse.csproj` をソリューションに追加しました。
+
+C:\Source\FCAIAgentSample>cd McpServer.Sse
+
+C:\Source\FCAIAgentSample\McpServer.Sse>
+```
 
 ○ パッケージをインストール
 ```console
