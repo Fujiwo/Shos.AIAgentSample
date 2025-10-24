@@ -247,7 +247,7 @@ You: exit
 ```csharp
 // エージェント名と指示
 const string agentName    = "テキストベースRPG";
-const string instructions = "あなたは**テキストベースRPGのゲームマスター**です";
+const string instructions = @"あなたは**テキストベースRPGのゲームマスター**です";
 // 新: エージェントのシステムロールに与える文脈的な指示
 const string systemPrompt = "
 あなたは**テキストベースRPGのゲームマスター**です。
