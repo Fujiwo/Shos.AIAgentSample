@@ -108,6 +108,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reviews", "Reviews", "{797B
 		Reviews\CodeReview.00.md = Reviews\CodeReview.00.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIAgent", "FCAIAgent\FCAIAgent.csproj", "{DCCF1F9D-7CEE-4E7A-B327-91D26E9F7FC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -142,6 +144,10 @@ Global
 		{6F3155D4-A67B-5B9C-B7BE-6183E537CE8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F3155D4-A67B-5B9C-B7BE-6183E537CE8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F3155D4-A67B-5B9C-B7BE-6183E537CE8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCCF1F9D-7CEE-4E7A-B327-91D26E9F7FC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCCF1F9D-7CEE-4E7A-B327-91D26E9F7FC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCCF1F9D-7CEE-4E7A-B327-91D26E9F7FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCCF1F9D-7CEE-4E7A-B327-91D26E9F7FC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -179,6 +179,8 @@ dotnet run
   - 複数の MCP サーバー（時刻、天気、ファイルシステム）の同時利用
   - より実践的なツール統合の例
 
+- **FCAIAgent** - 最終形 (FCAIAgent5と同じ)
+
 ### MCP サーバープロジェクト
 
 - **McpServer.Con** - STDIO トランスポートを使用した MCP サーバー
