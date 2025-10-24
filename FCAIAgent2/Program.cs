@@ -17,119 +17,126 @@
 // 4. 応答内容をコンソールに出力
 
 using System;
+// Microsoft Agent Framework 用
 using Microsoft.Extensions.AI;
 using Microsoft.Agents.AI;
+// Ollama 用
 using OllamaSharp;
-// 新: ここから Azure OpenAI のクライアントを利用するための名前空間
+// 新: ここから
+// Azure OpenAI のクライアント用
 using Azure;
 using Azure.AI.OpenAI;
 // 新: ここまで
 
-// エージェント名と指示
-const string agentName    = "AIエージェント";
-const string instructions = "あなたはAIエージェントです";
-// ユーザーからのプロンプトの例
-const string userPrompt   = "「AIエージェント」とはどのようなものですか?";
-
 // 旧: using IChatClient chatClient = GetOllamaClient();
 // 新: ここから
 // 使用するチャットクライアント種別
-const ChatClientType chatClientType = ChatClientType.AzureOpenAI;
-using IChatClient chatClient = GetChatClient(chatClientType);
+const My.ChatClientType chatClientType = My.ChatClientType.AzureOpenAI;
+using IChatClient       chatClient     = My.GetChatClient(chatClientType);
 // 新: ここまで
 
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
     chatClient,
     new ChatClientAgentOptions {
-        Name         = agentName,
-        Instructions = instructions
+        Name         = My.AgentName   ,
+        Instructions = My.Instructions
     }
 );
 
 try {
     // エージェントを実行して結果を表示する
-    AgentRunResponse response = await agent.RunAsync(userPrompt);
+    AgentRunResponse response = await agent.RunAsync(My.UserPrompt);
     Console.WriteLine(response.Text);
 } catch (Exception ex) {
     Console.WriteLine($"Error running agent: {ex.Message}");
 }
 
-// Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
-static IChatClient GetOllamaClient()
+// 上記コード中の型や定数、メソッドが自作のものかどうかを判別しやすくするためにクラスに格納
+static class My
 {
-    var uri    = new Uri("http://localhost:11434");
-    var ollama = new OllamaApiClient(uri);
-    // 使用するモデルを指定
-    // クラウドベースのモデルを使用(実行速度の向上のため)
-    // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
-    ollama.SelectedModel = "gpt-oss:20b-cloud";
+    // エージェント名と指示
+    public const string AgentName    = "AIエージェント";
+    public const string Instructions = "あなたはAIエージェントです";
+    // ユーザーからのプロンプトの例
+    public const string UserPrompt   = "「AIエージェント」とはどのようなものですか?";
 
-    // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
-    IChatClient chatClient = ollama;
-    chatClient = chatClient.AsBuilder()
-                           .UseFunctionInvocation() // ツール呼び出しを使う
-                           .Build();
-    return chatClient;
-}
-
-// 新: ここから Azure OpenAI を使う場合のクライアント生成
-static IChatClient GetAzureOpenAIClient()
-{
-    var azureOpenAIEndPoint     = GetEndPoint();
-    var openAIApiKey            = GetKey();
-    var credential              = new AzureKeyCredential(openAIApiKey);
-    // 使用するモデルを指定
-    const string deploymentName = "gpt-5-mini";
-
-    var azureOpenAIClient = new AzureOpenAIClient(new Uri(azureOpenAIEndPoint), credential);
-    // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
-    IChatClient chatClient = azureOpenAIClient.GetChatClient(deploymentName)
-                                              .AsIChatClient()
-                                              .AsBuilder()
-                                              .UseFunctionInvocation() // ツール呼び出しを使う
-                                              .Build();
-    return chatClient;
-
-    static string GetEndPoint()
+    // Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
+    static IChatClient GetOllamaClient()
     {
-        const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
-        var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
-        if (string.IsNullOrEmpty(azureOpenAIEndPoint))
-            throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
-        return azureOpenAIEndPoint;
+        var uri    = new Uri("http://localhost:11434");
+        var ollama = new OllamaApiClient(uri);
+        // 使用するモデルを指定
+        // クラウドベースのモデルを使用(実行速度の向上のため)
+        // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
+        ollama.SelectedModel = "gpt-oss:20b-cloud";
 
-        // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
-        // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-        //return @"[Azure OpenAI のエンドポイント]";
+        // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
+        IChatClient chatClient = ollama;
+        chatClient = chatClient.AsBuilder()
+                               .UseFunctionInvocation() // ツール呼び出しを使う
+                               .Build();
+        return chatClient;
     }
 
-    static string GetKey()
+    // 新: ここから Azure OpenAI を使う場合のクライアント生成
+    static IChatClient GetAzureOpenAIClient()
     {
-        const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
-        var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
-        if (string.IsNullOrEmpty(openAIApiKey))
-            throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
-        return openAIApiKey!;
+        // 使用するモデルを指定
+        const string deploymentName = "gpt-5-mini";
+        var azureOpenAIEndPoint     = GetEndPoint();
+        var openAIApiKey            = GetKey     ();
+        var credential              = new AzureKeyCredential(openAIApiKey);
 
-        // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
-        //例: https://your-resource-name.openai.azure.com/
-        //return @"[Azure OpenAI の APIキー]";
+        var azureOpenAIClient       = new AzureOpenAIClient(new Uri(azureOpenAIEndPoint), credential);
+        // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
+        IChatClient chatClient      = azureOpenAIClient.GetChatClient(deploymentName)
+                                                       .AsIChatClient()
+                                                       .AsBuilder()
+                                                       .UseFunctionInvocation() // ツール呼び出しを使う
+                                                       .Build();
+        return chatClient;
+
+        static string GetEndPoint()
+        {
+            const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
+            var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
+            if (string.IsNullOrEmpty(azureOpenAIEndPoint))
+                throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
+            return azureOpenAIEndPoint;
+
+            // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
+            // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+            //return @"[Azure OpenAI のエンドポイント]";
+        }
+
+        static string GetKey()
+        {
+            const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
+            var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
+            if (string.IsNullOrEmpty(openAIApiKey))
+                throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
+            return openAIApiKey!;
+
+            // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
+            //例: https://your-resource-name.openai.azure.com/
+            //return @"[Azure OpenAI の APIキー]";
+        }
     }
-}
 
-// ChatClientType に基づいて適切な IChatClient を返すファクトリ関数
-static IChatClient GetChatClient(ChatClientType chatClientType)
-    => chatClientType switch {
-        ChatClientType.Ollama      => GetOllamaClient     (),
-        ChatClientType.AzureOpenAI => GetAzureOpenAIClient(),
-        _ => throw new NotSupportedException($"Chat client type '{chatClientType}' is not supported.")
-    };
+    // ChatClientType に基づいて適切な IChatClient を返すファクトリ関数
+    public static IChatClient GetChatClient(My.ChatClientType chatClientType)
+        => chatClientType switch {
+            My.ChatClientType.Ollama      => My.GetOllamaClient     (),
+            My.ChatClientType.AzureOpenAI => My.GetAzureOpenAIClient(),
+            _ => throw new NotSupportedException($"Chat client type '{chatClientType}' is not supported.")
+        };
 
-// チャットクライアントの種別
-enum ChatClientType
-{
-    AzureOpenAI,
-    Ollama
+    // チャットクライアントの種別
+    public enum ChatClientType
+    {
+        AzureOpenAI,
+        Ollama
+    }
+    // 新: ここまで
 }
-// 新: ここまで

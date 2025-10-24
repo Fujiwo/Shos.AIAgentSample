@@ -23,6 +23,19 @@
 
 各チュートリアルには、コード例、実行結果、スクリーンショットが含まれており、手順に従って進めることで実際に動作するサンプルを作成できます。
 
+コードでは、前のステップからの変更箇所が下記のように示されています:
+
+```csharp
+// 旧: using IChatClient chatClient = GetOllamaClient();
+// 新: ここから
+// 使用するチャットクライアント種別
+const My.ChatClientType chatClientType = My.ChatClientType.AzureOpenAI;
+using IChatClient       chatClient     = My.GetChatClient(chatClientType);
+// 新: ここまで
+```
+
+新たなステップでは、「旧」の部分を「新」に書き換えてください。
+
 ## チュートリアル一覧
 
  0. 準備
