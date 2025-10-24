@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		Documents\2025010.AIエージェント開発ハンズオンセミナー.pptx = Documents\2025010.AIエージェント開発ハンズオンセミナー.pptx
 		Documents\aiagentlog.md = Documents\aiagentlog.md
 		LICENSE.txt = LICENSE.txt
+		Documents\maf.md = Documents\maf.md
 		README.md = README.md
 		Documents\tutorial.0.1.md = Documents\tutorial.0.1.md
 		Documents\tutorial.0.2.md = Documents\tutorial.0.2.md

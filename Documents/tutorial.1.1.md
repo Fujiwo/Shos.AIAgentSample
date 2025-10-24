@@ -1,7 +1,7 @@
 ## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
 
 ### ■ AIエージェントの作成 (LLM利用) - ローカルLLMの利用
-![AIエージェントの作成 (LLM利用) - ローカルLLMの利用](./Images/tutorial_banner_11.png)
+![AIエージェントの作成 (LLM利用) - ローカルLLMの利用](./Images/tutorial_banners/tutorial_banner_11.png)
 
 この手順では、ローカルLLM にプロンプトを投げて、返事を受け取るAIエージェントを作成します。
 

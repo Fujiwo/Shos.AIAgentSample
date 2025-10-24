@@ -7,7 +7,7 @@
   - [ダウンロードはこちら](https://visualstudio.microsoft.com)
 
 ### ■ 準備 - インストール
-![準備 - インストール](./Images/tutorial_banner_01.png)
+![準備 - インストール](./Images/tutorial_banners/tutorial_banner_01.png)
 
 この手順では、チュートリアルのための準備として、必要なツールのインストールを行います。
 
@@ -24,11 +24,11 @@ dotnet --version
 
 - 1\.2 (8\.0未満の場合) \.NET9\.0 のダウンロード
 
-![Download \.NET](./Images/download_dotnet.png)
+![Download \.NET](./Images/tutorial.0.1/download_dotnet.png)
 
 - 1\.3 (8\.0未満の場合) \.NET9\.0 のインストール
 
-![Install \.NET](./Images/install_dotnet.png)
+![Install \.NET](./Images/tutorial.0.1/install_dotnet.png)
 
 - 1\.4 \.NET のバージョンの再確認
 
@@ -47,11 +47,11 @@ dotnet --version
 
   - [Node\.js — Node\.js®をダウンロードする](https://nodejs.org/ja/download)
 
-![Download Node.js](./Images/download_nodejs.png)
+![Download Node.js](./Images/tutorial.0.1/download_nodejs.png)
 
 - 2\.2 Node.js のインストール
 
-![Node\.js のインストール](./Images/nodejs_installer.png)
+![Node\.js のインストール](./Images/tutorial.0.1/nodejs_installer.png)
 
 - 2\.3 確認
 
@@ -96,19 +96,19 @@ npx -v
 
   - [Ollama](https://www.ollama.com)
 
-![Download Ollama](./Images/download_ollama.png)
+![Download Ollama](./Images/tutorial.0.1/download_ollama.png)
 
 - 3\.2 Ollama をインストール
-![Install Ollama](./Images/install_ollama.png)
+![Install Ollama](./Images/tutorial.0.1/install_ollama.png)
 
 - 3\.3 起動して、サインアップ
 
-![Sign up Ollama](./Images/signup_ollama.png)
+![Sign up Ollama](./Images/tutorial.0.1/signup_ollama.png)
 
 - 3\.4 動作確認
 
-![Ollama](./Images/ollama_1.png)
+![Ollama](./Images/tutorial.0.1/ollama_1.png)
 
 - 3\.5 LLM の選択とダウンロード
 
-![Ollama](./Images/ollama_2.png)
+![Ollama](./Images/tutorial.0.1/ollama_2.png)

@@ -1,7 +1,7 @@
 ## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
 
 ### ■ MCP サーバー (SSE) の作成
-![MCP サーバー (SSE) の作成](./Images/tutorial_banner_22.png)
+![MCP サーバー (SSE) の作成](./Images/tutorial_banners/tutorial_banner_22.png)
 
 この手順では、AIエージェントから利用するための HTTP を利用する MCP サーバーを作成します。
 

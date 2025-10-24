@@ -1,7 +1,7 @@
 
 ## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
 
-![AIエージェント](./Images/tutorial_banner_aiagent.png)
+![AIエージェント](./Images/tutorial_banners/tutorial_banner_aiagent.png)
 
 >このチュートリアルは執筆時点のプレビュー版の Microsoft Agent Framework が基になっています。
 >Microsoft Agent Framework は、今後のバージョンアップで内容が変わる可能性があります。

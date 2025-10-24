@@ -1,7 +1,7 @@
 ## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
 
 ### ■ AIエージェントでの MCP サーバーの利用 (単数)
-![AIエージェントでの MCP サーバーの利用 (単数)](./Images/tutorial_banner_31.png)
+![AIエージェントでの MCP サーバーの利用 (単数)](./Images/tutorial_banners/tutorial_banner_31.png)
 
 この手順では、AIエージェントを MCP クライアントにし、先に作成した MCP サーバーを利用するようにします。
 

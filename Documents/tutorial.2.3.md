@@ -20,42 +20,42 @@ Visual Studio を使用している場合 → 「Visual Studio の場合」
 Visual Studio Code を起動し、設定を開く
 
 \"chat.agent.enabled\" で検索し、チェックが入っていなければチェック
-![Visual Studio Code の設定画面で chat.agent.enabled オプションにチェックを入れる](./Images/vscode_agentmode.png)
+![Visual Studio Code の設定画面で chat.agent.enabled オプションにチェックを入れる](./Images/tutorial.2.3/vscode_agentmode.png)
 
 3. メニュー -「表示」-「コマンド パレット」
 
 4. 「MCP サーバーの追加」コマンドを実行
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_1.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_1.png)
 
 5. 「コマンド (stdio) MCP プロトコルを実装するローカル コマンドを実行する」を選択
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_2.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_2.png)
 
 6. 「コマンドの入力」では、「実行するコマンド」に \"dotnet  run --project [McpServer\.Con\.csprojのフルパス]\" と入力して Enter
 - [McpServer\.Con\.csprojのフルパス] の部分は、実際のもので置き換えてください<br>
   (例. C:\\\\Source\\\\FCAIAgentSample\\\\McpServer.Con\\\\McpServer.Con.csproj)
 
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_3.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_3.png)
 
 7. 「サーバー ID の入力」で \"McpServer.Con\" と入力して Enter
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_4.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_4.png)
 
 8. 「MCP サーバーをインストールする場所を選択する」では「ワークスペース このワークスペースで利用可能で、ローカルで実行されます」を選択
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_5.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_5.png)
 
 9. 再度「MCP サーバーの追加」コマンドを実行
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_1.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_1.png)
 
 10. 「HTTP (HTTP またはサーバー送信イベント) MCP プロトコルを実装するリモート HTTP サーバーに接続する」を選択
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_6.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_6.png)
 
 11. 「サーバー URL の入力」では \"http://localhost:3001/sse\" と入力して Enter
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_7.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_7.png)
 
 12. 「サーバー ID の入力」で \"McpServer.Sse\" と入力して Enter
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_8.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_8.png)
 
 13. 「MCP サーバーをインストールする場所を選択する」では「ワークスペース このワークスペースで利用可能で、ローカルで実行されます」を選択
-![Visual Studio Code MCP の設定](./Images/vscode_mcp_5.png)
+![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_5.png)
 
 14. 次のファイルが作成される
 
@@ -91,41 +91,41 @@ cd McpServer.Sse
 dotnet run
 ```
 
-![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_1.png)
+![GitHub Copilot | Visual Studio Code](./Images/tutorial.2.3/vscode_github_copilot_1.png)
 
 mcp\.json ファイルを開き、正常に起動していないものがあれば、起動
 
 [ソリューション フォルダー]\\\.vscode\\mcp\.json
-![Visual Studio Code mcp.json](./Images/vscode_mcp_json.png)
+![Visual Studio Code mcp.json](./Images/tutorial.2.3/vscode_mcp_json.png)
 
 16. 「チャットを開く」
 
-![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_2.png)
+![GitHub Copilot | Visual Studio Code](./Images/tutorial.2.3/vscode_github_copilot_2.png)
 
-![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_3.png)
+![GitHub Copilot | Visual Studio Code](./Images/tutorial.2.3/vscode_github_copilot_3.png)
 
 17.  実行結果
 
-![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_4.png)
+![GitHub Copilot | Visual Studio Code](./Images/tutorial.2.3/vscode_github_copilot_4.png)
 
-![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_5.png)
+![GitHub Copilot | Visual Studio Code](./Images/tutorial.2.3/vscode_github_copilot_5.png)
 
-![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_6.png)
+![GitHub Copilot | Visual Studio Code](./Images/tutorial.2.3/vscode_github_copilot_6.png)
 
-![GitHub Copilot | Visual Studio Code](./Images/vscode_github_copilot_7.png)
+![GitHub Copilot | Visual Studio Code](./Images/tutorial.2.3/vscode_github_copilot_7.png)
 
 
 #### ○ Visual Studio の場合
 
 1. GitHub アカウントと GitHub へのサインインが必要
 
-![alt text](./Images/vs_account.png)
+![alt text](./Images/tutorial.2.3/vs_account.png)
 
 2. メニュー -「ツール」-「オプション」でオプション ダイアログを表示
 
 3. 「GitHub」-「Copilot」
 
-![Visual Studio MCP の設定](./Images/vs_mcp_1.png)
+![Visual Studio MCP の設定](./Images/tutorial.2.3/vs_mcp_1.png)
 
 4. ソリューション フォルダーに \"\.mcp\.json\" ファイルを作成
 
@@ -163,9 +163,9 @@ mcp\.json ファイルを開き、正常に起動していないものがあれ�
   (例. C:\\\\Source\\\\FCAIAgentSample\\\\McpServer.Con\\\\McpServer.Con.csproj)
 
 5. 「GitHub Copilot」-「チャット ウィンドウを開く」
-![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_1.png)
+![GitHub Copilot | Visual Studio](./Images/tutorial.2.3/vs_github_copilot_1.png)
 
-![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_2.png)
+![GitHub Copilot | Visual Studio](./Images/tutorial.2.3/vs_github_copilot_2.png)
 
 6. ツールの確認
 
@@ -176,9 +176,9 @@ cd McpServer.Sse
 dotnet run
 ```
 
-![GitHub Copilot | Visual Studio](./Images/vs_github_copilot_3.png)
+![GitHub Copilot | Visual Studio](./Images/tutorial.2.3/vs_github_copilot_3.png)
 
 \.mcp\.json ファイルを開き、正常に起動していないものがあれば、起動
 
 [ソリューション フォルダー]\\\.mcp\.json
-![.mcp.json](./Images/vs_mcp_json.png)
+![.mcp.json](./Images/tutorial.2.3/vs_mcp_json.png)
