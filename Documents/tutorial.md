@@ -1,5 +1,5 @@
 
-## 『AIエージェント開発ハンズオンセミナー』(開発者向け) チュートリアル
+## 【C#/.NET】Microsoft Agent Framework による AIエージェント開発 チュートリアル
 
 ![AIエージェント](./Images/tutorial_banners/tutorial_banner_aiagent.png)
 
