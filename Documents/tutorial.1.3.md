@@ -20,7 +20,7 @@
 // - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
 // 【実行方法】
-// dotnet run --project FCAIAgent3
+// dotnet run --project FCAIAgent
 //
 // 【動作説明】
 // 1. チャットクライアント(Ollama / Azure OpenAI)を生成

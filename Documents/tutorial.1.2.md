@@ -27,7 +27,7 @@ dotnet add package Microsoft.Agents.AI.OpenAI --prerelease
 // - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
 // 【実行方法】
-// dotnet run --project FCAIAgent2
+// dotnet run --project FCAIAgent
 //
 // 【動作説明】
 // 1. チャットクライアント(Ollama / Azure OpenAI)を生成
@@ -95,7 +95,7 @@ static class My
         chatClient = chatClient.AsBuilder()
                                .UseFunctionInvocation() // ツール呼び出しを使う
                                .Build();
-        return chatClient;
+        return chatClient
     }
 
     // 新: ここから Azure OpenAI を使う場合のクライアント生成

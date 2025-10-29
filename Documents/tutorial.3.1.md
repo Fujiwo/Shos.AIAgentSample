@@ -33,7 +33,7 @@ dotnet add package ModelContextProtocol --prerelease
 // - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
 // 【実行方法】
-// dotnet run --project FCAIAgent4
+// dotnet run --project FCAIAgent
 //
 // 【動作説明】
 // 1. 使用するチャットクライアントを作成

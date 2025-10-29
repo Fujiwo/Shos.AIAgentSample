@@ -80,7 +80,7 @@ dotnet add package OllamaSharp
 // - Ollama でモデル "gpt-oss:20b-cloud" が利用可能であること
 //
 // 【実行方法】
-// dotnet run --project FCAIAgent1
+// dotnet run --project FCAIAgent
 //
 // 【動作説明】
 // 1. Ollama クライアントを生成

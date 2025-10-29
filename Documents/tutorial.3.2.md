@@ -22,7 +22,7 @@
 // - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
 // 【実行方法】
-// dotnet run --project FCAIAgent5
+// dotnet run --project FCAIAgent
 //
 // 【動作説明】
 // 1. 使用するチャットクライアントを作成
