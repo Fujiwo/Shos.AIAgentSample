@@ -117,6 +117,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIChat2", "FCAIChat2\FCAI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIChat3", "FCAIChat3\FCAIChat3.csproj", "{D15782C9-8593-053C-40AE-87BB707E3A0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIChat4", "FCAIChat4\FCAIChat4.csproj", "{948F3253-BD44-AE48-9D66-952111CB9853}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,6 +169,10 @@ Global
 		{D15782C9-8593-053C-40AE-87BB707E3A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D15782C9-8593-053C-40AE-87BB707E3A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D15782C9-8593-053C-40AE-87BB707E3A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{948F3253-BD44-AE48-9D66-952111CB9853}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{948F3253-BD44-AE48-9D66-952111CB9853}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{948F3253-BD44-AE48-9D66-952111CB9853}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{948F3253-BD44-AE48-9D66-952111CB9853}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
