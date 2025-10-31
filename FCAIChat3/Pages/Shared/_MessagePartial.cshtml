@@ -1,0 +1,24 @@
+﻿@model FCAIChat.Data.Message
+
+@{
+    Layout = null;
+}
+
+@if (Model.UserName == User?.Identity?.Name) {
+    <div class="talk_right">
+        <p>
+            <span>@Model.UserName</span>
+            <span>@Html.Raw(Html.Encode(Model.Content).Replace("&#xA;", "<br>"))</span>
+            <span class="utc-time hidden">@Model.CreatedAt.ToString("o")</span>
+        </p>
+    </div>
+} else {
+    <div class="talk_left">
+        <p>
+            <span>@Model.UserName</span>
+            <span>@Html.Raw(Html.Encode(Model.Content).Replace("&#xA;", "<br>"))</span>
+            <span class="utc-time hidden">@Model.CreatedAt.ToString("o")</span>
+        </p>
+    </div>
+}
+<br><br><br><br>
