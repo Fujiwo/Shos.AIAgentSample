@@ -20,29 +20,29 @@ namespace FCAIChat4.AIAgents
 {
     public abstract class ChatAgent : IDisposable
     {
-        AIAgent? agent = null;
+        AIAgent?               agent      = null;
         IEnumerable<McpClient> mcpClients = [];
         // 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
-        AgentThread? thread = null;
-        bool isFirst = true;
+        AgentThread?           thread     = null;
+        bool                   isFirst    = true;
 
         // エージェント名と指示
-        protected abstract string Name { get; }
+        protected abstract string Name         { get; }
         protected abstract string Instructions { get; }
         // エージェントのシステムロールに与える文脈的な指示
         protected abstract string SystemPrompt { get; }
 
         public async Task Start()
         {
-            var (mcpClients, tools) = await GetMcpTools();
-            this.mcpClients = mcpClients;
+            var (mcpClients, tools) = await GetMcpToolsAsync();
+            this.mcpClients         = mcpClients;
 
             var chatClientAgentOptions = new ChatClientAgentOptions { Name = Name, Instructions = Instructions };
             if (tools.Any())
                 // ツールをエージェントに渡す
                 chatClientAgentOptions.ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() };
 
-            agent = new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
+            agent  = new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
             thread = agent.GetNewThread();
         }
 
@@ -68,7 +68,7 @@ namespace FCAIChat4.AIAgents
         // ファクトリ関数
         protected abstract IChatClient GetChatClient();
         
-        protected virtual async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpTools()
+        protected virtual async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
         {
             await Task.Delay(0);
             return ([], []);
@@ -93,7 +93,7 @@ namespace FCAIChat4.AIAgents
     public abstract class MyChatAgent : ChatAgent
     {
         // エージェント名と指示
-        protected override string Name => "AIエージェント";   
+        protected override string Name         => "AIエージェント";   
         protected override string Instructions => "あなたはAIエージェントです";
         // エージェントのシステムロールに与える文脈的な指示
         protected override string SystemPrompt => "あなたはAIエージェントです";
@@ -102,17 +102,17 @@ namespace FCAIChat4.AIAgents
         {
             // 使用するモデルを指定
             const string deploymentName = "gpt-5-mini";
-            var azureOpenAIEndPoint = GetEndPoint();
-            var openAIApiKey = GetKey();
-            var credential = new AzureKeyCredential(openAIApiKey);
+            var azureOpenAIEndPoint     = GetEndPoint();
+            var openAIApiKey            = GetKey();
+            var credential              = new AzureKeyCredential(openAIApiKey);
 
             var azureOpenAIClient = new AzureOpenAIClient(new Uri(azureOpenAIEndPoint), credential);
             // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
             IChatClient chatClient = azureOpenAIClient.GetChatClient(deploymentName)
-                                                           .AsIChatClient()
-                                                           .AsBuilder()
-                                                           .UseFunctionInvocation() // ツール呼び出しを使う
-                                                           .Build();
+                                                      .AsIChatClient()
+                                                      .AsBuilder()
+                                                      .UseFunctionInvocation() // ツール呼び出しを使う
+                                                      .Build();
             return chatClient;
 
             static string GetEndPoint()
@@ -142,15 +142,14 @@ namespace FCAIChat4.AIAgents
             }
         }
 
-        // 複数の MCP サーバーのツールを取得
-        // - 複数の McpClient に接続し、ツール一覧を取得して返す
+        // MCP サーバーのツールを取得
+        // - McpClient に接続し、ツール一覧を取得して返す
         // - 戻り値は (IEnumerable<McpClient>, IEnumerable<McpClientTool>) で、終了時にすべての McpClient について DisposeAsync() を呼ぶ必要がある
-        protected override async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpTools()
+        protected override async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
         {
             IClientTransport clientTransport = GetPlaywrightToolClientTransport();
-            McpClient client = await McpClient.CreateAsync(clientTransport);
-
-            IList<McpClientTool> tools = await client.ListToolsAsync();
+            McpClient        client          = await McpClient.CreateAsync(clientTransport);
+            IList<McpClientTool> tools       = await client.ListToolsAsync();
             foreach (var tool in tools)
                 Debug.WriteLine($"{tool.Name} ({tool.Description})");
 
@@ -160,7 +159,7 @@ namespace FCAIChat4.AIAgents
             static IClientTransport GetPlaywrightToolClientTransport()
                 => new StdioClientTransport(new() {
                     Name      = "playwright-mcp",
-                    Command   = "npx",
+                    Command   = "npx"           ,
                     Arguments = ["@playwright/mcp@latest"]
                 });
         }
