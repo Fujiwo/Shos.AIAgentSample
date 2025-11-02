@@ -26,6 +26,8 @@ namespace FCAIChat.AIAgents
 
         // 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
         public AgentThread?       Thread       { get; set; } = null;
+        // AIAgent を公開してスレッドのシリアライズに使用
+        public AIAgent?           Agent        { get => agent; }
         // エージェント名と指示
         public abstract string    Name         { get; }
         protected abstract string Instructions { get; }
