@@ -102,6 +102,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}"
 	ProjectSection(SolutionItems) = preProject
 		.mcp.json = .mcp.json
+		FCAIChat5\FCAIChat5.csproj = FCAIChat5\FCAIChat5.csproj
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reviews", "Reviews", "{797B7EC8-F122-43AF-9DD6-19E0C4281E7A}"
@@ -118,6 +119,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIChat3", "FCAIChat3\FCAIChat3.csproj", "{D15782C9-8593-053C-40AE-87BB707E3A0E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIChat4", "FCAIChat4\FCAIChat4.csproj", "{948F3253-BD44-AE48-9D66-952111CB9853}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIChat5", "FCAIChat5\FCAIChat5.csproj", "{A5F81D8E-EA21-1317-FCAB-1E5F2FA16E42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -173,6 +176,10 @@ Global
 		{948F3253-BD44-AE48-9D66-952111CB9853}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{948F3253-BD44-AE48-9D66-952111CB9853}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{948F3253-BD44-AE48-9D66-952111CB9853}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5F81D8E-EA21-1317-FCAB-1E5F2FA16E42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5F81D8E-EA21-1317-FCAB-1E5F2FA16E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5F81D8E-EA21-1317-FCAB-1E5F2FA16E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5F81D8E-EA21-1317-FCAB-1E5F2FA16E42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
