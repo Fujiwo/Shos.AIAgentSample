@@ -65,7 +65,24 @@
 
         private MyChatAgent GetOrCreateChatAgent(string connectionId)
         {
-            return chatAgents.GetOrAdd(connectionId, _ => new MyChatAgent());
+            return chatAgents.GetOrAdd(connectionId, _ =>
+            {
+                var agent = new MyChatAgent();
+                // Try to restore thread from store synchronously
+                var serializedThread = threadStore.GetThreadAsync(connectionId).Result;
+                if (serializedThread.HasValue)
+                {
+                    try
+                    {
+                        agent.RestoreThread(serializedThread.Value);
+                    }
+                    catch
+                    {
+                        // If restoration fails, continue with a new thread
+                    }
+                }
+                return agent;
+            });
         }
 
         private async Task SaveThreadAsync(string connectionId, MyChatAgent chatAgent)
@@ -84,7 +101,8 @@
             {
                 agent.Dispose();
             }
-            await threadStore.DeleteThreadAsync(connectionId);
+            // Note: We keep the thread in storage for potential reconnection
+            // To clean up old threads, implement a separate cleanup mechanism
             await base.OnDisconnectedAsync(exception);
         }
     }

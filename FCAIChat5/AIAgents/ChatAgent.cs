@@ -68,10 +68,21 @@ namespace FCAIChat.AIAgents
             this.mcpClients = mcpClients;
 
             agent = CreateAgent(tools);
-            Thread = agent.GetNewThread();
+            
+            // Restore thread if there's a pending restoration, otherwise create new
+            if (pendingThreadRestore.HasValue)
+            {
+                Thread = agent.DeserializeThread(pendingThreadRestore.Value);
+                pendingThreadRestore = null;
+            }
+            else if (Thread is null)
+            {
+                Thread = agent.GetNewThread();
+            }
 
-            // システムメッセージを最初に送信
-            await SendSystemMessageAsync();
+            // システムメッセージを最初に送信 (only for new threads)
+            if (!wasThreadRestored)
+                await SendSystemMessageAsync();
 
             isFirst = false;
 
@@ -93,6 +104,18 @@ namespace FCAIChat.AIAgents
                     await agent.RunAsync(systemMessage, Thread);
             }
         }
+
+        /// <summary>
+        /// Restores a thread from serialized state. Should be called before Start().
+        /// </summary>
+        public void RestoreThread(System.Text.Json.JsonElement serializedThread)
+        {
+            pendingThreadRestore = serializedThread;
+            wasThreadRestored = true;
+        }
+
+        private System.Text.Json.JsonElement? pendingThreadRestore = null;
+        private bool wasThreadRestored = false;
 
         static ChatMessage ToUserMessage(string userPrompt) => new ChatMessage(ChatRole.User, userPrompt);
     }
