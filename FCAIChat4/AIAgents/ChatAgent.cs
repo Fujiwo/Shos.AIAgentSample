@@ -16,7 +16,7 @@ using ModelContextProtocol.Client;
 // Debug.WriteLine を使うための名前空間
 using System.Diagnostics;
 
-namespace FCAIChat4.AIAgents
+namespace FCAIChat.AIAgents
 {
     public abstract class ChatAgent : IDisposable
     {
@@ -27,24 +27,10 @@ namespace FCAIChat4.AIAgents
         bool                   isFirst    = true;
 
         // エージェント名と指示
-        protected abstract string Name         { get; }
+        public abstract string    Name         { get; }
         protected abstract string Instructions { get; }
         // エージェントのシステムロールに与える文脈的な指示
         protected abstract string SystemPrompt { get; }
-
-        public async Task Start()
-        {
-            var (mcpClients, tools) = await GetMcpToolsAsync();
-            this.mcpClients         = mcpClients;
-
-            var chatClientAgentOptions = new ChatClientAgentOptions { Name = Name, Instructions = Instructions };
-            if (tools.Any())
-                // ツールをエージェントに渡す
-                chatClientAgentOptions.ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() };
-
-            agent  = new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
-            thread = agent.GetNewThread();
-        }
 
         public async void Dispose()
         {
@@ -55,14 +41,11 @@ namespace FCAIChat4.AIAgents
 
         public async Task<string> GetResponseAsync(string userPrompt)
         {
-            if (agent is null || thread is null)
-                throw new InvalidOperationException("Agent is not started. Call Start() method first.");
+            await Start();
 
-            // システムメッセージを最初に送信
-            await SendSystemMessageAsync();
             // ユーザープロンプトをエージェントスレッドに送信し、応答を取得
-            var response = await agent.RunAsync(ToUserMessage(userPrompt), thread);
-            return response.Text;
+            var response = agent is null ? null : await agent.RunAsync(ToUserMessage(userPrompt), thread);
+            return response?.Text ?? string.Empty;
         }
 
         // ファクトリ関数
@@ -74,26 +57,48 @@ namespace FCAIChat4.AIAgents
             return ([], []);
         }
 
-        async Task SendSystemMessageAsync()
+        async Task Start()
         {
-            if (isFirst) {
-                if (agent is null || thread is null)
-                    throw new InvalidOperationException("Agent is not started. Call Start() method first.");
+            if (!isFirst)
+                return;
 
+            var (mcpClients, tools) = await GetMcpToolsAsync();
+            this.mcpClients = mcpClients;
+
+            agent = CreateAgent(tools);
+            thread = agent.GetNewThread();
+
+            // システムメッセージを最初に送信
+            await SendSystemMessageAsync();
+
+            isFirst = false;
+
+            AIAgent CreateAgent(IEnumerable<McpClientTool> tools)
+            {
+                var chatClientAgentOptions = new ChatClientAgentOptions { Name = Name, Instructions = Instructions };
+                if (tools.Any())
+                    // ツールをエージェントに渡す
+                    chatClientAgentOptions.ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() };
+
+                return new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
+            }
+
+            async Task SendSystemMessageAsync()
+            {
                 // システムメッセージを作成して送信
                 ChatMessage systemMessage = new(ChatRole.System, SystemPrompt);
-                await agent.RunAsync(systemMessage, thread);
-                isFirst = false;
+                if (agent is not null)
+                    await agent.RunAsync(systemMessage, thread);
             }
         }
 
         static ChatMessage ToUserMessage(string userPrompt) => new ChatMessage(ChatRole.User, userPrompt);
     }
 
-    public abstract class MyChatAgent : ChatAgent
+    public class MyChatAgent : ChatAgent
     {
         // エージェント名と指示
-        protected override string Name         => "AIエージェント";   
+        public override string    Name         => "Agent";   
         protected override string Instructions => "あなたはAIエージェントです";
         // エージェントのシステムロールに与える文脈的な指示
         protected override string SystemPrompt => "あなたはAIエージェントです";
