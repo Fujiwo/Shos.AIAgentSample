@@ -5,8 +5,9 @@ document.addEventListener('DOMContentLoaded', run);
 function run() {
     var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-    //Disable the send button until connection is established.
-    document.getElementById("sendButton").disabled = true;
+    //Disable the send and clear button until connection is established.
+    document.getElementById("sendButton" ).disabled = true;
+    document.getElementById("clearButton").disabled = true;
 
     connection.on("ReceiveMessage", function (user, message, createdAt) {
         console.log("Receiving message:", user, message);
@@ -15,7 +16,8 @@ function run() {
     });
 
     connection.start().then(function () {
-        document.getElementById("sendButton").disabled = false;
+        document.getElementById("sendButton" ).disabled = false;
+        document.getElementById("clearButton").disabled = false;
     }).catch(function (err) {
         return console.error(err.toString());
     });
@@ -27,6 +29,13 @@ function run() {
         if (user.trim() !== "" && message.trim() !== "")
             connection.invoke("SendMessage", user, message)
                       .catch(err => console.error(err.toString()));
+        event.preventDefault();
+    });
+
+    document.getElementById("clearButton").addEventListener("click", function (event) {
+        connection.invoke("Clear")
+                  .catch(err => console.error(err.toString()));
+        location.reload();
         event.preventDefault();
     });
 

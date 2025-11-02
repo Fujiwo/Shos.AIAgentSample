@@ -3,12 +3,10 @@ using System.Text.Json;
 
 namespace FCAIChat.Services;
 
-/// <summary>
-/// In-memory implementation of IThreadStore using JSON storage
-/// </summary>
+/// <summary>In-memory implementation of IThreadStore using JSON storage</summary>
 public class InMemoryThreadStore : IThreadStore
 {
-    private readonly ConcurrentDictionary<string, string> threadStorage = new();
+    readonly ConcurrentDictionary<string, string> threadStorage = new();
 
     public Task SaveThreadAsync(string connectionId, JsonElement serializedThread)
     {
@@ -19,8 +17,7 @@ public class InMemoryThreadStore : IThreadStore
 
     public Task<JsonElement?> GetThreadAsync(string connectionId)
     {
-        if (threadStorage.TryGetValue(connectionId, out var json))
-        {
+        if (threadStorage.TryGetValue(connectionId, out var json)) {
             var jsonElement = JsonSerializer.Deserialize<JsonElement>(json);
             return Task.FromResult<JsonElement?>(jsonElement);
         }

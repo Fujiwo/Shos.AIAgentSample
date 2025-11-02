@@ -4,7 +4,9 @@
     using FCAIChat.Data;
     using FCAIChat.Services;
     using Microsoft.AspNetCore.SignalR;
+    using Microsoft.EntityFrameworkCore;
     using System.Collections.Concurrent;
+    using System.Diagnostics;
 
     public class ChatHub : Hub
     {
@@ -16,6 +18,17 @@
         {
             this.dbContext = dbContext;
             this.threadStore = threadStore;
+        }
+
+        public async Task Clear()
+        {
+            var connectionId = Context.ConnectionId;
+            if (chatAgents.TryRemove(connectionId, out var agent))
+                agent.Dispose();
+            await threadStore.DeleteThreadAsync(connectionId);
+
+            dbContext.Messages.Clear();
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task SendMessage(string user, string prompt)
@@ -71,16 +84,12 @@
             var agent = new MyChatAgent();
             // Try to restore thread from store
             var serializedThread = await threadStore.GetThreadAsync(connectionId);
-            if (serializedThread.HasValue)
-            {
-                try
-                {
+            if (serializedThread.HasValue) {
+                try {
                     agent.RestoreThread(serializedThread.Value);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     // Log the exception - thread restoration failed, will create new thread
-                    System.Diagnostics.Debug.WriteLine($"Thread restoration failed for connection {connectionId}: {ex.Message}");
+                    Debug.WriteLine($"Thread restoration failed for connection {connectionId}: {ex.Message}");
                 }
             }
             
@@ -89,8 +98,7 @@
 
         private async Task SaveThreadAsync(string connectionId, MyChatAgent chatAgent)
         {
-            if (chatAgent.Thread is not null && chatAgent.Agent is not null)
-            {
+            if (chatAgent.Thread is not null && chatAgent.Agent is not null) {
                 var serializedThread = chatAgent.Thread.Serialize();
                 await threadStore.SaveThreadAsync(connectionId, serializedThread);
             }
@@ -100,12 +108,17 @@
         {
             var connectionId = Context.ConnectionId;
             if (chatAgents.TryRemove(connectionId, out var agent))
-            {
                 agent.Dispose();
-            }
+
             // Note: We keep the thread in storage for potential reconnection
             // To clean up old threads, implement a separate cleanup mechanism
             await base.OnDisconnectedAsync(exception);
         }
+    }
+
+    public static class EntityExtensions
+    {
+        public static void Clear<T>(this DbSet<T> dbSet) where T : class
+            => dbSet.RemoveRange(dbSet);
     }
 }
