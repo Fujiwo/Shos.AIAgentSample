@@ -1,5 +1,6 @@
 using FCAIChat.Data;
 using FCAIChat.Hubs;
+using FCAIChat.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
+
+// Register thread store service
+builder.Services.AddSingleton<IThreadStore, InMemoryThreadStore>();
 
 var app = builder.Build();
 

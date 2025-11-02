@@ -26,6 +26,8 @@ namespace FCAIChat.AIAgents
 
         // 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
         public AgentThread?       Thread       { get; set; } = null;
+        // AIAgent を公開してスレッドのシリアライズに使用
+        public AIAgent?           Agent        { get => agent; }
         // エージェント名と指示
         public abstract string    Name         { get; }
         protected abstract string Instructions { get; }
@@ -66,10 +68,21 @@ namespace FCAIChat.AIAgents
             this.mcpClients = mcpClients;
 
             agent = CreateAgent(tools);
-            Thread = agent.GetNewThread();
+            
+            // Restore thread if there's a pending restoration, otherwise create new
+            if (pendingThreadRestore.HasValue)
+            {
+                Thread = agent.DeserializeThread(pendingThreadRestore.Value);
+                pendingThreadRestore = null;
+            }
+            else if (Thread is null)
+            {
+                Thread = agent.GetNewThread();
+            }
 
-            // システムメッセージを最初に送信
-            await SendSystemMessageAsync();
+            // システムメッセージを最初に送信 (only for new threads)
+            if (!wasThreadRestored)
+                await SendSystemMessageAsync();
 
             isFirst = false;
 
@@ -91,6 +104,18 @@ namespace FCAIChat.AIAgents
                     await agent.RunAsync(systemMessage, Thread);
             }
         }
+
+        /// <summary>
+        /// Restores a thread from serialized state. Should be called before Start().
+        /// </summary>
+        public void RestoreThread(System.Text.Json.JsonElement serializedThread)
+        {
+            pendingThreadRestore = serializedThread;
+            wasThreadRestored = true;
+        }
+
+        private System.Text.Json.JsonElement? pendingThreadRestore = null;
+        private bool wasThreadRestored = false;
 
         static ChatMessage ToUserMessage(string userPrompt) => new ChatMessage(ChatRole.User, userPrompt);
     }

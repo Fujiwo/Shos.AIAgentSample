@@ -2,17 +2,27 @@
 {
     using FCAIChat.AIAgents;
     using FCAIChat.Data;
+    using FCAIChat.Services;
     using Microsoft.AspNetCore.SignalR;
+    using System.Collections.Concurrent;
 
     public class ChatHub : Hub
     {
         readonly MessagesDbContext dbContext;
-        readonly MyChatAgent chatAgent = new();
+        readonly IThreadStore threadStore;
+        static readonly ConcurrentDictionary<string, MyChatAgent> chatAgents = new();
 
-        public ChatHub(MessagesDbContext dbContext) => this.dbContext = dbContext;
+        public ChatHub(MessagesDbContext dbContext, IThreadStore threadStore)
+        {
+            this.dbContext = dbContext;
+            this.threadStore = threadStore;
+        }
 
         public async Task SendMessage(string user, string prompt)
         {
+            var connectionId = Context.ConnectionId;
+            var chatAgent = await GetOrCreateChatAgentAsync(connectionId);
+
             DateTime createdAt = GetDateTime();
             var message = new Message() { UserName = user, Content = prompt, CreatedAt = createdAt };
 
@@ -21,6 +31,10 @@
             var (isForAgent, promptForAgent) = GetPromptForAgent(prompt);
             if (isForAgent) {
                 var responce = await chatAgent.GetResponseAsync(promptForAgent);
+                
+                // Save the thread after agent response
+                await SaveThreadAsync(connectionId, chatAgent);
+                
                 createdAt = GetDateTime();
                 message = new Message() { UserName = chatAgent.Name, Content = responce, CreatedAt = createdAt };
                 await SendAsync(chatAgent.Name, responce, createdAt, message);
@@ -47,6 +61,51 @@
                        ? (true, prompt.Replace(chatAgentReference, ""))
                        : (false, string.Empty);
             }
+        }
+
+        private async Task<MyChatAgent> GetOrCreateChatAgentAsync(string connectionId)
+        {
+            if (chatAgents.TryGetValue(connectionId, out var existingAgent))
+                return existingAgent;
+
+            var agent = new MyChatAgent();
+            // Try to restore thread from store
+            var serializedThread = await threadStore.GetThreadAsync(connectionId);
+            if (serializedThread.HasValue)
+            {
+                try
+                {
+                    agent.RestoreThread(serializedThread.Value);
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception - thread restoration failed, will create new thread
+                    System.Diagnostics.Debug.WriteLine($"Thread restoration failed for connection {connectionId}: {ex.Message}");
+                }
+            }
+            
+            return chatAgents.GetOrAdd(connectionId, agent);
+        }
+
+        private async Task SaveThreadAsync(string connectionId, MyChatAgent chatAgent)
+        {
+            if (chatAgent.Thread is not null && chatAgent.Agent is not null)
+            {
+                var serializedThread = chatAgent.Thread.Serialize();
+                await threadStore.SaveThreadAsync(connectionId, serializedThread);
+            }
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var connectionId = Context.ConnectionId;
+            if (chatAgents.TryRemove(connectionId, out var agent))
+            {
+                agent.Dispose();
+            }
+            // Note: We keep the thread in storage for potential reconnection
+            // To clean up old threads, implement a separate cleanup mechanism
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }
