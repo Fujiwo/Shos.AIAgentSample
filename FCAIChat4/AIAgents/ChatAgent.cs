@@ -13,6 +13,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 // MCP クライアントとツールを利用するための名前空間
 using ModelContextProtocol.Client;
+// Debug.WriteLine を使うための名前空間
 using System.Diagnostics;
 
 namespace FCAIChat4.AIAgents
@@ -20,7 +21,7 @@ namespace FCAIChat4.AIAgents
     public abstract class ChatAgent : IDisposable
     {
         AIAgent? agent = null;
-        IEnumerable<McpClient>? mcpClients = null;
+        IEnumerable<McpClient> mcpClients = [];
         // 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
         AgentThread? thread = null;
         bool isFirst = true;
@@ -36,22 +37,17 @@ namespace FCAIChat4.AIAgents
             var (mcpClients, tools) = await GetMcpTools();
             this.mcpClients = mcpClients;
 
-            agent = new ChatClientAgent(
-                GetChatClient(),
-                new ChatClientAgentOptions {
-                    Name         = Name,
-                    Instructions = Instructions,
-                    // ツールをエージェントに渡す
-                    ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() }
-                }
-            );
+            var chatClientAgentOptions = new ChatClientAgentOptions { Name = Name, Instructions = Instructions };
+            if (tools.Any())
+                // ツールをエージェントに渡す
+                chatClientAgentOptions.ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() };
+
+            agent = new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
             thread = agent.GetNewThread();
         }
 
         public async void Dispose()
         {
-            if (mcpClients is null)
-                return;
             // 終了処理 MCP クライアントを破棄
             foreach (var mcpClient in mcpClients)
                 await mcpClient.DisposeAsync();
@@ -71,14 +67,19 @@ namespace FCAIChat4.AIAgents
 
         // ファクトリ関数
         protected abstract IChatClient GetChatClient();
-        protected abstract Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpTools();
+        
+        protected virtual async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpTools()
+        {
+            await Task.Delay(0);
+            return ([], []);
+        }
 
         async Task SendSystemMessageAsync()
         {
-            if (agent is null || thread is null)
-                throw new InvalidOperationException("Agent is not started. Call Start() method first.");
-
             if (isFirst) {
+                if (agent is null || thread is null)
+                    throw new InvalidOperationException("Agent is not started. Call Start() method first.");
+
                 // システムメッセージを作成して送信
                 ChatMessage systemMessage = new(ChatRole.System, SystemPrompt);
                 await agent.RunAsync(systemMessage, thread);
