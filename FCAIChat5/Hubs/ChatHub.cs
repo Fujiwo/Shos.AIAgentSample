@@ -21,7 +21,7 @@
         public async Task SendMessage(string user, string prompt)
         {
             var connectionId = Context.ConnectionId;
-            var chatAgent = GetOrCreateChatAgent(connectionId);
+            var chatAgent = await GetOrCreateChatAgentAsync(connectionId);
 
             DateTime createdAt = GetDateTime();
             var message = new Message() { UserName = user, Content = prompt, CreatedAt = createdAt };
@@ -63,26 +63,28 @@
             }
         }
 
-        private MyChatAgent GetOrCreateChatAgent(string connectionId)
+        private async Task<MyChatAgent> GetOrCreateChatAgentAsync(string connectionId)
         {
-            return chatAgents.GetOrAdd(connectionId, _ =>
+            if (chatAgents.TryGetValue(connectionId, out var existingAgent))
+                return existingAgent;
+
+            var agent = new MyChatAgent();
+            // Try to restore thread from store
+            var serializedThread = await threadStore.GetThreadAsync(connectionId);
+            if (serializedThread.HasValue)
             {
-                var agent = new MyChatAgent();
-                // Try to restore thread from store synchronously
-                var serializedThread = threadStore.GetThreadAsync(connectionId).Result;
-                if (serializedThread.HasValue)
+                try
                 {
-                    try
-                    {
-                        agent.RestoreThread(serializedThread.Value);
-                    }
-                    catch
-                    {
-                        // If restoration fails, continue with a new thread
-                    }
+                    agent.RestoreThread(serializedThread.Value);
                 }
-                return agent;
-            });
+                catch (Exception ex)
+                {
+                    // Log the exception - thread restoration failed, will create new thread
+                    System.Diagnostics.Debug.WriteLine($"Thread restoration failed for connection {connectionId}: {ex.Message}");
+                }
+            }
+            
+            return chatAgents.GetOrAdd(connectionId, agent);
         }
 
         private async Task SaveThreadAsync(string connectionId, MyChatAgent chatAgent)
