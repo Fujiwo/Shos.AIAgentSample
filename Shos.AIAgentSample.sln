@@ -102,7 +102,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}"
 	ProjectSection(SolutionItems) = preProject
 		.mcp.json = .mcp.json
-		FCAIChat5\FCAIChat5.csproj = FCAIChat5\FCAIChat5.csproj
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reviews", "Reviews", "{797B7EC8-F122-43AF-9DD6-19E0C4281E7A}"
@@ -121,6 +120,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIChat4", "FCAIChat4\FCAIChat4.csproj", "{948F3253-BD44-AE48-9D66-952111CB9853}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAIChat5", "FCAIChat5\FCAIChat5.csproj", "{A5F81D8E-EA21-1317-FCAB-1E5F2FA16E42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{E15B0009-C67F-4563-85E3-78952D029DA7}"
+	ProjectSection(SolutionItems) = preProject
+		.github\copilot-instructions.md = .github\copilot-instructions.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{B189FA7B-A0FF-4FBB-BACB-5A1EFBEDF038}"
+	ProjectSection(SolutionItems) = preProject
+		.vscode\mcp.json = .vscode\mcp.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -186,6 +195,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5D5D9900-AFD8-4070-A26A-0F3687F7CE41} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
+		{E15B0009-C67F-4563-85E3-78952D029DA7} = {2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}
+		{B189FA7B-A0FF-4FBB-BACB-5A1EFBEDF038} = {2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C0405CB8-CE22-4ABD-AB69-4452DC1E54B3}
