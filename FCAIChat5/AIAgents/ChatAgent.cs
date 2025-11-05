@@ -172,21 +172,47 @@ namespace FCAIChat.AIAgents
         // - 戻り値は (IEnumerable<McpClient>, IEnumerable<McpClientTool>) で、終了時にすべての McpClient について DisposeAsync() を呼ぶ必要がある
         protected override async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
         {
-            IClientTransport clientTransport = GetPlaywrightToolClientTransport();
-            McpClient        client          = await McpClient.CreateAsync(clientTransport);
-            IList<McpClientTool> tools       = await client.ListToolsAsync();
+            IClientTransport clientTransport = GetBraveSearchToolClientTransport();
+            McpClient client = await McpClient.CreateAsync(clientTransport);
+            IList<McpClientTool> tools = await client.ListToolsAsync();
             foreach (var tool in tools)
                 Debug.WriteLine($"{tool.Name} ({tool.Description})");
 
             return ([client], tools);
 
-            // Playwright ツールを使うためのクライアント生成
-            static IClientTransport GetPlaywrightToolClientTransport()
-                => new StdioClientTransport(new() {
-                    Name      = "playwright-mcp",
-                    Command   = "npx"           ,
-                    Arguments = ["@playwright/mcp@latest"]
-                });
+            //// Playwright ツールを使うためのクライアント生成
+            //static IClientTransport GetPlaywrightToolClientTransport()
+            //    => new StdioClientTransport(new() {
+            //        Name      = "playwright-mcp",
+            //        Command   = "npx"           ,
+            //        Arguments = ["@playwright/mcp@latest"]
+            //    });
+
+            // BraveSearch ツールを使うためのクライアント生成
+            static IClientTransport GetBraveSearchToolClientTransport()
+            {
+                return new StdioClientTransport(new() {
+                            Name = "braveSearch",
+                            Command = "npx",
+                            Arguments = ["-y", "@modelcontextprotocol/server-brave-search"],
+                            EnvironmentVariables = new Dictionary<string, string> {
+                                ["BRAVE_API_KEY"] = GetKey()
+                            }
+                       });
+
+                static string GetKey()
+                {
+                    const string braveApiKeyEnvironmentVariable = "BRAVE_API_KEY";
+                    var braveApiKey = Environment.GetEnvironmentVariable(braveApiKeyEnvironmentVariable);
+                    if (string.IsNullOrEmpty(braveApiKey))
+                        throw new InvalidOperationException($"Please set the {braveApiKeyEnvironmentVariable} environment variable.");
+                    return braveApiKey;
+
+                    // 上記のように、セキュリティ上 Brave の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
+                    //return @"[Brave の APIキー]";
+                    //return "BSA_34_BLuPDA8L2rUExdqjCx9ElrQc";
+                }
+            }
         }
     }
 }
