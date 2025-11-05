@@ -210,7 +210,6 @@ namespace FCAIChat.AIAgents
 
                     // 上記のように、セキュリティ上 Brave の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
                     //return @"[Brave の APIキー]";
-                    //return "BSA_34_BLuPDA8L2rUExdqjCx9ElrQc";
                 }
             }
         }
