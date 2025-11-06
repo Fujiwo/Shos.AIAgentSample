@@ -1,6 +1,32 @@
 # Shos.AIAgentSample
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)](https://dotnet.microsoft.com/)
+[![C#](https://img.shields.io/badge/C%23-12.0-239120)](https://docs.microsoft.com/dotnet/csharp/)
+
 AIエージェント開発ハンズオンセミナー (開発者向け) のサンプルコードとチュートリアル
+
+**リポジトリ**: https://github.com/Fujiwo/Shos.AIAgentSample
+
+## 目次
+
+- [概要](#概要)
+- [特徴](#特徴)
+- [クイックスタート](#クイックスタート)
+- [内容一覧](#内容一覧)
+- [チュートリアルの実施方法](#チュートリアルの実施方法)
+  - [前提条件](#前提条件)
+  - [学習の進め方](#学習の進め方)
+  - [学習のヒント](#学習のヒント)
+- [プロジェクト構成](#プロジェクト構成)
+- [ファイル・ディレクトリ構成](#ファイルディレクトリ構成)
+- [実施環境](#実施環境)
+- [技術用語の補足](#技術用語の補足)
+- [トラブルシューティング](#トラブルシューティング)
+- [ライセンス](#ライセンス)
+- [作者](#作者)
+- [謝辞](#謝辞)
+- [貢献](#貢献)
 
 ## 概要
 
@@ -15,8 +41,20 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 - **複数の LLM 対応** - ローカル LLM (Ollama) と Azure OpenAI の両方に対応
 - **MCP サーバーの実装** - STDIO と SSE の両方のトランスポート方式をサポート
 - **段階的な学習** - 基礎から応用まで、ステップバイステップで学習
-- **実践的なサンプル** - すぐに動かせる実装例を複数提供
+- **実践的なサンプル** - コンソールアプリと Web アプリの両方を提供
 - **日本語ドキュメント** - すべてのチュートリアルを日本語で提供
+
+## クイックスタート
+
+最も簡単に試すには：
+
+1. リポジトリをクローン
+2. [Ollama](https://ollama.com/) をインストール（ローカル LLM を使用）
+3. Ollama で `llama3.2` モデルをダウンロード: `ollama pull llama3.2`
+4. Visual Studio で `Shos.AIAgentSample.sln` を開く
+5. `FCAIAgent1` プロジェクトを実行
+
+詳細は[チュートリアル](#チュートリアルの実施方法)を参照してください。
 
 ## 内容一覧
 
@@ -60,9 +98,12 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
   - チュートリアルは Visual Studio を前提としていますが、Visual Studio Code でも実施可能です
 - **Node.js** (v24.0 以上推奨)
   - MCP サーバーの動作確認ツールに必要
+  - [インストールガイド](./Documents/tutorial.0.1.md)を参照
 
-前提知識のための資料は以下にあります:
-- [AIエージェント開発ハンズオンセミナー (PDF)](./Documents/2025010.AIエージェント開発ハンズオンセミナー.pdf)
+#### 推奨される参考資料
+
+事前学習として以下の資料が役立ちます:
+- [AIエージェント開発ハンズオンセミナー (PDF)](./Documents/2025010.AIエージェント開発ハンズオンセミナー.pdf) - セミナー資料（前提知識を含む）
 
 #### 選択要件
 
@@ -91,8 +132,8 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 1. **リポジトリのクローン**
 
    ```bash
-   git clone https://github.com/Fujiwo/FCAIAgentSample.git
-   cd FCAIAgentSample
+   git clone https://github.com/Fujiwo/Shos.AIAgentSample.git
+   cd Shos.AIAgentSample
    ```
 
 2. **必要なツールのインストール**
@@ -101,7 +142,7 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 
 3. **ソリューションを開く**
 
-   Visual Studio で `FCAIAgentSample.sln` を開きます。
+   Visual Studio で `Shos.AIAgentSample.sln` を開きます。
 
 #### ステップ 2: チュートリアルの実施
 
@@ -130,17 +171,30 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 
 #### ステップ 3: サンプルプロジェクトの実行
 
-各プロジェクトは独立して実行できます。チュートリアルに従って作成することもできますが、既存のサンプルプロジェクトを参照・実行することもできます:
-※ その場合、APIキーやエンドポイント、プロジェクトのパスなどを、環境に合わせてソースコード内に追記する必要があります
+各プロジェクトは独立して実行できます。チュートリアルに従って作成することもできますが、既存のサンプルプロジェクトを参照・実行することもできます。
+
+> **注意**: 既存のサンプルを実行する場合、API キーやエンドポイント、プロジェクトのパスなどを、環境に合わせてソースコード内に追記する必要があります。
+
+**コンソールアプリケーションの実行例:**
 
 ```bash
-# AI エージェントの例（FCAIAgent1〜5）
+# 基本的な AI エージェント (FCAIAgent1〜5)
 cd FCAIAgent1
 dotnet run
 
 # MCP サーバーの例
 cd McpServer.Con
 dotnet run
+```
+
+**Web アプリケーションの実行例:**
+
+```bash
+# Web チャットアプリケーション (FCAIChat1〜5)
+cd FCAIChat1
+dotnet run
+
+# ブラウザで https://localhost:5001 にアクセス
 ```
 
 ### 学習のヒント
@@ -158,6 +212,8 @@ dotnet run
 ### AI エージェントプロジェクト
 
 各プロジェクトは前のプロジェクトの機能を拡張していく形になっています：
+
+#### コンソールアプリケーション
 
 - **FCAIAgent1** - 基本的な AI エージェントの実装
   - Ollama を使用したローカル LLM との通信
@@ -179,7 +235,29 @@ dotnet run
   - 複数の MCP サーバー（時刻、天気、ファイルシステム）の同時利用
   - より実践的なツール統合の例
 
-- **FCAIAgent** - 最終形 (FCAIAgent5と同じ)
+- **FCAIAgent** - 最終形態 (FCAIAgent5と同じ実装)
+
+#### Web アプリケーション (ASP.NET Core)
+
+- **FCAIChat1** - 基本的な Web チャットインターフェース
+  - ASP.NET Core MVC を使用した Web UI
+  - ローカル LLM (Ollama) との対話
+  
+- **FCAIChat2** - LLM 選択機能を追加した Web チャット
+  - Ollama と Azure OpenAI の切り替え機能
+  - Web ベースの UI で LLM を選択可能
+  
+- **FCAIChat3** - 複数ターン対話を実装した Web チャット
+  - セッション管理による会話履歴の保持
+  - 連続的な対話のサポート
+  
+- **FCAIChat4** - MCP サーバー連携 Web チャット（単一サーバー）
+  - Web インターフェースから MCP ツールを利用
+  - ユーザーフレンドリーな対話型 AI 体験
+  
+- **FCAIChat5** - 複数 MCP サーバー連携 Web チャット
+  - 複数のツールを統合した実践的な Web アプリケーション
+  - エンドユーザー向けの完全な AI エージェント体験
 
 ### MCP サーバープロジェクト
 
@@ -204,7 +282,7 @@ dotnet run
 
 - **.mcp.json** - ルートディレクトリの MCP サーバー設定（サンプル）
 - **.vscode/mcp.json** - Visual Studio Code 用の MCP サーバー設定
-- **FCAIAgentSample.sln** - Visual Studio ソリューションファイル
+- **Shos.AIAgentSample.sln** - Visual Studio ソリューションファイル
 
 ## 実施環境
 
@@ -243,10 +321,11 @@ dotnet run
 ## ファイル・ディレクトリ構成
 
 ```
-FCAIAgentSample/
+Shos.AIAgentSample/
 ├── .mcp.json                    # MCP サーバー設定（ルート、サンプル）
 ├── .vscode/
 │   └── mcp.json                # Visual Studio Code 用 MCP 設定
+├── .github/                     # GitHub Actions とエージェント設定
 ├── Documents/                   # チュートリアルとリソース
 │   ├── Images/                 # チュートリアル用画像
 │   ├── tutorial.md             # チュートリアルメインページ
@@ -262,39 +341,59 @@ FCAIAgentSample/
 │   ├── tutorial.3.2.md         # MCP サーバー利用（複数）
 │   ├── tutorial.4.1.md         # 後片付け
 │   ├── aiagentlog.md           # AI エージェント開発ログ
+│   ├── maf.md                  # Microsoft Agent Framework 情報
 │   ├── 2025010.AIエージェント開発ハンズオンセミナー.pptx
 │   └── 2025010.AIエージェント開発ハンズオンセミナー.pdf
-├── FCAIAgent1/                 # 基本的な AI エージェント
-│   ├── Program.cs             # メインプログラム
-│   └── FCAIAgent1.csproj      # プロジェクトファイル
-├── FCAIAgent2/                 # LLM 選択機能追加
+├── FCAIAgent/                   # 最終形態の AI エージェント (コンソール)
+│   ├── Program.cs
+│   └── FCAIAgent.csproj
+├── FCAIAgent1/                  # 基本的な AI エージェント
+│   ├── Program.cs              # メインプログラム
+│   └── FCAIAgent1.csproj       # プロジェクトファイル
+├── FCAIAgent2/                  # LLM 選択機能追加
 │   ├── Program.cs
 │   └── FCAIAgent2.csproj
-├── FCAIAgent3/                 # 複数ターン対話
+├── FCAIAgent3/                  # 複数ターン対話
 │   ├── Program.cs
 │   └── FCAIAgent3.csproj
-├── FCAIAgent4/                 # MCP サーバー連携（単数）
+├── FCAIAgent4/                  # MCP サーバー連携（単数）
 │   ├── Program.cs
 │   └── FCAIAgent4.csproj
-├── FCAIAgent5/                 # MCP サーバー連携（複数）
+├── FCAIAgent5/                  # MCP サーバー連携（複数）
 │   ├── Program.cs
 │   └── FCAIAgent5.csproj
-├── McpServer.Con/              # STDIO MCP サーバー
-│   ├── Program.cs             # 時刻取得ツール実装
+├── FCAIChat1/                   # 基本的な Web チャット
+│   ├── Controllers/            # MVC コントローラー
+│   ├── Models/                 # データモデル
+│   ├── Views/                  # Razor ビュー
+│   ├── wwwroot/                # 静的ファイル
+│   └── FCAIChat1.csproj
+├── FCAIChat2/                   # LLM 選択機能付き Web チャット
+│   └── FCAIChat2.csproj
+├── FCAIChat3/                   # 複数ターン対話 Web チャット
+│   └── FCAIChat3.csproj
+├── FCAIChat4/                   # MCP 連携 Web チャット（単数）
+│   └── FCAIChat4.csproj
+├── FCAIChat5/                   # MCP 連携 Web チャット（複数）
+│   └── FCAIChat5.csproj
+├── McpServer.Con/               # STDIO MCP サーバー
+│   ├── Program.cs              # 時刻取得ツール実装
 │   └── McpServer.Con.csproj
-├── McpServer.Sse/              # HTTP/SSE MCP サーバー
-│   ├── Program.cs             # 天気予報ツール実装
+├── McpServer.Sse/               # HTTP/SSE MCP サーバー
+│   ├── Program.cs              # 天気予報ツール実装
 │   └── McpServer.Sse.csproj
-├── FCAIAgentSample.sln      # Visual Studio ソリューション
-├── LICENSE.txt                 # ライセンス情報
-└── README.md                   # このファイル
+├── Reviews/                     # コードレビュー記録
+├── Shos.AIAgentSample.sln      # Visual Studio ソリューション
+├── LICENSE.txt                  # ライセンス情報（MIT License）
+└── README.md                    # このファイル
 ```
 
 ## トラブルシューティング
 
 ### よくある問題と解決方法
 
-#### ビルドエラーが発生する
+<details>
+<summary><strong>ビルドエラーが発生する</strong></summary>
 
 - **.NET SDK のバージョン確認**
   ```bash
@@ -306,8 +405,16 @@ FCAIAgentSample/
   ```bash
   dotnet restore
   ```
+  
+- **プロジェクトのクリーンとリビルド**
+  ```bash
+  dotnet clean
+  dotnet build
+  ```
+</details>
 
-#### Ollama に接続できない
+<details>
+<summary><strong>Ollama に接続できない</strong></summary>
 
 - **Ollama が起動しているか確認**
   - Windows: タスクトレイに Ollama アイコンが表示されているか確認
@@ -317,8 +424,15 @@ FCAIAgentSample/
   ```bash
   ollama list
   ```
+  
+- **必要なモデルのダウンロード**
+  ```bash
+  ollama pull llama3.2
+  ```
+</details>
 
-#### Azure OpenAI に接続できない
+<details>
+<summary><strong>Azure OpenAI に接続できない</strong></summary>
 
 - **API キーとエンドポイントの確認**
   - Azure Portal で正しい API キーとエンドポイントを取得しているか確認
@@ -326,13 +440,40 @@ FCAIAgentSample/
 
 - **デプロイ名の確認**
   - Azure OpenAI Studio でデプロイしたモデル名が正しいか確認
+  
+- **ネットワーク接続の確認**
+  - ファイアウォールやプロキシ設定を確認
+</details>
 
-#### MCP サーバーが見つからない
+<details>
+<summary><strong>MCP サーバーが見つからない</strong></summary>
 
 - **.mcp.json のパス確認**
   - `.mcp.json` 内のパスが環境に合っているか確認
-  - Windows の場合: バックスラッシュを使用
-  - Linux/Mac の場合: スラッシュを使用
+  - Windows の場合: バックスラッシュ (`\`) を使用
+  - Linux/Mac の場合: スラッシュ (`/`) を使用
+
+- **MCP サーバーのビルド確認**
+  ```bash
+  cd McpServer.Con
+  dotnet build
+  ```
+</details>
+
+<details>
+<summary><strong>Web アプリケーションが起動しない</strong></summary>
+
+- **ポートの競合確認**
+  - 他のアプリケーションが同じポートを使用していないか確認
+  - `launchSettings.json` でポート番号を変更可能
+
+- **HTTPS 証明書の問題**
+  ```bash
+  dotnet dev-certs https --trust
+  ```
+</details>
+
+問題が解決しない場合は、[Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) で質問してください。
 
 ## ライセンス
 
@@ -344,7 +485,7 @@ Copyright (c) 2025 Fujio Kojima
 
 ## 作者
 
-**小島 富治雄** - ソフトウェア開発エンジニア
+**小島 富治雄 (Fujio Kojima)** - ソフトウェア開発エンジニア
 
 ### 経歴・実績
 - Microsoft MVP for Development Tools - Visual C# (Jul. 2005 - Dec. 2014)
@@ -353,18 +494,48 @@ Copyright (c) 2025 Fujio Kojima
 - Microsoft MVP for Developer Technologies (Nov. 2018 - Jun. 2026)
 
 ### 連絡先・リンク
-- [MVP Profile](https://mvp.microsoft.com/en-us/PublicProfile/21482)
-- [ブログ (Japanese)](http://wp.shos.info)
-- [Webサイト (Japanese)](http://www.shos.info)
-- [X (Twitter)](https://x.com/Fujiwo)
-- [Instagram](https://www.instagram.com/fujiwo/)
-
-### **リポジトリ**: https://github.com/Fujiwo/Shos.AIAgentSample
+- **GitHub**: [Fujiwo](https://github.com/Fujiwo)
+- **MVP Profile**: [Microsoft MVP](https://mvp.microsoft.com/en-us/PublicProfile/21482)
+- **ブログ**: [http://wp.shos.info](http://wp.shos.info) (Japanese)
+- **Web サイト**: [http://www.shos.info](http://www.shos.info) (Japanese)
+- **X (Twitter)**: [@Fujiwo](https://x.com/Fujiwo)
+- **Instagram**: [@fujiwo](https://www.instagram.com/fujiwo/)
 
 ## 謝辞
 
-このプロジェクトは、Microsoft Agent Framework と Model Context Protocol を使用しています。これらの素晴らしいツールを提供してくださった開発者の皆様に感謝いたします。
+このプロジェクトは、以下のオープンソースプロジェクトと技術を使用しています:
+
+- [Microsoft Agent Framework](https://github.com/microsoft/agents) - AI エージェント開発フレームワーク
+- [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) - AI エージェントとツール連携の標準プロトコル
+- [Ollama](https://ollama.com/) - ローカル LLM 実行環境
+- [Azure OpenAI Service](https://azure.microsoft.com/services/cognitive-services/openai-service/) - クラウド LLM サービス
+
+これらの素晴らしいツールとフレームワークを提供してくださった開発者とコミュニティの皆様に感謝いたします。
+
+## 貢献
+
+バグ報告、機能要望、プルリクエストを歓迎します。
+
+1. このリポジトリをフォーク
+2. フィーチャーブランチを作成 (`git checkout -b feature/amazing-feature`)
+3. 変更をコミット (`git commit -m 'Add some amazing feature'`)
+4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
+5. プルリクエストを作成
+
+詳細は [Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) または [Pull Requests](https://github.com/Fujiwo/Shos.AIAgentSample/pulls) をご覧ください。
 
 ---
 
-**注意**: このリポジトリのコードはチュートリアル目的で提供されています。本番環境での使用前に、適切なセキュリティレビューと最適化を行ってください。
+## 重要な注意事項
+
+> **⚠️ このリポジトリのコードは学習・チュートリアル目的で提供されています。**
+> 
+> - プレビュー版の Microsoft Agent Framework を使用しています
+> - 本番環境での使用前に、適切なセキュリティレビューと最適化を行ってください
+> - API キーやシークレットは環境変数や安全な設定管理ツールを使用してください
+> - Microsoft Agent Framework は今後のバージョンアップで仕様が変わる可能性があります
+
+---
+
+**Last Updated**: 2025-01  
+**Repository**: https://github.com/Fujiwo/Shos.AIAgentSample
