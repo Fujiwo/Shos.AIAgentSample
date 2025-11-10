@@ -249,7 +249,18 @@ dotnet run
 | **FCAIAgent5** | ステップ 5 | ・複数の MCP サーバー（時刻、天気、ファイルシステム）の同時利用<br>・より実践的なツール統合の例 | [3.2](./Documents/tutorial.3.2.md) |
 | **FCAIAgent** | 最終形態 | FCAIAgent5 と同等の実装 | - |
 
-#### 🌐 Web アプリケーション (FCAIChat シリーズ)
+### 🔧 MCP サーバープロジェクト
+
+| プロジェクト | トランスポート | 主な機能 | チュートリアル |
+|------------|--------------|---------|--------------|
+| **McpServer.Con** | STDIO | ・標準入出力を通じた通信<br>・時刻取得ツールの実装例<br>・ローカルプロセス間通信向け | [2.1](./Documents/tutorial.2.1.md) |
+| **McpServer.Sse** | HTTP/SSE | ・Server-Sent Events によるリアルタイム通信<br>・天気予報ツールの実装例<br>・ネットワーク経由での利用が可能 | [2.2](./Documents/tutorial.2.2.md) |
+
+#### サンプルアプリケーション
+
+チュートリアルプロジェクト以外にも、実践的なアプリケーション例が含まれています。
+
+###### 🌐 Web アプリケーション (FCAIChat シリーズ)
 
 | プロジェクト | 学習ステップ | 主な機能 | 対応チュートリアル |
 |------------|------------|---------|------------------|
@@ -259,12 +270,20 @@ dotnet run
 | **FCAIChat4** | ステップ 4 | ・Web インターフェースから MCP ツールを利用<br>・ユーザーフレンドリーな対話型 AI 体験 | [3.1](./Documents/tutorial.3.1.md) |
 | **FCAIChat5** | ステップ 5 | ・複数のツールを統合した実践的な Web アプリケーション<br>・エンドユーザー向けの完全な AI エージェント体験 | [3.2](./Documents/tutorial.3.2.md) |
 
-### 🔧 MCP サーバープロジェクト
+###### CAD アプリケーション (FCAICad)
 
-| プロジェクト | トランスポート | 主な機能 | チュートリアル |
-|------------|--------------|---------|--------------|
-| **McpServer.Con** | STDIO | ・標準入出力を通じた通信<br>・時刻取得ツールの実装例<br>・ローカルプロセス間通信向け | [2.1](./Documents/tutorial.2.1.md) |
-| **McpServer.Sse** | HTTP/SSE | ・Server-Sent Events によるリアルタイム通信<br>・天気予報ツールの実装例<br>・ネットワーク経由での利用が可能 | [2.2](./Documents/tutorial.2.2.md) |
+Windows Forms を使用した、AI エージェントを統合した CAD (Computer-Aided Design) アプリケーションです。
+
+- **主な機能**:
+  - 自然言語による図形描画指示
+  - AI エージェントによる描画コマンド実行
+  - リアルタイム図形表示
+  
+- **提供されるツール**:
+  - `GetPaperSize()` - 用紙サイズの取得
+  - `DrawLine()` - 直線の描画
+
+このプロジェクトは、AI エージェントをデスクトップアプリケーションに統合し、自然言語でアプリケーションを制御する実例を提供します。
 
 ### 📚 ドキュメントとリソース
 
@@ -290,15 +309,39 @@ dotnet run
 | **ランタイム** | .NET 8.0 以上（推奨: .NET 9.0） |
 | **IDE** | Visual Studio 2022 17.12 以降、または Visual Studio Code |
 
+## 実施環境
+
+### オペレーティングシステム
+
+- **Windows 11** - すべてのプロジェクトをサポート
+- **macOS** - FCAIAgent、FCAIChat、MCP サーバープロジェクトをサポート（FCAICad1 を除く）
+- **Linux** - FCAIAgent、FCAIChat、MCP サーバープロジェクトをサポート（FCAICad1 を除く）
+
+> [!NOTE]  
+> FCAICad1 プロジェクトは Windows Forms を使用しているため、Windows でのみ動作します。
+
+### 言語とランタイム
+
+- **言語**: C# 12.0
+- **ランタイム**: .NET 8.0 以上(推奨: .NET 9.0)
+- **IDE**: Visual Studio 2022 17.12 以降、または Visual Studio Code
+
 ### 主要な依存パッケージ
 
-| パッケージ | 説明 | バージョン |
-|-----------|------|-----------|
-| `Microsoft.Agents.AI` | AI エージェント開発フレームワーク | プレリリース版 |
-| `Microsoft.Extensions.AI` | .NET AI 拡張機能 | 安定版 |
-| `ModelContextProtocol` | MCP プロトコル実装 | プレリリース版 |
-| `OllamaSharp` | Ollama（ローカル LLM）クライアント | 安定版 |
-| `Azure.AI.OpenAI` | Azure OpenAI クライアント | 安定版 |
+#### AI エージェント関連
+- `Microsoft.Agents.AI` (プレリリース版)
+- `Microsoft.Extensions.AI`
+- `ModelContextProtocol` (プレリリース版)
+- `OllamaSharp` - ローカル LLM との通信
+- `Azure.AI.OpenAI` - Azure OpenAI との通信
+
+#### Web アプリケーション関連（FCAIChat）
+- `Microsoft.AspNetCore.Identity.EntityFrameworkCore` - 認証・認可
+- `Microsoft.AspNetCore.SignalR` - リアルタイム通信
+- `Microsoft.EntityFrameworkCore.SqlServer` - データベースアクセス
+
+#### デスクトップアプリケーション関連（FCAICad）
+- Windows Forms (.NET 8.0+)
 
 ### 技術用語の補足
 
@@ -496,6 +539,14 @@ Shos.AIAgentSample/
   ```bash
   dotnet dev-certs https --trust
   ```
+</details>
+
+<details>
+<summary><strong>CAD アプリケーションが起動しない</strong></summary>
+
+- **Windows Forms の要件**
+  - FCAICad1 は Windows でのみ動作します
+  - .NET デスクトップ開発ワークロードがインストールされているか確認
 </details>
 
 問題が解決しない場合は、[Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) で質問してください。
