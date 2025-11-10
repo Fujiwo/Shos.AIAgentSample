@@ -55,25 +55,32 @@ AIエージェント開発ハンズオンセミナー (開発者向け) のサ�
 
 ## クイックスタート
 
-最も簡単に試すには：
+最も簡単に AI エージェントを試すには、以下の手順に従ってください：
 
-```bash
-# 1. リポジトリをクローン
-git clone https://github.com/Fujiwo/Shos.AIAgentSample.git
-cd Shos.AIAgentSample
+### 手順
 
-# 2. Ollama をインストール（ローカル LLM を使用）
-# https://ollama.com/ からダウンロードしてインストール
+1. **リポジトリをクローン**
+   ```bash
+   git clone https://github.com/Fujiwo/Shos.AIAgentSample.git
+   cd Shos.AIAgentSample
+   ```
 
-# 3. Ollama で llama3.2 モデルをダウンロード
-ollama pull llama3.2
+2. **Ollama をインストール**（ローカル LLM を使用）
+   - [https://ollama.com/](https://ollama.com/) からダウンロードしてインストール
 
-# 4. Visual Studio で Shos.AIAgentSample.sln を開く
+3. **LLM モデルをダウンロード**
+   ```bash
+   ollama pull llama3.2
+   ```
 
-# 5. FCAIAgent1 プロジェクトをスタートアッププロジェクトに設定して実行
-```
+4. **Visual Studio でソリューションを開く**
+   - `Shos.AIAgentSample.sln` を Visual Studio で開く
 
-詳細な手順は[チュートリアル](#チュートリアルの実施方法)を参照してください。
+5. **サンプルプロジェクトを実行**
+   - `FCAIAgent1` プロジェクトを右クリックし、「スタートアップ プロジェクトに設定」を選択
+   - F5 キーを押してデバッグ実行
+
+詳細な手順とオプション設定は、[チュートリアルの実施方法](#チュートリアルの実施方法)を参照してください。
 
 ## 内容一覧
 
@@ -138,8 +145,8 @@ ollama pull llama3.2
 
 #### 推奨される参考資料
 
-事前学習として以下の資料が役立ちます:
-- [AIエージェント開発ハンズオンセミナー (PDF)](./Documents/2025010.AIエージェント開発ハンズオンセミナー.pdf) - セミナー資料（前提知識を含む）
+事前学習として以下の資料が役立ちます：
+- [AIエージェント開発ハンズオンセミナー資料 (PDF)](./Documents/2025010.AIエージェント開発ハンズオンセミナー.pdf) - セミナーの詳細資料（前提知識を含む）
 
 ### 学習の進め方
 
@@ -256,11 +263,9 @@ dotnet run
 | **McpServer.Con** | STDIO | ・標準入出力を通じた通信<br>・時刻取得ツールの実装例<br>・ローカルプロセス間通信向け | [2.1](./Documents/tutorial.2.1.md) |
 | **McpServer.Sse** | HTTP/SSE | ・Server-Sent Events によるリアルタイム通信<br>・天気予報ツールの実装例<br>・ネットワーク経由での利用が可能 | [2.2](./Documents/tutorial.2.2.md) |
 
-#### サンプルアプリケーション
+### 🌐 Web アプリケーション (FCAIChat シリーズ)
 
-チュートリアルプロジェクト以外にも、実践的なアプリケーション例が含まれています。
-
-###### 🌐 Web アプリケーション (FCAIChat シリーズ)
+コンソールアプリケーションと並行して、同等の機能を Web インターフェースで提供するプロジェクト群です：
 
 | プロジェクト | 学習ステップ | 主な機能 | 対応チュートリアル |
 |------------|------------|---------|------------------|
@@ -270,20 +275,35 @@ dotnet run
 | **FCAIChat4** | ステップ 4 | ・Web インターフェースから MCP ツールを利用<br>・ユーザーフレンドリーな対話型 AI 体験 | [3.1](./Documents/tutorial.3.1.md) |
 | **FCAIChat5** | ステップ 5 | ・複数のツールを統合した実践的な Web アプリケーション<br>・エンドユーザー向けの完全な AI エージェント体験 | [3.2](./Documents/tutorial.3.2.md) |
 
-###### CAD アプリケーション (FCAICad)
+### 🎨 CAD アプリケーション (FCAICad1)
 
-Windows Forms を使用した、AI エージェントを統合した CAD (Computer-Aided Design) アプリケーションです。
+Windows Forms を使用した、AI エージェントを統合した CAD (Computer-Aided Design) アプリケーションです。自然言語で図形描画を指示でき、AI エージェントがそれを解釈して実際に描画を実行します。
 
-- **主な機能**:
-  - 自然言語による図形描画指示
-  - AI エージェントによる描画コマンド実行
-  - リアルタイム図形表示
-  
-- **提供されるツール**:
-  - `GetPaperSize()` - 用紙サイズの取得
-  - `DrawLine()` - 直線の描画
+#### プロジェクト概要
 
-このプロジェクトは、AI エージェントをデスクトップアプリケーションに統合し、自然言語でアプリケーションを制御する実例を提供します。
+| プロジェクト | プラットフォーム | 主な機能 |
+|------------|----------------|---------|
+| **FCAICad1** | Windows Forms | ・自然言語による図形描画指示<br>・AI エージェントによる描画コマンド自動実行<br>・リアルタイム図形表示<br>・Windows Forms を使った GUI 実装 |
+
+#### AI エージェントに提供されるツール
+
+FCAICad1 では、以下のツール（関数）を AI エージェントに提供しています：
+
+| ツール | 説明 | パラメータ |
+|--------|------|-----------|
+| `GetPaperSize()` | 用紙サイズ（幅と高さ）を取得 | なし（戻り値: width, height） |
+| `DrawLine()` | 直線を描画 | startX, startY, endX, endY（始点と終点の座標） |
+
+#### 実装のポイント
+
+- **自然言語インターフェース**: ユーザーは「右上から左下に線を引いて」といった自然な指示を入力できます
+- **AI による解釈**: エージェントが指示を解釈し、適切なツールを呼び出します
+- **即座の可視化**: 描画結果がリアルタイムに画面に表示されます
+
+このプロジェクトは、**AI エージェントをデスクトップアプリケーションに統合し、自然言語でアプリケーションを制御する実例**を提供します。今後、より多くの描画ツール（円、矩形、テキストなど）を追加することで、より高度な CAD システムへと発展させることができます。
+
+> [!NOTE]  
+> FCAICad1 は Windows Forms を使用しているため、**Windows でのみ動作**します。
 
 ### 📚 ドキュメントとリソース
 
@@ -298,33 +318,35 @@ Windows Forms を使用した、AI エージェントを統合した CAD (Comput
 - **.vscode/mcp.json** - Visual Studio Code 用の MCP サーバー設定
 - **Shos.AIAgentSample.sln** - Visual Studio ソリューションファイル
 
-## 技術スタックと実施環境
+## 技術スタックと実行環境
 
-### 開発環境
+### 開発・実行環境
 
 | カテゴリ | 内容 |
 |----------|------|
-| **OS** | Windows 11、macOS（一部機能）、Linux（一部機能） |
 | **言語** | C# 12.0 |
 | **ランタイム** | .NET 8.0 以上（推奨: .NET 9.0） |
-| **IDE** | Visual Studio 2022 17.12 以降、または Visual Studio Code |
+| **IDE** | Visual Studio 2022（17.12 以降）、または Visual Studio Code |
+| **対応 OS** | Windows 11/10（全機能）、macOS、Linux（FCAICad1 を除く） |
 
-## 実施環境
+### 実行環境
 
-### オペレーティングシステム
+#### オペレーティングシステム
 
-- **Windows 11** - すべてのプロジェクトをサポート
-- **macOS** - FCAIAgent、FCAIChat、MCP サーバープロジェクトをサポート（FCAICad1 を除く）
-- **Linux** - FCAIAgent、FCAIChat、MCP サーバープロジェクトをサポート（FCAICad1 を除く）
+| OS | サポート状況 | 備考 |
+|----|------------|------|
+| **Windows 11/10** | ✅ すべてのプロジェクト | FCAICad1 を含むすべてのプロジェクトが動作 |
+| **macOS** | ✅ 一部対応 | FCAIAgent、FCAIChat、MCP サーバープロジェクトをサポート |
+| **Linux** | ✅ 一部対応 | FCAIAgent、FCAIChat、MCP サーバープロジェクトをサポート |
 
 > [!NOTE]  
-> FCAICad1 プロジェクトは Windows Forms を使用しているため、Windows でのみ動作します。
+> **FCAICad1** プロジェクトは Windows Forms を使用しているため、Windows でのみ動作します。macOS および Linux では実行できません。
 
-### 言語とランタイム
+#### 言語とランタイム
 
 - **言語**: C# 12.0
-- **ランタイム**: .NET 8.0 以上(推奨: .NET 9.0)
-- **IDE**: Visual Studio 2022 17.12 以降、または Visual Studio Code
+- **ランタイム**: .NET 8.0 以上（推奨: .NET 9.0）
+- **IDE**: Visual Studio 2022（17.12 以降）、または Visual Studio Code
 
 ### 主要な依存パッケージ
 
@@ -399,8 +421,7 @@ Shos.AIAgentSample/
 │   ├── 📄 tutorial.4.1.md                         # 4.1 後片付け
 │   ├── 📄 aiagentlog.md                           # AI エージェント開発ログ
 │   ├── 📄 maf.md                                  # Microsoft Agent Framework 情報
-│   ├── 📄 2025010.AIエージェント開発ハンズオンセミナー.pptx
-│   └── 📄 2025010.AIエージェント開発ハンズオンセミナー.pdf
+│   └── 📄 2025010.AIエージェント開発ハンズオンセミナー.pdf # セミナー資料
 │
 ├── 📁 FCAIAgent/                                   # 🤖 最終形態の AI エージェント (FCAIAgent5と同等)
 │   ├── 📄 Program.cs
@@ -444,6 +465,14 @@ Shos.AIAgentSample/
 │
 ├── 📁 FCAIChat5/                                   # 🌐 ステップ 5: MCP 連携 Web チャット（複数）
 │   └── 📄 FCAIChat5.csproj
+│
+├── 📁 FCAICad1/                                    # 🎨 CAD アプリケーション
+│   ├── 📄 Program.cs                              # メインプログラムとツール定義
+│   ├── 📄 ChatAgent.cs                            # AI エージェント実装
+│   ├── 📄 MainForm.cs                             # メインフォーム
+│   ├── 📄 View.cs                                 # 描画ビュー
+│   ├── 📄 Model.cs                                # データモデル
+│   └── 📄 FCAICad1.csproj
 │
 ├── 📁 McpServer.Con/                               # 🔧 STDIO MCP サーバー
 │   ├── 📄 Program.cs                              # 時刻取得ツール実装
@@ -581,25 +610,23 @@ Copyright (c) 2025 Fujio Kojima
 
 ## 謝辞
 
-このプロジェクトは、以下のオープンソースプロジェクトと技術を使用しています:
+このプロジェクトは、以下のオープンソースプロジェクトと技術を使用しています：
 
-- [Microsoft Agent Framework](https://github.com/microsoft/agents) - AI エージェント開発フレームワーク
-- [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) - AI エージェントとツール連携の標準プロトコル
-- [Ollama](https://ollama.com/) - ローカル LLM 実行環境
-- [Azure OpenAI Service](https://azure.microsoft.com/services/cognitive-services/openai-service/) - クラウド LLM サービス
+- **[Microsoft Agent Framework](https://github.com/microsoft/agents)** - AI エージェント開発フレームワーク
+- **[Model Context Protocol (MCP)](https://modelcontextprotocol.io/)** - AI エージェントとツール連携の標準プロトコル
+- **[Ollama](https://ollama.com/)** - ローカル LLM 実行環境
+- **[Azure OpenAI Service](https://azure.microsoft.com/services/cognitive-services/openai-service/)** - クラウド LLM サービス
 
-これらの素晴らしいツールとフレームワークを提供してくださった開発者とコミュニティの皆様に感謝いたします。
+これらの素晴らしいツールとフレームワークを提供してくださった開発者とコミュニティの皆様に深く感謝いたします。
 
 ## 貢献
 
-バグ報告、機能要望、プルリクエストを歓迎します！
+このプロジェクトへの貢献を歓迎します！バグ報告、機能要望、ドキュメントの改善、プルリクエストなど、あらゆる形での貢献をお待ちしています。
 
-### 貢献方法
+### 貢献の方法
 
 1. **このリポジトリをフォーク**
-   ```bash
-   # GitHub で Fork ボタンをクリック
-   ```
+   - GitHub で「Fork」ボタンをクリック
 
 2. **フィーチャーブランチを作成**
    ```bash
@@ -621,9 +648,13 @@ Copyright (c) 2025 Fujio Kojima
 
 ### 報告とフィードバック
 
-- **バグ報告**: [Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) で報告してください
-- **機能要望**: [Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) で提案してください
-- **質問**: [Discussions](https://github.com/Fujiwo/Shos.AIAgentSample/discussions) で質問してください
+| 種類 | 方法 |
+|------|------|
+| 🐛 **バグ報告** | [Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) でバグを報告 |
+| 💡 **機能要望** | [Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) で新機能を提案 |
+| ❓ **質問** | [Discussions](https://github.com/Fujiwo/Shos.AIAgentSample/discussions) で質問を投稿 |
+
+皆様からのフィードバックと貢献をお待ちしています！
 
 ---
 
