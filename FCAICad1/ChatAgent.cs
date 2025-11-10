@@ -3,14 +3,17 @@ dotnet add package Microsoft.Agents.AI --prerelease
 dotnet add package Azure.AI.OpenAI
 dotnet add package Microsoft.Agents.AI.OpenAI --prerelease
 dotnet add package ModelContextProtocol --prerelease
+dotnet add package OllamaSharp
  */
 
-// Microsoft Agent Framework 用
 // Azure OpenAI のクライアント用
 using Azure;
 using Azure.AI.OpenAI;
+// Microsoft Agent Framework 用
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+// Ollama 用
+using OllamaSharp;
 // MCP クライアントとツールを利用するための名前空間
 using ModelContextProtocol.Client;
 // Debug.WriteLine を使うための名前空間
@@ -104,13 +107,32 @@ public class MyChatAgent : ChatAgent
     // エージェントのシステムロールに与える文脈的な指示
     protected override string SystemPrompt => "あなたは一流のCADオペレーターです。CADを用いた様々な製図を得意としています。指示に従って図面を描いてください。";
 
+    //// Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
+    //protected override IChatClient GetChatClient()
+    //{
+    //    var uri = new Uri("http://localhost:11434");
+    //    var ollama = new OllamaApiClient(uri);
+    //    // 使用するモデルを指定
+    //    // クラウドベースのモデルを使用(実行速度の向上のため)
+    //    // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
+    //    ollama.SelectedModel = "gpt-oss:20b-cloud";
+
+    //    // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
+    //    IChatClient chatClient = ollama;
+    //    chatClient = chatClient.AsBuilder()
+    //                           .UseFunctionInvocation() // ツール呼び出しを使う
+    //                           .Build();
+    //    return chatClient;
+    //}
+
+    //Azure OpenAI を使う場合のクライアント生成
     protected override IChatClient GetChatClient()
     {
         // 使用するモデルを指定
         const string deploymentName = "gpt-5-mini";
-        var azureOpenAIEndPoint     = GetEndPoint();
-        var openAIApiKey            = GetKey();
-        var credential              = new AzureKeyCredential(openAIApiKey);
+        var azureOpenAIEndPoint = GetEndPoint();
+        var openAIApiKey = GetKey();
+        var credential = new AzureKeyCredential(openAIApiKey);
 
         var azureOpenAIClient = new AzureOpenAIClient(new Uri(azureOpenAIEndPoint), credential);
         // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド

@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Agents.AI" Version="1.0.0-preview.251107.1" />
     <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0-preview.251107.1" />
     <PackageReference Include="ModelContextProtocol" Version="0.4.0-preview.3" />
+    <PackageReference Include="OllamaSharp" Version="5.4.8" />
   </ItemGroup>
 
 </Project>
