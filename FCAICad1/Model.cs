@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic.Logging;
-using System.Collections;
-using System.Diagnostics;
+﻿using System.Collections;
 
 namespace FCAICad;
 
@@ -11,6 +9,17 @@ public class Model : IEnumerable<Figure>
     public event EventHandler<Figure?>? Update;
 
     readonly List<Figure> figures = new();
+
+    public RectangleF Bounds {
+        get {
+            if (figures.Count <= 0)
+                return new RectangleF(PointF.Empty, SizeF.Empty);
+            var bounds = figures[0].Bounds;
+            for (var index = 1; index < figures.Count; index++)
+                bounds = RectangleF.Union(bounds, figures[index].Bounds);
+            return bounds;
+        }
+    }
 
     public void Add(Figure figure)
     {
@@ -35,7 +44,17 @@ public abstract class Figure
     public string ColorName { set => Color = Color.FromName(value); }
 
     public float LineWidth { get; set; } = 10.0f;
-    public abstract RectangleF Bounds { get; }
+
+    public RectangleF Bounds
+    {
+        get {
+            var bounds = ShapeBounds;
+            bounds.Inflate(LineWidth / 2.0f, LineWidth / 2.0f);
+            return bounds;
+        }
+    }
+
+    public abstract RectangleF ShapeBounds { get; }
 
     public void Draw(Graphics graphics)
     {
@@ -54,10 +73,10 @@ public class LineFigure : Figure
     public required PointF Start { get; init; }
     public required PointF End   { get; init; }
 
-    public override RectangleF Bounds => new RectangleF(x     : Math.Min(Start.X, End.X),
-                                                        y     : Math.Min(Start.Y, End.Y),
-                                                        width : Math.Abs(End.X - Start.X),
-                                                        height: Math.Abs(End.Y - Start.Y));
+    public override RectangleF ShapeBounds => new RectangleF(x     : Math.Min(Start.X, End.X ),
+                                                             y     : Math.Min(Start.Y, End.Y ),
+                                                             width : Math.Abs(End.X - Start.X),
+                                                             height: Math.Abs(End.Y - Start.Y));
 
     public override string ToString()
         => $"{base.ToString()}, Start: {Start}, End: {End}";
@@ -71,10 +90,10 @@ public class CircleFigure : Figure
     public required PointF Center { get; init; }
     public required float Radius { get; init; }
 
-    public override RectangleF Bounds => new RectangleF(x     : Center.X - Radius,
-                                                        y     : Center.Y - Radius,
-                                                        width : Radius + Radius,
-                                                        height: Radius + Radius);
+    public override RectangleF ShapeBounds => new RectangleF(x     : Center.X - Radius,
+                                                             y     : Center.Y - Radius,
+                                                             width : Radius + Radius  ,
+                                                             height: Radius + Radius  );
 
     public override string ToString()
         => $"{base.ToString()}, Center: {Center}, Radius: {Radius}";
@@ -89,10 +108,10 @@ public class EllipseFigure : Figure
     public required float RadiusX { get; init; }
     public required float RadiusY { get; init; }
 
-    public override RectangleF Bounds => new RectangleF(x     : Center.X - RadiusX,
-                                                        y     : Center.Y - RadiusY,
-                                                        width : RadiusX + RadiusX,
-                                                        height: RadiusY + RadiusY);
+    public override RectangleF ShapeBounds => new RectangleF(x     : Center.X - RadiusX,
+                                                             y     : Center.Y - RadiusY,
+                                                             width : RadiusX + RadiusX ,
+                                                             height: RadiusY + RadiusY );
 
     public override string ToString()
         => $"{base.ToString()}, Center: {Center}, RadiusX: {RadiusX}, RadiusY: {RadiusY}";
@@ -116,7 +135,7 @@ public class FreeFormCurveFigure : Figure
         }
     }
 
-    public override RectangleF Bounds {
+    public override RectangleF ShapeBounds {
         get {
             if (position.Count <= 0)
                 return RectangleF.Empty;
@@ -130,10 +149,13 @@ public class FreeFormCurveFigure : Figure
                 if (point.X > maxX) maxX = point.X;
                 if (point.Y > maxY) maxY = point.Y;
             });
-            return new RectangleF(x     : minX,
-                                  y     : minY,
-                                  width : maxX - minX,
-                                  height: maxY - minY);
+            var bounds = new RectangleF(x     : minX       ,
+                                        y     : minY       ,
+                                        width : maxX - minX,
+                                        height: maxY - minY);
+            const float inflateRate = 0.05f;
+            bounds.Inflate(bounds.Width * inflateRate, bounds.Height * inflateRate);
+            return bounds;
         }
     }
 
