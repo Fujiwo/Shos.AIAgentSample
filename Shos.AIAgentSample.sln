@@ -131,6 +131,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{B189
 		.vscode\mcp.json = .vscode\mcp.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCAICad1", "FCAICad1\FCAICad1.csproj", "{1F932FD4-8A15-001A-876F-5B54D7DF2C55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -189,6 +191,10 @@ Global
 		{A5F81D8E-EA21-1317-FCAB-1E5F2FA16E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5F81D8E-EA21-1317-FCAB-1E5F2FA16E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5F81D8E-EA21-1317-FCAB-1E5F2FA16E42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F932FD4-8A15-001A-876F-5B54D7DF2C55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F932FD4-8A15-001A-876F-5B54D7DF2C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F932FD4-8A15-001A-876F-5B54D7DF2C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F932FD4-8A15-001A-876F-5B54D7DF2C55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
