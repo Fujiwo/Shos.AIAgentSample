@@ -30,8 +30,7 @@ namespace FCAICad
 
         void OnKeyDown(object? sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.C)
-            {
+            if (e.Control && e.KeyCode == Keys.C) {
                 CopyToClipboard();
                 e.Handled = true;
             }
@@ -43,7 +42,7 @@ namespace FCAICad
                 return;
 
             var bounds = Model.Bounds;
-            if (bounds.Width <= 0 || bounds.Height <= 0)
+            if (bounds.Width <= 0.0f || bounds.Height <= 0.0f)
                 return;
 
             // Add some padding around the figures
@@ -54,14 +53,7 @@ namespace FCAICad
             var height = (int)Math.Ceiling(bounds.Height);
 
             // Create bitmap
-            using var bitmap = new Bitmap(width, height);
-            using (var graphics = Graphics.FromImage(bitmap))
-            {
-                graphics.Clear(Color.White);
-                graphics.TranslateTransform(-bounds.X, -bounds.Y);
-                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                Model.ForEach(figure => figure.Draw(graphics));
-            }
+            using var bitmap = CreateBitmap(bounds, width, height);
 
             // Create metafile
             using var metafile = CreateMetafile(bounds, width, height);
@@ -73,24 +65,30 @@ namespace FCAICad
             Clipboard.SetDataObject(dataObject, true);
         }
 
+        Bitmap CreateBitmap(RectangleF bounds, int width, int height)
+        {
+            var bitmap = new Bitmap(width, height);
+            var graphics = Graphics.FromImage(bitmap);
+            graphics.Clear(Color.White);
+            graphics.TranslateTransform(-bounds.X, -bounds.Y);
+            graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            Model?.ForEach(figure => figure.Draw(graphics));
+            return bitmap;
+        }
+
         Metafile CreateMetafile(RectangleF bounds, int width, int height)
         {
             using var referenceGraphics = CreateGraphics();
             var hdc = referenceGraphics.GetHdc();
-            try
-            {
+            try {
                 var metafile = new Metafile(hdc, new Rectangle(0, 0, width, height), MetafileFrameUnit.Pixel, EmfType.EmfPlusDual);
-                using (var graphics = Graphics.FromImage(metafile))
-                {
-                    graphics.Clear(Color.White);
-                    graphics.TranslateTransform(-bounds.X, -bounds.Y);
-                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    Model?.ForEach(figure => figure.Draw(graphics));
-                }
+                using var graphics = Graphics.FromImage(metafile);
+                graphics.Clear(Color.White);
+                graphics.TranslateTransform(-bounds.X, -bounds.Y);
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                Model?.ForEach(figure => figure.Draw(graphics));
                 return metafile;
-            }
-            finally
-            {
+            } finally {
                 referenceGraphics.ReleaseHdc(hdc);
             }
         }

@@ -28,8 +28,7 @@ public partial class MainForm : Form
     void OnFormKeyDown(object? sender, KeyEventArgs e)
     {
         // Forward Ctrl+C to the view for clipboard copy
-        if (e.Control && e.KeyCode == Keys.C)
-        {
+        if (e.Control && e.KeyCode == Keys.C) {
             view.CopyToClipboard();
             e.Handled = true;
         }
