@@ -18,9 +18,12 @@ namespace FCAICad
         void OnPaint(object sender, PaintEventArgs e)
         {
             Model?.ForEach(figure => figure.Draw(e.Graphics));
+#if DEBUG
             DrawBounds(e.Graphics);
+#endif // DEBUG
         }
 
+#if DEBUG
         void DrawBounds(Graphics graphics)
         {
             if (Model is null)
@@ -29,5 +32,6 @@ namespace FCAICad
             Model?.ForEach(figure => graphics.DrawRectangle(pen, figure.Bounds));
             graphics.DrawRectangle(pen, Model.Bounds);
         }
+#endif // DEBUG
     }
 }
