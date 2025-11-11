@@ -6,14 +6,19 @@ dotnet add package ModelContextProtocol --prerelease
 dotnet add package OllamaSharp
  */
 
+#define AZURE_OPENAI
+#if AZURE_OPENAI
 // Azure OpenAI のクライアント用
 using Azure;
 using Azure.AI.OpenAI;
+#else // AZURE_OPENAI
+// Ollama 用
+using OllamaSharp;
+#endif // AZURE_OPENAI
+
 // Microsoft Agent Framework 用
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-// Ollama 用
-using OllamaSharp;
 // MCP クライアントとツールを利用するための名前空間
 using ModelContextProtocol.Client;
 // Debug.WriteLine を使うための名前空間
@@ -102,7 +107,7 @@ public abstract class ChatAgent : IAsyncDisposable
             return response?.Text ?? string.Empty;
         } catch (Exception ex) {
             Debug.WriteLine($"Error running agent: {ex.Message}");
-            return string.Empty;
+            return "……";
         }
     }
 }
@@ -110,44 +115,35 @@ public abstract class ChatAgent : IAsyncDisposable
 public class MyChatAgent : ChatAgent
 {
     // エージェント名と指示
-    public override string    Name         => "CADオペレーター";   
-    protected override string Instructions => "CADオペレーターとして、CADを用いた製図を行ってください。";
+    public override string    Name         => "CADオペレーター兼イラストレーター";   
+    protected override string Instructions => "CADオペレーター兼イラストレーターとして、CADを用いて様々な製図やイラストを描いてください。";
     // エージェントのシステムロールに与える文脈的な指示
     protected override string SystemPrompt => @$"
 あなたは一流のCADオペレーター兼イラストレーターです。CADを用いて様々な製図やイラストを描くことを得意としています。
 目的: 指示に従って美しく読みやすく分かりやすい図面や絵を描いてください。
-特に指示がなければ、幅{Program.GetPaperSize().Width}・高さ{Program.GetPaperSize().Height}の作図領域を基準にします。
+
+- 特に指示がなければ、幅{Program.GetPaperSize().Width}・高さ{Program.GetPaperSize().Height}の作図領域を基準にします。
+- 特に指示がなければ、描かれたものは消さないでください (クリアしないでください)。
+- 常にプロフェッショナルな品質を追求してください。
 
 作業手順:
 1. 要望を読み取り、必要なら不足情報(寸法、方位、視点など)を適宜補ってください。
 2. 図面全体の構成を短くプランニングし、主要要素と使用するツール(API)を考えてください。
 3. 描画時は座標(左上を原点、右方向がX+、下方向がY+)や単位を意識してください。
 4. 線は `DrawLine`、円は `DrawCircle`、楕円は `DrawEllipse`、自由曲線や複雑な輪郭は `DrawFreeLine` を用いて描き、必要に応じて `ClearAll` でリセットします。
-5. 色・線種・重ね順を適切に選び、視認性向上のためにコントラストのある色を選択してください。
-6. 必要に応じて `GetPaperSize` で用紙サイズを確認し、適切なスケールで描画してください。
-7. 指示を待たずに、直ちに描画してください。
-
-常にプロフェッショナルな品質を追求してください。
+5. 色は、有効な色 ({GetAvailableColorNameList()}) から指定してください。
+6. 色・線種・重ね順を適切に選び、視認性向上のためにコントラストのある色を選択してください。
+7. 線幅は3から20の範囲で指定し、図面の目的に応じて適切な太さを選んでください。
+8. 必要に応じて `GetPaperSize` で用紙サイズを確認し、適切なスケールで描画してください。
+9. 指示を待たずに、直ちに描画してください。
 ";
+    static string GetAvailableColorNameList()
+    {
+        var availableColorNames = Program.GetAvailableColors();
+        return string.Join(", ", availableColorNames);
+    }
 
-    //// Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
-    //protected override IChatClient GetChatClient()
-    //{
-    //    var uri = new Uri("http://localhost:11434");
-    //    var ollama = new OllamaApiClient(uri);
-    //    // 使用するモデルを指定
-    //    // クラウドベースのモデルを使用(実行速度の向上のため)
-    //    // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
-    //    ollama.SelectedModel = "gpt-oss:20b-cloud";
-
-    //    // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
-    //    IChatClient chatClient = ollama;
-    //    chatClient = chatClient.AsBuilder()
-    //                           .UseFunctionInvocation() // ツール呼び出しを使う
-    //                           .Build();
-    //    return chatClient;
-    //}
-
+#if AZURE_OPENAI
     //Azure OpenAI を使う場合のクライアント生成
     protected override IChatClient GetChatClient()
     {
@@ -192,6 +188,25 @@ public class MyChatAgent : ChatAgent
             //return @"[Azure OpenAI の APIキー]";
         }
     }
+#else // AZURE_OPENAI
+    // Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
+    protected override IChatClient GetChatClient()
+    {
+        var uri = new Uri("http://localhost:11434");
+        var ollama = new OllamaApiClient(uri);
+        // 使用するモデルを指定
+        // クラウドベースのモデルを使用(実行速度の向上のため)
+        // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
+        ollama.SelectedModel = "gpt-oss:20b-cloud";
+
+        // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
+        IChatClient chatClient = ollama;
+        chatClient = chatClient.AsBuilder()
+                               .UseFunctionInvocation() // ツール呼び出しを使う
+                               .Build();
+        return chatClient;
+    }
+#endif // AZURE_OPENAI
 
     // MCP サーバーのツールを取得
     // - McpClient に接続し、ツール一覧を取得して返す

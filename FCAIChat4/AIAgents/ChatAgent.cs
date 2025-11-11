@@ -99,7 +99,7 @@ namespace FCAIChat.AIAgents
                 return response?.Text ?? string.Empty;
             } catch (Exception ex) {
                 Debug.WriteLine($"Error running agent: {ex.Message}");
-                return string.Empty;
+                return "……";
             }
         }
     }
