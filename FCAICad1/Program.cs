@@ -225,14 +225,14 @@ namespace FCAICad
             => mainForm?.AddFigure(new EllipseFigure { ColorName = color, LineWidth = lineWidth, Center = center, RadiusX = radiusX, RadiusY = radiusY });
 
         [Description("Draw a free-form curve with points.")]
-        public static void DrawFreeLine(
-            [Description("The color of the free line.")]
+        public static void DrawFreeFormCurve(
+            [Description("The color of the free-form curve.")]
             string color,
-            [Description("The line width (3 to 20) of the free line.")]
+            [Description("The line width (3 to 20) of the free-form curve.")]
             float lineWidth,
-            [Description("Points that make up the free curve.")]
+            [Description("Points that make up the free-form curve.")]
             PointF[] points
         )
-            => mainForm?.AddFigure(new FreeLineFigure { ColorName = color, LineWidth = lineWidth, Points = points });
+            => mainForm?.AddFigure(new FreeFormCurveFigure { ColorName = color, LineWidth = lineWidth, Points = points });
     }
 }

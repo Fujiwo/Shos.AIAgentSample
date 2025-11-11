@@ -16,7 +16,7 @@ public class Model : IEnumerable<Figure>
     {
         figures.Add(figure);
         Update?.Invoke(this, figure);
-        Log(figure);
+        figure.Log();
     }
 
     public void Clear()
@@ -27,8 +27,6 @@ public class Model : IEnumerable<Figure>
 
     public IEnumerator<Figure> GetEnumerator() => figures.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    static void Log(object item) => Debug.WriteLine(item);
 }
 
 public abstract class Figure
@@ -103,7 +101,7 @@ public class EllipseFigure : Figure
         => graphics.DrawEllipse(pen, Center.X - RadiusX, Center.Y - RadiusY, RadiusX + RadiusX, RadiusY + RadiusY);
 }
 
-public class FreeLineFigure : Figure
+public class FreeFormCurveFigure : Figure
 {
     const float minimumDistance = 10.0f;
 
@@ -114,8 +112,7 @@ public class FreeLineFigure : Figure
         get { return position; }
         set {
             position.Clear();
-            foreach (var point in value)
-                Add(point);
+            value.ForEach(point => Add(point));
         }
     }
 
@@ -127,12 +124,12 @@ public class FreeLineFigure : Figure
             var minY = position[0].Y;
             var maxX = position[0].X;
             var maxY = position[0].Y;
-            foreach (var point in position) {
+            position.ForEach(point => {
                 if (point.X < minX) minX = point.X;
                 if (point.Y < minY) minY = point.Y;
                 if (point.X > maxX) maxX = point.X;
                 if (point.Y > maxY) maxY = point.Y;
-            }
+            });
             return new RectangleF(x     : minX,
                                   y     : minY,
                                   width : maxX - minX,

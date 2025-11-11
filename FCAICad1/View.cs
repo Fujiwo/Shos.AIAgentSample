@@ -16,11 +16,6 @@ namespace FCAICad
         }
 
         void OnPaint(object sender, PaintEventArgs e)
-        {
-            if (Model is null)
-                return;
-            foreach (var figure in Model)
-                figure.Draw(e.Graphics);
-        }
+            => Model?.ForEach(figure => figure.Draw(e.Graphics));
     }
 }

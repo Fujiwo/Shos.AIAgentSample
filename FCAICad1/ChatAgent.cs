@@ -248,11 +248,12 @@ public class MyChatAgent : ChatAgent
 
         // CAD 操作用のツール群を取得
         static IEnumerable<AITool> GetCadTools()
-            => [AIFunctionFactory.Create(Program.GetPaperSize),
-                AIFunctionFactory.Create(Program.ClearAll    ),
-                AIFunctionFactory.Create(Program.DrawLine    ),
-                AIFunctionFactory.Create(Program.DrawCircle  ),
-                AIFunctionFactory.Create(Program.DrawEllipse ),
-                AIFunctionFactory.Create(Program.DrawFreeLine)];
+            => [AIFunctionFactory.Create(Program.GetPaperSize      ),
+                AIFunctionFactory.Create(Program.GetAvailableColors),
+                AIFunctionFactory.Create(Program.ClearAll          ),
+                AIFunctionFactory.Create(Program.DrawLine          ),
+                AIFunctionFactory.Create(Program.DrawCircle        ),
+                AIFunctionFactory.Create(Program.DrawEllipse       ),
+                AIFunctionFactory.Create(Program.DrawFreeFormCurve )];
     }
 }
