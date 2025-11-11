@@ -19,6 +19,20 @@ public partial class MainForm : Form
             else
                 view.Draw(figure);
         };
+
+        // Enable keyboard events for the form
+        KeyPreview = true;
+        KeyDown += OnFormKeyDown;
+    }
+
+    void OnFormKeyDown(object? sender, KeyEventArgs e)
+    {
+        // Forward Ctrl+C to the view for clipboard copy
+        if (e.Control && e.KeyCode == Keys.C)
+        {
+            view.CopyToClipboard();
+            e.Handled = true;
+        }
     }
 
     public void Clear() => model.Clear();
