@@ -46,10 +46,8 @@ public abstract class ChatAgent : IAsyncDisposable
     public async Task<string> GetResponseAsync(string userPrompt)
     {
         await Start();
-
         // ユーザープロンプトをエージェントスレッドに送信し、応答を取得
-        var response = Agent is null ? null : await Agent.RunAsync(ToUserMessage(userPrompt), Thread);
-        return response?.Text ?? string.Empty;
+        return await RunAgentAsync(ToUserMessage(userPrompt)) ?? string.Empty;
 
         static ChatMessage ToUserMessage(string userPrompt) => new ChatMessage(ChatRole.User, userPrompt);
     }
@@ -89,12 +87,22 @@ public abstract class ChatAgent : IAsyncDisposable
             return new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
         }
 
-        async Task SendSystemMessageAsync()
-        {
-            // システムメッセージを作成して送信
-            ChatMessage systemMessage = new(ChatRole.System, SystemPrompt);
-            if (Agent is not null)
-                await Agent.RunAsync(systemMessage, Thread);
+        // システムメッセージを作成して送信
+        async Task SendSystemMessageAsync() => await RunAgentAsync(new (ChatRole.System, SystemPrompt));
+    }
+
+    // エージェントに ChatMessage を投げて応答を取得
+    async Task<string> RunAgentAsync(ChatMessage chatMessage)
+    {
+        if (Agent is null)
+            return string.Empty;
+
+        try {
+            var response = await Agent.RunAsync(chatMessage, Thread);
+            return response?.Text ?? string.Empty;
+        } catch (Exception ex) {
+            Debug.WriteLine($"Error running agent: {ex.Message}");
+            return string.Empty;
         }
     }
 }
@@ -105,7 +113,22 @@ public class MyChatAgent : ChatAgent
     public override string    Name         => "CADオペレーター";   
     protected override string Instructions => "CADオペレーターとして、CADを用いた製図を行ってください。";
     // エージェントのシステムロールに与える文脈的な指示
-    protected override string SystemPrompt => $"あなたは一流のCADオペレーターです。CADを用いた様々な製図を得意としています。指示に従って図面を描いてください。特に指示がなければ、幅{Program.GetPaperSize().Width}・高さ{Program.GetPaperSize().Height}の範囲に描いてください。";
+    protected override string SystemPrompt => @$"
+あなたは一流のCADオペレーター兼イラストレーターです。CADを用いて様々な製図やイラストを描くことを得意としています。
+目的: 指示に従って美しく読みやすく分かりやすい図面や絵を描いてください。
+特に指示がなければ、幅{Program.GetPaperSize().Width}・高さ{Program.GetPaperSize().Height}の作図領域を基準にします。
+
+作業手順:
+1. 要望を読み取り、必要なら不足情報(寸法、方位、視点など)を適宜補ってください。
+2. 図面全体の構成を短くプランニングし、主要要素と使用するツール(API)を考えてください。
+3. 描画時は座標(左上を原点、右方向がX+、下方向がY+)や単位を意識してください。
+4. 線は `DrawLine`、円は `DrawCircle`、楕円は `DrawEllipse`、自由曲線や複雑な輪郭は `DrawFreeLine` を用いて描き、必要に応じて `ClearAll` でリセットします。
+5. 色・線種・重ね順を適切に選び、視認性向上のためにコントラストのある色を選択してください。
+6. 必要に応じて `GetPaperSize` で用紙サイズを確認し、適切なスケールで描画してください。
+7. 指示を待たずに、直ちに描画してください。
+
+常にプロフェッショナルな品質を追求してください。
+";
 
     //// Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
     //protected override IChatClient GetChatClient()

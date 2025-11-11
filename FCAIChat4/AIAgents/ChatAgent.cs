@@ -44,8 +44,7 @@ namespace FCAIChat.AIAgents
             await Start();
 
             // ユーザープロンプトをエージェントスレッドに送信し、応答を取得
-            var response = agent is null ? null : await agent.RunAsync(ToUserMessage(userPrompt), thread);
-            return response?.Text ?? string.Empty;
+            return await RunAgentAsync(ToUserMessage(userPrompt)) ?? string.Empty;
         }
 
         // ファクトリ関数
@@ -83,16 +82,26 @@ namespace FCAIChat.AIAgents
                 return new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
             }
 
-            async Task SendSystemMessageAsync()
-            {
-                // システムメッセージを作成して送信
-                ChatMessage systemMessage = new(ChatRole.System, SystemPrompt);
-                if (agent is not null)
-                    await agent.RunAsync(systemMessage, thread);
-            }
+            // システムメッセージを作成して送信
+            async Task SendSystemMessageAsync() => await RunAgentAsync(new(ChatRole.System, SystemPrompt));
         }
 
         static ChatMessage ToUserMessage(string userPrompt) => new ChatMessage(ChatRole.User, userPrompt);
+
+        // エージェントに ChatMessage を投げて応答を取得
+        async Task<string> RunAgentAsync(ChatMessage chatMessage)
+        {
+            if (agent is null)
+                return string.Empty;
+
+            try {
+                var response = await agent.RunAsync(chatMessage, thread);
+                return response?.Text ?? string.Empty;
+            } catch (Exception ex) {
+                Debug.WriteLine($"Error running agent: {ex.Message}");
+                return string.Empty;
+            }
+        }
     }
 
     public class MyChatAgent : ChatAgent

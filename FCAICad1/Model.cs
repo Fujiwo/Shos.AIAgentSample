@@ -29,12 +29,14 @@ public class Model : IEnumerable<Figure>
 public abstract class Figure
 {
     public Color Color { get; set; } = Color.Black;
-    public float Width { get; set; } = 5.0f;
+    public string ColorName { set => Color = Color.FromName(value); }
+
+    public float LineWidth { get; set; } = 5.0f;
     public abstract RectangleF Bounds { get; }
 
     public void Draw(Graphics graphics)
     {
-        using Pen pen = new(Color, Width);
+        using Pen pen = new(Color, LineWidth);
         DrawShape(graphics, pen);
     }
 

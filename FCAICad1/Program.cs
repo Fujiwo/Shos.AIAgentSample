@@ -187,28 +187,34 @@ namespace FCAICad
         public static void DrawLine(
             [Description("The color of the line.")]
             string color,
+            [Description("The line width (1 to 10) of the line.")]
+            float lineWidth,
             [Description("The starting point of the line.")]
             PointF start,
             [Description("The ending point of the line.")]
             PointF end
         )
-            => mainForm?.AddFigure(new LineFigure { Color = Color.FromName(color), Start = start, End = end });
+            => mainForm?.AddFigure(new LineFigure { ColorName = color, LineWidth = lineWidth, Start = start, End = end });
 
         [Description("Draw a circle.")]
         public static void DrawCircle(
             [Description("The color of the circle.")]
             string color,
+            [Description("The line width (1 to 10) of the circle.")]
+            float lineWidth,
             [Description("The center point of the circle.")]
             PointF center,
             [Description("The radius of the circle.")]
             float radius
         )
-            => mainForm?.AddFigure(new CircleFigure { Color = Color.FromName(color), Center = center, Radius = radius });
+            => mainForm?.AddFigure(new CircleFigure { ColorName = color, LineWidth = lineWidth, Center = center, Radius = radius });
 
         [Description("Draw a ellipse.")]
         public static void DrawEllipse(
             [Description("The color of the ellipse.")]
             string color,
+            [Description("The line width (1 to 10) of the ellipse.")]
+            float lineWidth,
             [Description("The center point of the ellipse.")]
             PointF center,
             [Description("The radius of the ellipse in the x-direction.")]
@@ -216,15 +222,17 @@ namespace FCAICad
             [Description("The radius of the ellipse in the y-direction.")]
             float radiusY
         )
-            => mainForm?.AddFigure(new EllipseFigure { Color = Color.FromName(color), Center = center, RadiusX = radiusX, RadiusY = radiusY });
+            => mainForm?.AddFigure(new EllipseFigure { ColorName = color, LineWidth = lineWidth, Center = center, RadiusX = radiusX, RadiusY = radiusY });
 
         [Description("Draw a free-form curve with points.")]
         public static void DrawFreeLine(
             [Description("The color of the free line.")]
             string color,
+            [Description("The line width (1 to 10) of the free line.")]
+            float lineWidth,
             [Description("Points that make up the free curve.")]
             PointF[] points
         )
-            => mainForm?.AddFigure(new FreeLineFigure { Color = Color.FromName(color), Points = points });
+            => mainForm?.AddFigure(new FreeLineFigure { ColorName = color, LineWidth = lineWidth, Points = points });
     }
 }
