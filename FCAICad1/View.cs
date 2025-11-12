@@ -55,18 +55,18 @@ namespace FCAICad
 
         class ClipboardHelper
         {
-            Metafile? metafile = null;
+            //Metafile? metafile = null;
 
-            Metafile? Metafile
-            {
-                get { return metafile; }
-                set {
-                    if (value != metafile) {
-                        metafile?.Dispose();
-                        metafile = value;
-                    }
-                }
-            }
+            //Metafile? Metafile
+            //{
+            //    get { return metafile; }
+            //    set {
+            //        if (value != metafile) {
+            //            metafile?.Dispose();
+            //            metafile = value;
+            //        }
+            //    }
+            //}
 
             public void CopyToClipboard(Model? model, Control control)
             {
@@ -85,17 +85,17 @@ namespace FCAICad
 
                 try {
                     using var bitmap = CreateBitmap(model, bounds, size);
-                    Metafile = CreateMetafile(model, control, bounds, size);
+                    //Metafile = CreateMetafile(model, control, bounds, size);
 
-                    if (Metafile?.GetHenhmetafile() != IntPtr.Zero) {
-                        var dataObject = new DataObject();
-                        dataObject.SetData(DataFormats.EnhancedMetafile, false, Metafile);
-                        dataObject.SetData(DataFormats.Bitmap, false, bitmap);
-                        Clipboard.SetDataObject(dataObject, true);
-                    } else {
+                    //if (Metafile?.GetHenhmetafile() != IntPtr.Zero) {
+                    //    var dataObject = new DataObject();
+                    //    dataObject.SetData(DataFormats.EnhancedMetafile, false, Metafile);
+                    //    dataObject.SetData(DataFormats.Bitmap, false, bitmap);
+                    //    Clipboard.SetDataObject(dataObject, true);
+                    //} else {
                         // Fallback to bitmap only if metafile copy failed
                         Clipboard.SetImage(bitmap);
-                    }
+                    //}
                 } catch (ExternalException ex) {
                     // Handle clipboard access exceptions
                     System.Diagnostics.Debug.WriteLine($"Clipboard access failed: {ex.Message}");
