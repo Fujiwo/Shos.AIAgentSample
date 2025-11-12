@@ -35,7 +35,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             Name = "View";
-            Paint += OnPaint;
             ResumeLayout(false);
         }
 
