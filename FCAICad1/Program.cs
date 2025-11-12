@@ -196,6 +196,19 @@ namespace FCAICad
         )
             => mainForm?.AddFigure(new LineFigure { ColorName = color, LineWidth = lineWidth, Start = start, End = end });
 
+        [Description("Draw a rectangle.")]
+        public static void DrawRectangle(
+            [Description("The color of the rectangle.")]
+            string color,
+            [Description("The line width (3 to 20) of the rectangle.")]
+            float lineWidth,
+            [Description("The shape of rectangle.")]
+            RectangleF shape,
+            [Description("The rectangle is filled or not.")]
+            bool isFilled
+        )
+            => mainForm?.AddFigure(new RectangleFigure { ColorName = color, LineWidth = lineWidth, Shape = shape, IsFilled = isFilled });
+
         [Description("Draw a circle.")]
         public static void DrawCircle(
             [Description("The color of the circle.")]
@@ -205,9 +218,11 @@ namespace FCAICad
             [Description("The center point of the circle.")]
             PointF center,
             [Description("The radius of the circle.")]
-            float radius
+            float radius,
+            [Description("The circle is filled or not.")]
+            bool isFilled
         )
-            => mainForm?.AddFigure(new CircleFigure { ColorName = color, LineWidth = lineWidth, Center = center, Radius = radius });
+            => mainForm?.AddFigure(new CircleFigure { ColorName = color, LineWidth = lineWidth, Center = center, Radius = radius, IsFilled = isFilled });
 
         [Description("Draw a ellipse.")]
         public static void DrawEllipse(
@@ -220,9 +235,11 @@ namespace FCAICad
             [Description("The radius of the ellipse in the x-direction.")]
             float radiusX,
             [Description("The radius of the ellipse in the y-direction.")]
-            float radiusY
+            float radiusY,
+            [Description("The ellipse is filled or not.")]
+            bool isFilled
         )
-            => mainForm?.AddFigure(new EllipseFigure { ColorName = color, LineWidth = lineWidth, Center = center, RadiusX = radiusX, RadiusY = radiusY });
+            => mainForm?.AddFigure(new EllipseFigure { ColorName = color, LineWidth = lineWidth, Center = center, RadiusX = radiusX, RadiusY = radiusY, IsFilled = isFilled });
 
         [Description("Draw a free-form curve with points.")]
         public static void DrawFreeFormCurve(
@@ -231,8 +248,10 @@ namespace FCAICad
             [Description("The line width (3 to 20) of the free-form curve.")]
             float lineWidth,
             [Description("Points that make up the free-form curve.")]
-            PointF[] points
+            PointF[] points,
+            [Description("The curve is closed or not.")]
+            bool isClosed
         )
-            => mainForm?.AddFigure(new FreeFormCurveFigure { ColorName = color, LineWidth = lineWidth, Points = points });
+            => mainForm?.AddFigure(new FreeFormCurveFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed });
     }
 }

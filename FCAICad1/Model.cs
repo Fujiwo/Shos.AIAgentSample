@@ -85,10 +85,31 @@ public class LineFigure : Figure
         =>  graphics.DrawLine(pen, Start, End);
 }
 
+public class RectangleFigure : Figure
+{
+    public required RectangleF Shape { get; init; }
+    public bool IsFilled { get; set; } = true;
+
+    public override RectangleF ShapeBounds => Shape;
+
+    public override string ToString()
+        => $"{base.ToString()}, Shape: {Shape}";
+
+    protected override void DrawShape(Graphics graphics, Pen pen)
+    {
+        if (IsFilled) {
+            using Brush brush = new SolidBrush(Color);
+            graphics.FillRectangle(brush, Shape);
+        }
+        graphics.DrawRectangle(pen, Shape);
+    }
+}
+
 public class CircleFigure : Figure
 {
     public required PointF Center { get; init; }
     public required float Radius { get; init; }
+    public bool IsFilled { get; set; } = true;
 
     public override RectangleF ShapeBounds => new RectangleF(x     : Center.X - Radius,
                                                              y     : Center.Y - Radius,
@@ -99,7 +120,13 @@ public class CircleFigure : Figure
         => $"{base.ToString()}, Center: {Center}, Radius: {Radius}";
 
     protected override void DrawShape(Graphics graphics, Pen pen)
-        => graphics.DrawEllipse(pen, Center.X - Radius, Center.Y - Radius, Radius + Radius, Radius + Radius);
+    {
+        if (IsFilled) {
+            using Brush brush = new SolidBrush(Color);
+            graphics.FillEllipse(brush, Center.X - Radius, Center.Y - Radius, Radius + Radius, Radius + Radius);
+        }
+        graphics.DrawEllipse(pen, Center.X - Radius, Center.Y - Radius, Radius + Radius, Radius + Radius);
+   }
 }
 
 public class EllipseFigure : Figure
@@ -107,6 +134,8 @@ public class EllipseFigure : Figure
     public required PointF Center { get; init; }
     public required float RadiusX { get; init; }
     public required float RadiusY { get; init; }
+
+    public bool IsFilled { get; set; } = true;
 
     public override RectangleF ShapeBounds => new RectangleF(x     : Center.X - RadiusX,
                                                              y     : Center.Y - RadiusY,
@@ -117,7 +146,13 @@ public class EllipseFigure : Figure
         => $"{base.ToString()}, Center: {Center}, RadiusX: {RadiusX}, RadiusY: {RadiusY}";
 
     protected override void DrawShape(Graphics graphics, Pen pen)
-        => graphics.DrawEllipse(pen, Center.X - RadiusX, Center.Y - RadiusY, RadiusX + RadiusX, RadiusY + RadiusY);
+    {
+        if (IsFilled) {
+            using Brush brush = new SolidBrush(Color);
+            graphics.FillEllipse(brush, Center.X - RadiusX, Center.Y - RadiusY, RadiusX + RadiusX, RadiusY + RadiusY);
+        }
+        graphics.DrawEllipse(pen, Center.X - RadiusX, Center.Y - RadiusY, RadiusX + RadiusX, RadiusY + RadiusY);
+    }
 }
 
 public class FreeFormCurveFigure : Figure
@@ -134,6 +169,8 @@ public class FreeFormCurveFigure : Figure
             value.ForEach(point => Add(point));
         }
     }
+
+    public bool IsClosed { get; set; } = false;
 
     public override RectangleF ShapeBounds {
         get {
@@ -172,7 +209,12 @@ public class FreeFormCurveFigure : Figure
         => $"{base.ToString()}, Points: {string.Join(", ", position)}";
 
     protected override void DrawShape(Graphics graphics, Pen pen)
-        => GraphicHelper.DrawBezierLine(graphics, pen, position.ToArray());
+    {
+        if (IsClosed)
+            GraphicHelper.DrawBezierPolygon(graphics, pen, position.ToArray());
+        else
+            GraphicHelper.DrawBezierLine(graphics, pen, position.ToArray());
+    }
 }
 
 public static class GraphicHelper
