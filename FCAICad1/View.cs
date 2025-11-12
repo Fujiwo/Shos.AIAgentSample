@@ -52,14 +52,44 @@ namespace FCAICad
 
             Size size = new(width: Round(bounds.Width), height: Round(bounds.Height));
 
+            Bitmap? bitmap = null;
+            Metafile? metafile = null;
+            IntPtr metafileHandle = IntPtr.Zero;
+
             try {
-                using var bitmap = CreateBitmap  (bounds, size);
-                var metafile     = CreateMetafile(bounds, size);
-                var dataObject = new DataObject();
-                dataObject.SetData(DataFormats.Bitmap, bitmap);
-                dataObject.SetData(DataFormats.EnhancedMetafile, metafile);
-                Clipboard.SetDataObject(dataObject, true);
-            } catch {
+                bitmap = CreateBitmap(bounds, size);
+                metafile = CreateMetafile(bounds, size);
+
+                // Copy the metafile handle for clipboard
+                var sourceHandle = metafile.GetHenhmetafile();
+                metafileHandle = NativeMethods.CopyEnhMetaFile(sourceHandle, IntPtr.Zero);
+
+                // Dispose the original metafile after copying the handle
+                metafile.Dispose();
+                metafile = null;
+
+                // Delete the source handle as we've copied it
+                NativeMethods.DeleteEnhMetaFile(sourceHandle);
+
+                if (metafileHandle != IntPtr.Zero) {
+                    var dataObject = new DataObject();
+                    dataObject.SetData(DataFormats.Bitmap, bitmap);
+                    dataObject.SetData(DataFormats.EnhancedMetafile, true, metafileHandle);
+                    Clipboard.SetDataObject(dataObject, true);
+                } else {
+                    // Fallback to bitmap only if metafile copy failed
+                    Clipboard.SetImage(bitmap);
+                }
+            } catch (ExternalException ex) {
+                // Handle clipboard access exceptions
+                System.Diagnostics.Debug.WriteLine($"Clipboard access failed: {ex.Message}");
+            } catch (Exception ex) {
+                // Handle other exceptions
+                System.Diagnostics.Debug.WriteLine($"Failed to copy to clipboard: {ex.Message}");
+            } finally {
+                // Clean up resources
+                bitmap?.Dispose();
+                metafile?.Dispose();
             }
 
             static int Round(float value) => (int)Math.Ceiling(value);
@@ -82,11 +112,14 @@ namespace FCAICad
             var hdc = referenceGraphics.GetHdc();
             try {
                 var metafile = new Metafile(hdc, new Rectangle(new Point(), size), MetafileFrameUnit.Pixel, EmfType.EmfPlusDual);
-                using var graphics = Graphics.FromImage(metafile);
-                graphics.Clear(Color.White);
-                graphics.TranslateTransform(-bounds.X, -bounds.Y);
-                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                Model?.ForEach(figure => figure.Draw(graphics));
+                // Draw to the metafile and dispose the graphics to finalize the metafile content
+                using (var graphics = Graphics.FromImage(metafile)) {
+                    graphics.Clear(Color.White);
+                    graphics.TranslateTransform(-bounds.X, -bounds.Y);
+                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    Model?.ForEach(figure => figure.Draw(graphics));
+                }
+                // Graphics is now disposed, metafile content is finalized
                 return metafile;
             } finally {
                 referenceGraphics.ReleaseHdc(hdc);
