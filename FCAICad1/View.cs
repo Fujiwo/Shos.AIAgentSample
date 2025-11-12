@@ -52,27 +52,39 @@ namespace FCAICad
             var width = (int)Math.Ceiling(bounds.Width);
             var height = (int)Math.Ceiling(bounds.Height);
 
-            // Create bitmap
-            using var bitmap = CreateBitmap(bounds, width, height);
+            try {
+                // Create bitmap
+                using var bitmap = CreateBitmap(bounds, width, height);
 
-            // Create metafile
-            using var metafile = CreateMetafile(bounds, width, height);
+                // Create metafile - Must NOT dispose until after clipboard operation
+                // The metafile handle must remain valid when clipboard uses it
+                var metafile = CreateMetafile(bounds, width, height);
 
-            // Copy both formats to clipboard
-            var dataObject = new DataObject();
-            dataObject.SetData(DataFormats.Bitmap, bitmap);
-            dataObject.SetData(DataFormats.EnhancedMetafile, metafile);
-            Clipboard.SetDataObject(dataObject, true);
+                // Copy both formats to clipboard
+                var dataObject = new DataObject();
+                dataObject.SetData(DataFormats.Bitmap, bitmap);
+                dataObject.SetData(DataFormats.EnhancedMetafile, metafile);
+                
+                // SetDataObject copies the data, after which the metafile can be disposed
+                Clipboard.SetDataObject(dataObject, true);
+                
+                // Now safe to dispose the metafile
+                metafile.Dispose();
+            } catch (Exception ex) {
+                MessageBox.Show($"Failed to copy to clipboard: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         Bitmap CreateBitmap(RectangleF bounds, int width, int height)
         {
             var bitmap = new Bitmap(width, height);
-            var graphics = Graphics.FromImage(bitmap);
-            graphics.Clear(Color.White);
-            graphics.TranslateTransform(-bounds.X, -bounds.Y);
-            graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            Model?.ForEach(figure => figure.Draw(graphics));
+            // Properly dispose the Graphics object to avoid resource leak
+            using (var graphics = Graphics.FromImage(bitmap)) {
+                graphics.Clear(Color.White);
+                graphics.TranslateTransform(-bounds.X, -bounds.Y);
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                Model?.ForEach(figure => figure.Draw(graphics));
+            }
             return bitmap;
         }
 
