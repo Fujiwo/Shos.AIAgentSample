@@ -2,14 +2,14 @@ using System.ComponentModel;
 
 namespace FCAICad
 {
-    internal static class Program
+    static class Program
     {
         static MainForm? mainForm;
         static MyChatAgent chatAgent = new();
 
         /// <summary> The main entry point for the application.</summary>
         [STAThread]
-        static async Task Main()
+        static void Main()
         {
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
@@ -19,7 +19,7 @@ namespace FCAICad
             mainForm.Prompted += OnPrompted;
 
             Application.Run(mainForm);
-            await chatAgent.DisposeAsync();
+            chatAgent.DisposeAsync().AsTask().Wait();
         }
 
         static async void OnPrompted(object? sender, string prompt)
