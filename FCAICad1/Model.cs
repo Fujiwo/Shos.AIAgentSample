@@ -225,6 +225,16 @@ public class CurveFigure : PointsFigure
 {
     public bool IsFilled { get; set; } = true;
 
+    public override RectangleF ShapeBounds
+    {
+        get {
+            var bounds = base.ShapeBounds;
+            const float inflateRate = 0.05f;
+            bounds.Inflate(bounds.Width * inflateRate, bounds.Height * inflateRate);
+            return bounds;
+        }
+    }
+
     protected override void DrawShape(Graphics graphics, Pen pen)
     {
         if (IsClosed) {
