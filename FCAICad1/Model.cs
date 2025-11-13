@@ -42,6 +42,7 @@ public abstract class Figure
 {
     public Color Color { get; set; } = Color.Black;
     public string ColorName { set => Color = Color.FromName(value); }
+    protected Brush Brush => new SolidBrush(Color);
 
     public float LineWidth { get; set; } = 10.0f;
 
@@ -65,7 +66,7 @@ public abstract class Figure
     public override string ToString()
         => $"{GetType().Name} (Color: {Color.Name}, LineWidth: {LineWidth})";
 
-    protected virtual void DrawShape(Graphics graphics, Pen pen) {}
+    protected virtual void DrawShape(Graphics graphics, Pen pen) { }
 }
 
 public class LineFigure : Figure
@@ -98,7 +99,7 @@ public class RectangleFigure : Figure
     protected override void DrawShape(Graphics graphics, Pen pen)
     {
         if (IsFilled) {
-            using Brush brush = new SolidBrush(Color);
+            using Brush brush = Brush;
             graphics.FillRectangle(brush, Shape);
         }
         graphics.DrawRectangle(pen, Shape);
@@ -122,7 +123,7 @@ public class CircleFigure : Figure
     protected override void DrawShape(Graphics graphics, Pen pen)
     {
         if (IsFilled) {
-            using Brush brush = new SolidBrush(Color);
+            using Brush brush = Brush;
             graphics.FillEllipse(brush, Center.X - Radius, Center.Y - Radius, Radius + Radius, Radius + Radius);
         }
         graphics.DrawEllipse(pen, Center.X - Radius, Center.Y - Radius, Radius + Radius, Radius + Radius);
@@ -148,20 +149,18 @@ public class EllipseFigure : Figure
     protected override void DrawShape(Graphics graphics, Pen pen)
     {
         if (IsFilled) {
-            using Brush brush = new SolidBrush(Color);
+            using Brush brush = Brush;
             graphics.FillEllipse(brush, Center.X - RadiusX, Center.Y - RadiusY, RadiusX + RadiusX, RadiusY + RadiusY);
         }
         graphics.DrawEllipse(pen, Center.X - RadiusX, Center.Y - RadiusY, RadiusX + RadiusX, RadiusY + RadiusY);
     }
 }
 
-public class FreeFormCurveFigure : Figure
+public abstract class PointsFigure : Figure
 {
-    const float minimumDistance = 10.0f;
-
     List<PointF> position = new List<PointF>();
 
-    public IEnumerable<PointF> Points
+    public IList<PointF> Points
     {
         get { return position; }
         set {
@@ -172,7 +171,8 @@ public class FreeFormCurveFigure : Figure
 
     public bool IsClosed { get; set; } = false;
 
-    public override RectangleF ShapeBounds {
+    public override RectangleF ShapeBounds
+    {
         get {
             if (position.Count <= 0)
                 return RectangleF.Empty;
@@ -186,34 +186,87 @@ public class FreeFormCurveFigure : Figure
                 if (point.X > maxX) maxX = point.X;
                 if (point.Y > maxY) maxY = point.Y;
             });
-            var bounds = new RectangleF(x     : minX       ,
-                                        y     : minY       ,
-                                        width : maxX - minX,
-                                        height: maxY - minY);
+            return new RectangleF(x     : minX       ,
+                                  y     : minY       ,
+                                  width : maxX - minX,
+                                  height: maxY - minY);
+        }
+    }
+
+    public virtual bool Add(PointF point)
+    {
+        position.Add(point);
+        return true;
+    }
+
+    public override string ToString()
+        => $"{base.ToString()}, Points: {string.Join(", ", position)}";
+}
+
+public class PolylineFigure : PointsFigure
+{
+    public bool IsFilled { get; set; } = true;
+
+    protected override void DrawShape(Graphics graphics, Pen pen)
+    {
+        if (IsClosed) {
+            if (IsFilled) {
+                using Brush brush = Brush;
+                graphics.FillPolygon(brush, Points.ToArray());
+            }
+            graphics.DrawPolygon(pen, Points.ToArray());
+        } else {
+            graphics.DrawLines(pen, Points.ToArray());
+        }
+    }
+}
+
+public class CurveFigure : PointsFigure
+{
+    public bool IsFilled { get; set; } = true;
+
+    protected override void DrawShape(Graphics graphics, Pen pen)
+    {
+        if (IsClosed) {
+            if (IsFilled) {
+                using Brush brush = Brush;
+                graphics.FillClosedCurve(brush, Points.ToArray());
+            }
+            graphics.DrawClosedCurve(pen, Points.ToArray());
+        } else {
+            graphics.DrawCurve(pen, Points.ToArray());
+        }
+    }
+}
+
+public class FreeFormCurveFigure : PointsFigure
+{
+    const float minimumDistance = 10.0f;
+
+    public override RectangleF ShapeBounds {
+        get {
+            var bounds = base.ShapeBounds;
             const float inflateRate = 0.05f;
             bounds.Inflate(bounds.Width * inflateRate, bounds.Height * inflateRate);
             return bounds;
         }
     }
 
-    public bool Add(PointF point)
+    public override bool Add(PointF point)
     {
-        if (point.IsValidForBezier(position, minimumDistance)) {
-            position.Add(point);
+        if (point.IsValidForBezier(Points, minimumDistance)) {
+            Points.Add(point);
             return true;
         }
         return false;
     }
 
-    public override string ToString()
-        => $"{base.ToString()}, Points: {string.Join(", ", position)}";
-
     protected override void DrawShape(Graphics graphics, Pen pen)
     {
         if (IsClosed)
-            GraphicHelper.DrawBezierPolygon(graphics, pen, position.ToArray());
+            GraphicHelper.DrawBezierPolygon(graphics, pen, Points);
         else
-            GraphicHelper.DrawBezierLine(graphics, pen, position.ToArray());
+            GraphicHelper.DrawBezierLine(graphics, pen, Points);
     }
 }
 

@@ -216,6 +216,36 @@ static class Toolbox
     )
         => MainForm?.AddFigure(new EllipseFigure { ColorName = color, LineWidth = lineWidth, Center = center, RadiusX = radiusX, RadiusY = radiusY, IsFilled = isFilled });
 
+    [Description("Draw a polyline or polygon with points.")]
+    public static void DrawPolylineOrPolygon(
+        [Description("The color of the polyline or polygon.")]
+            string color,
+        [Description("The line width (3 to 30) of the polyline or polygon.")]
+            float lineWidth,
+        [Description("Points that make up the polyline or polygon.")]
+            PointF[] points,
+        [Description("The polyline or polygon is closed or not.")]
+            bool isClosed,
+        [Description("The polyline or polygon is filled or not.")]
+            bool isFilled
+    )
+        => MainForm?.AddFigure(new PolylineFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed, IsFilled = isFilled });
+
+    [Description("Draw a curve with points.")]
+    public static void DrawCurve(
+        [Description("The color of the curve.")]
+            string color,
+        [Description("The line width (3 to 30) of the curve.")]
+            float lineWidth,
+        [Description("Points that make up the curve.")]
+            PointF[] points,
+        [Description("The curve is closed or not.")]
+            bool isClosed,
+        [Description("The curve is filled or not.")]
+            bool isFilled
+    )
+        => MainForm?.AddFigure(new CurveFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed, IsFilled = isFilled });
+
     [Description("Draw a free-form curve with points.")]
     public static void DrawFreeFormCurve(
         [Description("The color of the free-form curve.")]
