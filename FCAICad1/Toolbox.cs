@@ -162,7 +162,7 @@ static class Toolbox
     public static void DrawLine(
         [Description("The color of the line.")]
             string color,
-        [Description("The line width (10 to 100) of the line.")]
+        [Description("The line width (3 to 30) of the line.")]
             float lineWidth,
         [Description("The starting point of the line.")]
             PointF start,
@@ -175,7 +175,7 @@ static class Toolbox
     public static void DrawRectangle(
         [Description("The color of the rectangle.")]
             string color,
-        [Description("The line width (10 to 100) of the rectangle.")]
+        [Description("The line width (3 to 30) of the rectangle.")]
             float lineWidth,
         [Description("The shape of rectangle.")]
             RectangleF shape,
@@ -188,7 +188,7 @@ static class Toolbox
     public static void DrawCircle(
         [Description("The color of the circle.")]
             string color,
-        [Description("The line width (10 to 100) of the circle.")]
+        [Description("The line width (3 to 30) of the circle.")]
             float lineWidth,
         [Description("The center point of the circle.")]
             PointF center,
@@ -203,7 +203,7 @@ static class Toolbox
     public static void DrawEllipse(
         [Description("The color of the ellipse.")]
             string color,
-        [Description("The line width (10 to 100) of the ellipse.")]
+        [Description("The line width (3 to 30) of the ellipse.")]
             float lineWidth,
         [Description("The center point of the ellipse.")]
             PointF center,
@@ -220,7 +220,7 @@ static class Toolbox
     public static void DrawFreeFormCurve(
         [Description("The color of the free-form curve.")]
             string color,
-        [Description("The line width (10 to 100) of the free-form curve.")]
+        [Description("The line width (3 to 30) of the free-form curve.")]
             float lineWidth,
         [Description("Points that make up the free-form curve.")]
             PointF[] points,
