@@ -205,10 +205,10 @@ namespace FCAIChat.AIAgents
             static IClientTransport GetBraveSearchToolClientTransport()
             {
                 return new StdioClientTransport(new() {
-                            Name = "braveSearch",
-                            Command = "npx",
-                            Arguments = ["-y", "@modelcontextprotocol/server-brave-search"],
-                            EnvironmentVariables = new Dictionary<string, string> {
+                            Name                 = "braveSearch",
+                            Command              = "npx",
+                            Arguments            = ["-y", "@modelcontextprotocol/server-brave-search"],
+                            EnvironmentVariables = new Dictionary<string, string?> {
                                 ["BRAVE_API_KEY"] = GetKey()
                             }
                        });

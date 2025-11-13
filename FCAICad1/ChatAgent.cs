@@ -254,6 +254,7 @@ public class MyChatAgent : ChatAgent
                 AIFunctionFactory.Create(Toolbox.GetAvailableColors   ),
                 AIFunctionFactory.Create(Toolbox.ClearAll             ),
                 AIFunctionFactory.Create(Toolbox.DrawLine             ),
+                AIFunctionFactory.Create(Toolbox.DrawRoundedRectangle ),
                 AIFunctionFactory.Create(Toolbox.DrawRectangle        ),
                 AIFunctionFactory.Create(Toolbox.DrawCircle           ),
                 AIFunctionFactory.Create(Toolbox.DrawEllipse          ),

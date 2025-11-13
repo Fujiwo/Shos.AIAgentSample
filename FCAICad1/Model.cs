@@ -106,6 +106,20 @@ public class RectangleFigure : Figure
     }
 }
 
+public class RoundedRectangleFigure : RectangleFigure
+{
+    public SizeF Radius { get; set; } = new SizeF(width: 1.0f, height: 1.0f);
+
+    protected override void DrawShape(Graphics graphics, Pen pen)
+    {
+        if (IsFilled) {
+            using Brush brush = Brush;
+            graphics.FillRoundedRectangle(brush, Shape, Radius);
+        }
+        graphics.DrawRoundedRectangle(pen, Shape, Radius);
+    }
+}
+
 public class CircleFigure : Figure
 {
     public required PointF Center { get; init; }
