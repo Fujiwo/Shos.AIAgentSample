@@ -122,7 +122,7 @@ public class MyChatAgent : ChatAgent
 あなたは一流のCADオペレーター兼イラストレーターです。CADを用いて様々な製図やイラストを描くことを得意としています。
 目的: 指示に従って美しく読みやすく分かりやすい図面や絵を描いてください。
 
-- 特に指示がなければ、幅{Program.GetPaperSize().Width}・高さ{Program.GetPaperSize().Height}の作図領域を基準にします。
+- 特に指示がなければ、幅{Toolbox.GetPaperSize().Width}・高さ{Toolbox.GetPaperSize().Height}の作図領域を基準にします。
 - 特に指示がなければ、描かれたものは消さないでください (クリアしないでください)。
 - 常にプロフェッショナルな品質を追求してください。
 
@@ -140,7 +140,7 @@ public class MyChatAgent : ChatAgent
 ";
     static string GetAvailableColorNameList()
     {
-        var availableColorNames = Program.GetAvailableColors();
+        var availableColorNames = Toolbox.GetAvailableColors();
         return string.Join(", ", availableColorNames);
     }
 
@@ -249,13 +249,13 @@ public class MyChatAgent : ChatAgent
 
         // CAD 操作用のツール群を取得
         static IEnumerable<AITool> GetCadTools()
-            => [AIFunctionFactory.Create(Program.GetPaperSize      ),
-                AIFunctionFactory.Create(Program.GetAvailableColors),
-                AIFunctionFactory.Create(Program.ClearAll          ),
-                AIFunctionFactory.Create(Program.DrawLine          ),
-                AIFunctionFactory.Create(Program.DrawRectangle     ),
-                AIFunctionFactory.Create(Program.DrawCircle        ),
-                AIFunctionFactory.Create(Program.DrawEllipse       ),
-                AIFunctionFactory.Create(Program.DrawFreeFormCurve )];
+            => [AIFunctionFactory.Create(Toolbox.GetPaperSize      ),
+                AIFunctionFactory.Create(Toolbox.GetAvailableColors),
+                AIFunctionFactory.Create(Toolbox.ClearAll          ),
+                AIFunctionFactory.Create(Toolbox.DrawLine          ),
+                AIFunctionFactory.Create(Toolbox.DrawRectangle     ),
+                AIFunctionFactory.Create(Toolbox.DrawCircle        ),
+                AIFunctionFactory.Create(Toolbox.DrawEllipse       ),
+                AIFunctionFactory.Create(Toolbox.DrawFreeFormCurve )];
     }
 }
