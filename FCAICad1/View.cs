@@ -22,6 +22,9 @@ namespace FCAICad
         {
             using var graphics = CreateGraphics();
             figure.Draw(graphics);
+#if DEBUG
+            DrawBounds(graphics, figure);
+#endif // DEBUG
         }
 
         public void CopyToClipboard() => clipboardHelper.CopyToClipboard(Model, this);
@@ -43,13 +46,21 @@ namespace FCAICad
         }
 
 #if DEBUG
+        static readonly Color boundsColor = Color.LightGray;
+
         void DrawBounds(Graphics graphics)
         {
             if (Model is null)
                 return;
-            using var pen = new Pen(Color.LightGray);
+            using var pen = new Pen(boundsColor);
             Model?.ForEach(figure => graphics.DrawRectangle(pen, figure.Bounds));
             graphics.DrawRectangle(pen, Model.Bounds);
+        }
+
+        void DrawBounds(Graphics graphics, Figure figure)
+        {
+            using var pen = new Pen(boundsColor);
+            graphics.DrawRectangle(pen, figure.Bounds);
         }
 #endif // DEBUG
 

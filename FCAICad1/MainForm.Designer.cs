@@ -35,9 +35,9 @@ namespace FCAICad
             // 
             view.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             view.BackColor = Color.White;
-            view.Location = new Point(-5, -1);
+            view.Location = new Point(0, 0);
             view.Name = "view";
-            view.Size = new Size(2373, 1133);
+            view.Size = new Size(2363, 1134);
             view.TabIndex = 0;
             // 
             // promptTextBox
@@ -54,6 +54,7 @@ namespace FCAICad
             // promptButton
             // 
             promptButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            promptButton.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 128);
             promptButton.Location = new Point(2158, 1140);
             promptButton.Name = "promptButton";
             promptButton.Size = new Size(102, 150);
@@ -72,15 +73,16 @@ namespace FCAICad
             responseTextBox.Name = "responseTextBox";
             responseTextBox.ReadOnly = true;
             responseTextBox.Size = new Size(2363, 200);
-            responseTextBox.TabIndex = 3;
+            responseTextBox.TabIndex = 4;
             // 
             // clearButton
             // 
             clearButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            clearButton.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 128);
             clearButton.Location = new Point(2261, 1140);
             clearButton.Name = "clearButton";
             clearButton.Size = new Size(102, 150);
-            clearButton.TabIndex = 4;
+            clearButton.TabIndex = 3;
             clearButton.Text = "🆑";
             clearButton.UseVisualStyleBackColor = true;
             clearButton.Click += OnClearButtonClick;
@@ -90,11 +92,11 @@ namespace FCAICad
             AutoScaleDimensions = new SizeF(20F, 48F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(2364, 1497);
+            Controls.Add(view);
+            Controls.Add(promptTextBox);
+            Controls.Add(promptButton);
             Controls.Add(clearButton);
             Controls.Add(responseTextBox);
-            Controls.Add(promptButton);
-            Controls.Add(promptTextBox);
-            Controls.Add(view);
             Name = "MainForm";
             Text = "FCAICad";
             ResumeLayout(false);
@@ -106,7 +108,7 @@ namespace FCAICad
         View view;
         TextBox promptTextBox;
         Button promptButton;
+        Button clearButton;
         TextBox responseTextBox;
-        private Button clearButton;
     }
 }
