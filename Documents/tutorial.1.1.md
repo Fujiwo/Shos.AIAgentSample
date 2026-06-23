@@ -77,10 +77,10 @@ dotnet add package OllamaSharp
 //
 // 【前提条件】
 // - Ollama がインストールされ、http://localhost:11434 で起動していること
-// - Ollama でモデル "gpt-oss:20b-cloud" が利用可能であること
+// - Ollama でモデル "minimax-m3:cloud" が利用可能であること
 //
 // 【実行方法】
-// dotnet run --project FCAIAgent
+// dotnet run --project FCAIAgent1
 //
 // 【動作説明】
 // 1. Ollama クライアントを生成
@@ -101,15 +101,13 @@ using IChatClient chatClient = My.GetOllamaClient();
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
     chatClient,
-    new ChatClientAgentOptions {
-        Name         = My.AgentName   ,
-        Instructions = My.Instructions
-    }
+    instructions: My.Instructions,
+    name        : My.AgentName
 );
 
 try {
     // エージェントを実行して結果を表示する
-    AgentRunResponse response = await agent.RunAsync(My.UserPrompt);
+    AgentResponse response = await agent.RunAsync(My.UserPrompt);
     Console.WriteLine(response.Text);
 } catch (Exception ex) {
     Console.WriteLine($"Error running agent: {ex.Message}");
@@ -132,7 +130,7 @@ static class My
         // 使用するモデルを指定
         // クラウドベースのモデルを使用(実行速度の向上のため)
         // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
-        ollama.SelectedModel = "gpt-oss:20b-cloud";
+        ollama.SelectedModel = "minimax-m3:cloud";
 
         // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
         IChatClient chatClient = ollama;

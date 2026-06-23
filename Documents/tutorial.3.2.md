@@ -18,7 +18,7 @@
 //
 // 【前提条件】
 // - Ollama がインストールされ、http://localhost:11434 で起動していること
-// - Ollama でモデル "gpt-oss:20b-cloud" が利用可能であること
+// - Ollama でモデル "minimax-m3:cloud" が利用可能であること
 // - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
 // 【実行方法】
@@ -28,7 +28,7 @@
 // 1. 使用するチャットクライアントを作成
 // 2. 複数の MCP サーバー (Time, Weather, FileSystem) へ接続してツールを取得
 // 3. 取得したツールを ChatClientAgent に渡してエージェントを作成
-// 4. AgentThread を使った複数ターン対話ループを実行
+// 4. AgentSession を使った複数ターン対話ループを実行
 // 5. 終了時に全ての MCP クライアントを破棄
 //
 // 【注意】
@@ -70,8 +70,8 @@ AIAgent agent = new ChatClientAgent(
     }
 );
 
-// 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
-AgentThread thread = agent.GetNewThread();
+// 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
+AgentSession thread = agent.GetNewThread();
 
 // システムメッセージを作成して最初に送信
 ChatMessage systemMessage = new(ChatRole.System, My.SystemPrompt);
@@ -111,7 +111,7 @@ static class My
         // 使用するモデルを指定
         // クラウドベースのモデルを使用(実行速度の向上のため)
         // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
-        ollama.SelectedModel = "gpt-oss:20b-cloud";
+        ollama.SelectedModel = "minimax-m3:cloud";
 
         // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
         IChatClient chatClient = ollama;
@@ -194,7 +194,7 @@ static class My
     }
 
     // エージェントに ChatMessage を投げて応答を取得
-    public static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentThread? thread = null)
+    public static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentSession? thread = null)
     {
         try {
             var response = await agent.RunAsync(chatMessage, thread);

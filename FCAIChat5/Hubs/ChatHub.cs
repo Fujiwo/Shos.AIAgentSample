@@ -3,6 +3,7 @@
     using FCAIChat.AIAgents;
     using FCAIChat.Data;
     using FCAIChat.Services;
+//    using Microsoft.AspNetCore.Session;
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.EntityFrameworkCore;
     using System.Collections.Concurrent;
@@ -12,13 +13,11 @@
     {
         readonly MessagesDbContext dbContext;
         readonly IThreadStore threadStore;
+        
         static readonly ConcurrentDictionary<string, MyChatAgent> chatAgents = new();
 
         public ChatHub(MessagesDbContext dbContext, IThreadStore threadStore)
-        {
-            this.dbContext = dbContext;
-            this.threadStore = threadStore;
-        }
+            => (this.dbContext, this.threadStore) = (dbContext, threadStore);
 
         public async Task Clear()
         {
@@ -34,7 +33,7 @@
         public async Task SendMessage(string user, string prompt)
         {
             var connectionId = Context.ConnectionId;
-            var chatAgent = await GetOrCreateChatAgentAsync(connectionId);
+            var chatAgent = await GetOrCreateChatAgentAsync(connectionId);  
 
             DateTime createdAt = GetDateTime();
             var message = new Message() { UserName = user, Content = prompt, CreatedAt = createdAt };
@@ -83,10 +82,11 @@
 
             var agent = new MyChatAgent();
             // Try to restore thread from store
-            var serializedThread = await threadStore.GetThreadAsync(connectionId);
-            if (serializedThread.HasValue) {
+            var serializedSession = await threadStore.GetThreadAsync(connectionId);
+            if (serializedSession.HasValue) {
                 try {
-                    agent.RestoreThread(serializedThread.Value);
+                    await agent.DeserializeSessionAsync(serializedSession);
+                    //agent.RestoreThread(serializedThread.Value);
                 } catch (Exception ex) {
                     // Log the exception - thread restoration failed, will create new thread
                     Debug.WriteLine($"Thread restoration failed for connection {connectionId}: {ex.Message}");
@@ -98,9 +98,10 @@
 
         private async Task SaveThreadAsync(string connectionId, MyChatAgent chatAgent)
         {
-            if (chatAgent.Thread is not null && chatAgent.Agent is not null) {
-                var serializedThread = chatAgent.Thread.Serialize();
-                await threadStore.SaveThreadAsync(connectionId, serializedThread);
+            if (chatAgent.Session is not null && chatAgent.Agent is not null) {
+                var serializedSession = await chatAgent.SerializeSessionAsync();
+                if (serializedSession.HasValue)
+                    await threadStore.SaveThreadAsync(connectionId, serializedSession.Value);
             }
         }
 

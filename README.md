@@ -257,7 +257,7 @@ dotnet run
 |------------|------------|---------|--------------|
 | **FCAIAgent1** | ステップ 1 | ・Ollama を使用したローカル LLM との通信<br>・シンプルな1回のプロンプトと応答 | [1.1](./Documents/tutorial.1.1.md) |
 | **FCAIAgent2** | ステップ 2 | ・Ollama と Azure OpenAI の両方に対応<br>・チャットクライアントの切り替え機能 | [1.2](./Documents/tutorial.1.2.md) |
-| **FCAIAgent3** | ステップ 3 | ・会話履歴を保持したチャット機能<br>・AgentThread を使用した対話セッション管理 | [1.3](./Documents/tutorial.1.3.md) |
+| **FCAIAgent3** | ステップ 3 | ・会話履歴を保持したチャット機能<br>・AgentSession を使用した対話セッション管理 | [1.3](./Documents/tutorial.1.3.md) |
 | **FCAIAgent4** | ステップ 4 | ・STDIO トランスポートを使用した MCP サーバー接続<br>・外部ツール（時刻取得など）の利用 | [3.1](./Documents/tutorial.3.1.md) |
 | **FCAIAgent5** | ステップ 5 | ・複数の MCP サーバー（時刻、天気、ファイルシステム）の同時利用<br>・より実践的なツール統合の例 | [3.2](./Documents/tutorial.3.2.md) |
 | **FCAIAgent** | 最終形態 | FCAIAgent5 と同等の実装 | - |
@@ -380,7 +380,7 @@ FCAICad1 では、以下のツール（関数）を AI エージェントに提�
 - **LLM (Large Language Model)**: 大規模言語モデル。自然言語を理解し生成する AI モデル
 - **Microsoft Agent Framework**: Microsoft が提供する AI エージェント開発用のフレームワーク（プレビュー版）
 - **IChatClient**: .NET の AI 拡張における、チャット機能を提供する標準インターフェース
-- **AgentThread**: 複数ターンの対話を管理するためのオブジェクト
+- **AgentSession**: 複数ターンの対話を管理するためのオブジェクト
 </details>
 
 <details>

@@ -33,8 +33,8 @@ public abstract class ChatAgent : IAsyncDisposable
 
     // AIAgent を公開してスレッドのシリアライズに使用
     public AIAgent?           Agent        { get; private set; }
-    // 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
-    public AgentThread?       Thread       { get; set; } = null;
+    // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
+    public AgentSession?      Session       { get; set; } = null;
     // エージェント名と指示
     public abstract string    Name         { get; }
     protected abstract string Instructions { get; }
@@ -75,7 +75,7 @@ public abstract class ChatAgent : IAsyncDisposable
         this.mcpClients = mcpClients;
 
         Agent = CreateAgent(tools);
-        Thread = Agent.GetNewThread();
+        Session = await Agent.CreateSessionAsync();
 
         // システムメッセージを最初に送信 (only for new threads)
         await SendSystemMessageAsync();
@@ -83,14 +83,13 @@ public abstract class ChatAgent : IAsyncDisposable
         isFirst = false;
 
         AIAgent CreateAgent(IEnumerable<AITool> tools)
-        {
-            var chatClientAgentOptions = new ChatClientAgentOptions { Name = Name, Instructions = Instructions };
-            if (tools.Any())
-                // ツールをエージェントに渡す
-                chatClientAgentOptions.ChatOptions = new ChatOptions { Tools = tools.ToList() };
-
-            return new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
-        }
+                => new ChatClientAgent(
+                    chatClient  : GetChatClient(),
+                    instructions: Instructions,
+                    name        : Name,
+                    description : null,
+                    tools       : tools.Any() ? tools.ToList() : null
+                );
 
         // システムメッセージを作成して送信
         async Task SendSystemMessageAsync() => await RunAgentAsync(new (ChatRole.System, SystemPrompt));
@@ -103,7 +102,7 @@ public abstract class ChatAgent : IAsyncDisposable
             return string.Empty;
 
         try {
-            var response = await Agent.RunAsync(chatMessage, Thread);
+            var response = await Agent.RunAsync(chatMessage, Session);
             return response?.Text ?? string.Empty;
         } catch (Exception ex) {
             Debug.WriteLine($"Error running agent: {ex.Message}");
@@ -199,7 +198,7 @@ public class MyChatAgent : ChatAgent
         // 使用するモデルを指定
         // クラウドベースのモデルを使用(実行速度の向上のため)
         // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
-        ollama.SelectedModel = "gpt-oss:20b-cloud";
+        ollama.SelectedModel = "minimax-m3:cloud";
 
         // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
         IChatClient chatClient = ollama;

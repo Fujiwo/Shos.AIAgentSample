@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace FCAIChat.Services;
 
-/// <summary>Interface for storing and retrieving AgentThread data</summary>
+/// <summary>Interface for storing and retrieving AgentSession data</summary>
 public interface IThreadStore
 {
     /// <summary>Saves a serialized thread for a specific connection</summary>

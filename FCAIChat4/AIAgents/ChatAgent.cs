@@ -13,6 +13,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 // MCP クライアントとツールを利用するための名前空間
 using ModelContextProtocol.Client;
+
 // Debug.WriteLine を使うための名前空間
 using System.Diagnostics;
 
@@ -22,8 +23,8 @@ namespace FCAIChat.AIAgents
     {
         AIAgent?               agent      = null;
         IEnumerable<McpClient> mcpClients = [];
-        // 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
-        AgentThread?           thread     = null;
+        // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
+        AgentSession?          session     = null;
         bool                   isFirst    = true;
 
         // エージェント名と指示
@@ -65,7 +66,7 @@ namespace FCAIChat.AIAgents
             this.mcpClients = mcpClients;
 
             agent = CreateAgent(tools);
-            thread = agent.GetNewThread();
+            session = await agent.CreateSessionAsync();
 
             // システムメッセージを最初に送信
             await SendSystemMessageAsync();
@@ -73,14 +74,13 @@ namespace FCAIChat.AIAgents
             isFirst = false;
 
             AIAgent CreateAgent(IEnumerable<McpClientTool> tools)
-            {
-                var chatClientAgentOptions = new ChatClientAgentOptions { Name = Name, Instructions = Instructions };
-                if (tools.Any())
-                    // ツールをエージェントに渡す
-                    chatClientAgentOptions.ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() };
-
-                return new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
-            }
+                => new ChatClientAgent(
+                    chatClient  : GetChatClient(),
+                    instructions: Instructions,
+                    name        : Name,
+                    description : null,
+                    tools       : tools.Any() ? tools.Cast<AITool>().ToList() : null
+                );
 
             // システムメッセージを作成して送信
             async Task SendSystemMessageAsync() => await RunAgentAsync(new(ChatRole.System, SystemPrompt));
@@ -95,7 +95,7 @@ namespace FCAIChat.AIAgents
                 return string.Empty;
 
             try {
-                var response = await agent.RunAsync(chatMessage, thread);
+                var response = await agent.RunAsync(chatMessage, session);
                 return response?.Text ?? string.Empty;
             } catch (Exception ex) {
                 Debug.WriteLine($"Error running agent: {ex.Message}");

@@ -214,7 +214,7 @@ macOS では以下の点が異なります:
 ```csharp{4,7}
 // 重要な行（4行目と7行目）をハイライト
 var client = new OllamaApiClient(uri);
-client.SelectedModel = "gpt-oss:20b-cloud";
+client.SelectedModel = "minimax-m3:cloud";
 
 IChatClient chatClient = client;
 chatClient = chatClient.AsBuilder()

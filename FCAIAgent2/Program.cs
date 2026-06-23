@@ -4,7 +4,7 @@
 //
 // 【前提条件】
 // - Ollama がインストールされ、http://localhost:11434 で起動していること
-// - Ollama でモデル "gpt-oss:20b-cloud" が利用可能であること
+// - Ollama でモデル "minimax-m3:cloud" が利用可能であること
 // - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
 // 【実行方法】
@@ -37,16 +37,14 @@ using IChatClient       chatClient     = My.GetChatClient(chatClientType);
 
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
-    chatClient,
-    new ChatClientAgentOptions {
-        Name         = My.AgentName   ,
-        Instructions = My.Instructions
-    }
+    chatClient                   ,
+    instructions: My.Instructions,
+    name        : My.AgentName
 );
 
 try {
     // エージェントを実行して結果を表示する
-    AgentRunResponse response = await agent.RunAsync(My.UserPrompt);
+    AgentResponse response = await agent.RunAsync(My.UserPrompt);
     Console.WriteLine(response.Text);
 } catch (Exception ex) {
     Console.WriteLine($"Error running agent: {ex.Message}");
@@ -69,7 +67,7 @@ static class My
         // 使用するモデルを指定
         // クラウドベースのモデルを使用(実行速度の向上のため)
         // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
-        ollama.SelectedModel = "gpt-oss:20b-cloud";
+        ollama.SelectedModel = "minimax-m3:cloud";
 
         // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
         IChatClient chatClient = ollama;

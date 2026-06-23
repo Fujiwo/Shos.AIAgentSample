@@ -34,14 +34,14 @@ FCAIAgent1 は、Microsoft.Agents.AI フレームワークと OllamaSharp を使
 
 2. **モデルの利用不可** (行 38)
    ```csharp
-   ollama.SelectedModel = "gpt-oss:20b-cloud";
+   ollama.SelectedModel = "minimax-m3:cloud";
    ```
    - 指定したモデルがダウンロードされていない場合
    - モデル名が誤っている場合
 
 3. **エージェント実行時のエラー** (行 29)
    ```csharp
-   AgentRunResponse response = await agent.RunAsync(userPrompt);
+   AgentResponse response = await agent.RunAsync(userPrompt);
    ```
    - サーバーからのタイムアウト
    - プロンプト処理中のエラー
@@ -83,7 +83,7 @@ try
 
     // エージェントを実行して結果を表示する
     Console.WriteLine($"\nプロンプト: {userPrompt}\n");
-    AgentRunResponse response = await agent.RunAsync(userPrompt);
+    AgentResponse response = await agent.RunAsync(userPrompt);
     Console.WriteLine("応答:");
     Console.WriteLine(response.Text);
 }
@@ -248,7 +248,7 @@ Visual Studio の場合:
 
 **ハードコードされている値:**
 - Ollama サーバーの URI: `"http://localhost:11434"` (行 35)
-- モデル名: `"gpt-oss:20b-cloud"` (行 38)
+- モデル名: `"minimax-m3:cloud"` (行 38)
 - エージェント名: `"AIエージェント"` (行 11)
 - 指示: `"あなたはAIエージェントです"` (行 12)
 - プロンプト: `"「AIエージェント」とはどのようなものですか?"` (行 14)
@@ -261,7 +261,7 @@ Visual Studio の場合:
 {
   "Ollama": {
     "BaseUri": "http://localhost:11434",
-    "Model": "gpt-oss:20b-cloud",
+    "Model": "minimax-m3:cloud",
     "Timeout": 60
   },
   "Agent": {
@@ -312,7 +312,7 @@ IChatClient chatClient = GetOllamaClient(configuration);
 static IChatClient GetOllamaClient(IConfiguration configuration)
 {
     string baseUri = configuration["Ollama:BaseUri"] ?? "http://localhost:11434";
-    string model = configuration["Ollama:Model"] ?? "gpt-oss:20b-cloud";
+    string model = configuration["Ollama:Model"] ?? "minimax-m3:cloud";
     
     var uri    = new Uri(baseUri);
     var ollama = new OllamaApiClient(uri);
@@ -365,7 +365,7 @@ try
 
     logger.LogInformation("プロンプトを送信中: {Prompt}", userPrompt);
     var startTime = DateTime.UtcNow;
-    AgentRunResponse response = await agent.RunAsync(userPrompt);
+    AgentResponse response = await agent.RunAsync(userPrompt);
     var duration = DateTime.UtcNow - startTime;
     
     logger.LogInformation("応答を受信しました (処理時間: {Duration}ms)", duration.TotalMilliseconds);
@@ -409,7 +409,7 @@ static IChatClient GetOllamaClient()
     };
     
     var ollama = new OllamaApiClient(uri, httpClient);
-    ollama.SelectedModel = "gpt-oss:20b-cloud";
+    ollama.SelectedModel = "minimax-m3:cloud";
     
     // ... 残りの処理
 }
@@ -728,12 +728,12 @@ public record AgentConfiguration(
 
 **問題点:**
 1. 「クラウドのもの」という表現が誤解を招く
-   - "gpt-oss:20b-cloud" の "cloud" は単にモデル名の一部であり、クラウドサービスを指していない
+   - "minimax-m3:cloud" の "cloud" は単にモデル名の一部であり、クラウドサービスを指していない
    - Ollama は常にローカルで実行される（すべてのモデルがローカルLLM）
    - この表現により、クラウドAPIを使用していると誤解される可能性がある
 
 2. モデル名の一般性の問題
-   - "gpt-oss:20b-cloud" は特定のカスタムモデルで、一般ユーザーが利用できない可能性があります
+   - "minimax-m3:cloud" は特定のカスタムモデルで、一般ユーザーが利用できない可能性があります
    - "gemma3:latest" も正確ではない（正しくは "gemma:7b" や "gemma2:9b" など）
 
 **修正案:**
@@ -829,7 +829,7 @@ const string userPrompt = "「AIエージェント」とはどのようなもの
 ### 8.2 【注意】モデル名の検証
 
 **問題の可能性:**
-`"gpt-oss:20b-cloud"` というモデル名が実際に存在するか、また一般的に利用可能かどうかは不明です。
+`"minimax-m3:cloud"` というモデル名が実際に存在するか、また一般的に利用可能かどうかは不明です。
 
 **重要な注意点:**
 - Ollama のモデル名は通常 `<model>:<size>` の形式（例: `llama3:8b`, `gemma:7b`）
@@ -955,7 +955,7 @@ public partial class Program
             }
         );
         
-        AgentRunResponse response = await agent.RunAsync(prompt);
+        AgentResponse response = await agent.RunAsync(prompt);
         return response.Text;
     }
     
@@ -1003,7 +1003,7 @@ public class ProgramTests
 ```xml
 <PropertyGroup>
   <OutputType>Exe</OutputType>
-  <TargetFramework>net9.0</TargetFramework>
+  <TargetFramework>net10.0</TargetFramework>
   <ImplicitUsings>enable</ImplicitUsings>
   <Nullable>enable</Nullable>
 </PropertyGroup>
@@ -1023,7 +1023,7 @@ public class ProgramTests
 ```xml
 <PropertyGroup>
   <OutputType>Exe</OutputType>
-  <TargetFramework>net9.0</TargetFramework>
+  <TargetFramework>net10.0</TargetFramework>
   <ImplicitUsings>enable</ImplicitUsings>
   <Nullable>enable</Nullable>
   
@@ -1052,8 +1052,8 @@ public class ProgramTests
 
 **現在のパッケージ:**
 ```xml
-<PackageReference Include="Microsoft.Agents.AI" Version="1.0.0-preview.251007.1" />
-<PackageReference Include="OllamaSharp" Version="5.4.7" />
+<PackageReference Include="Microsoft.Agents.AI" Version="1.10.0" />
+<PackageReference Include="OllamaSharp" Version="5.4.25" />
 ```
 
 **評価:**

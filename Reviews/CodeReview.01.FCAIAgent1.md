@@ -54,7 +54,7 @@ try
     );
 
     // エージェントを実行して結果を表示する
-    AgentRunResponse response = await agent.RunAsync(userPrompt);
+    AgentResponse response = await agent.RunAsync(userPrompt);
     Console.WriteLine(response.Text);
 }
 catch (HttpRequestException ex)
@@ -109,7 +109,7 @@ var configuration = new ConfigurationBuilder()
     .Build();
 
 string ollamaUri = configuration["Ollama:Uri"] ?? "http://localhost:11434";
-string modelName = configuration["Ollama:Model"] ?? "gpt-oss:20b-cloud";
+string modelName = configuration["Ollama:Model"] ?? "minimax-m3:cloud";
 ```
 
 ### 2.2 非同期処理の一貫性
@@ -145,7 +145,7 @@ var logger = loggerFactory.CreateLogger<Program>();
 
 logger.LogInformation("AI エージェントを初期化しています...");
 logger.LogInformation("プロンプト: {Prompt}", userPrompt);
-AgentRunResponse response = await agent.RunAsync(userPrompt);
+AgentResponse response = await agent.RunAsync(userPrompt);
 logger.LogInformation("応答を受信しました");
 Console.WriteLine(response.Text);
 ```
@@ -208,7 +208,7 @@ static IChatClient GetOllamaClient()
 
 1. **前提条件の明記:**
    - Ollama サーバーが http://localhost:11434 で起動している必要がある
-   - 指定したモデル（gpt-oss:20b-cloud）が利用可能である必要がある
+   - 指定したモデル（minimax-m3:cloud）が利用可能である必要がある
 
 2. **セットアップ手順:**
    - Ollama のインストール方法
@@ -233,8 +233,8 @@ README.md ファイルを作成するか、ファイル冒頭のコメントに�
 //
 // 【前提条件】
 // - Ollama がインストールされ、http://localhost:11434 で起動していること
-// - モデル "gpt-oss:20b-cloud" がダウンロード済みであること
-//   （コマンド: ollama pull gpt-oss:20b-cloud）
+// - モデル "minimax-m3:cloud" がダウンロード済みであること
+//   （コマンド: ollama pull minimax-m3:cloud）
 //
 // 【実行方法】
 // dotnet run --project FCAIAgent1
@@ -288,7 +288,7 @@ public class AIAgentRunner
             }
         );
 
-        AgentRunResponse response = await agent.RunAsync(prompt);
+        AgentResponse response = await agent.RunAsync(prompt);
         return response.Text;
     }
 }
@@ -367,7 +367,7 @@ AIAgent agent = new ChatClientAgent(/*...*/);
 - ⚠️ IChatClient への変換（行 41）はライブラリのバージョンに依存する可能性がある
 
 **注意点:**
-行 38 のコメントで「gpt-oss:20b-cloud」を「クラウドのもの」と表現していますが、これは実際には Ollama に登録されたモデル名であり、クラウドサービスを指しているわけではない可能性があります。モデルの実体が何であるかを明確にする必要があります。
+行 38 のコメントで「minimax-m3:cloud」を「クラウドのもの」と表現していますが、これは実際には Ollama に登録されたモデル名であり、クラウドサービスを指しているわけではない可能性があります。モデルの実体が何であるかを明確にする必要があります。
 
 ---
 
@@ -389,7 +389,7 @@ static IChatClient GetOllamaClient()
 {
     var uri    = new Uri("http://localhost:11434");
     var ollama = new OllamaApiClient(uri);
-    ollama.SelectedModel = "gpt-oss:20b-cloud";
+    ollama.SelectedModel = "minimax-m3:cloud";
 
     IChatClient client = ollama;
     client = client.AsBuilder()

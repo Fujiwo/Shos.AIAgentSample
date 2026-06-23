@@ -29,13 +29,27 @@ namespace FCAIChat.AIAgents
 
         // AIAgent を公開してスレッドのシリアライズに使用
         public AIAgent?           Agent        { get; private set; }
-        // 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
-        public AgentThread?       Thread       { get; set; } = null;
+        // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
+        public AgentSession?      Session      { get; set; } = null;
         // エージェント名と指示
         public abstract string    Name         { get; }
         protected abstract string Instructions { get; }
         // エージェントのシステムロールに与える文脈的な指示
         protected abstract string SystemPrompt { get; }
+
+        public async Task<JsonElement?> SerializeSessionAsync()
+            => Agent is null || Session is null
+               ? null
+               : await Agent.SerializeSessionAsync(Session);
+
+        public async Task<bool> DeserializeSessionAsync(JsonElement? jsonElement)
+        {
+            if (Agent is not null && jsonElement.HasValue) {
+                Session = await Agent.DeserializeSessionAsync(jsonElement.Value);
+                return true;
+            }
+            return false;
+        }
 
         public async void Dispose()
         {
@@ -74,10 +88,10 @@ namespace FCAIChat.AIAgents
             
             // Restore thread if there's a pending restoration, otherwise create new
             if (pendingThreadRestore.HasValue) {
-                Thread = Agent.DeserializeThread(pendingThreadRestore.Value);
+                Session = await Agent.DeserializeSessionAsync(pendingThreadRestore.Value);
                 pendingThreadRestore = null;
-            } else if (Thread is null) {
-                Thread = Agent.GetNewThread();
+            } else if (Session is null) {
+                Session = await Agent.CreateSessionAsync();
             }
 
             // システムメッセージを最初に送信 (only for new threads)
@@ -87,21 +101,20 @@ namespace FCAIChat.AIAgents
             isFirst = false;
 
             AIAgent CreateAgent(IEnumerable<McpClientTool> tools)
-            {
-                var chatClientAgentOptions = new ChatClientAgentOptions { Name = Name, Instructions = Instructions };
-                if (tools.Any())
-                    // ツールをエージェントに渡す
-                    chatClientAgentOptions.ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() };
-
-                return new ChatClientAgent(GetChatClient(), chatClientAgentOptions);
-            }
+                => new ChatClientAgent(
+                    chatClient  : GetChatClient(),
+                    instructions: Instructions,
+                    name        : Name,
+                    description : null,
+                    tools       : tools.Any() ? tools.Cast<AITool>().ToList() : null
+                );
 
             async Task SendSystemMessageAsync()
             {
                 // システムメッセージを作成して送信
                 ChatMessage systemMessage = new(ChatRole.System, SystemPrompt);
                 if (Agent is not null)
-                    await Agent.RunAsync(systemMessage, Thread);
+                    await Agent.RunAsync(systemMessage, Session);
             }
         }
 
@@ -119,7 +132,7 @@ namespace FCAIChat.AIAgents
                 return string.Empty;
 
             try {
-                var response = await Agent.RunAsync(chatMessage, Thread);
+                var response = await Agent.RunAsync(chatMessage, Session);
                 return response?.Text ?? string.Empty;
             } catch (Exception ex) {
                 Debug.WriteLine($"Error running agent: {ex.Message}");

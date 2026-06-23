@@ -54,7 +54,7 @@ namespace FCAICad
                 return;
             using var pen = new Pen(boundsColor);
             Model?.ForEach(figure => graphics.DrawRectangle(pen, figure.Bounds));
-            graphics.DrawRectangle(pen, Model.Bounds);
+            graphics.DrawRectangle(pen, Model?.Bounds ?? RectangleF.Empty);
         }
 
         void DrawBounds(Graphics graphics, Figure figure)

@@ -23,11 +23,11 @@ dotnet add package Microsoft.Agents.AI.OpenAI --prerelease
 //
 // 【前提条件】
 // - Ollama がインストールされ、http://localhost:11434 で起動していること
-// - Ollama でモデル "gpt-oss:20b-cloud" が利用可能であること
+// - Ollama でモデル "minimax-m3:cloud" が利用可能であること
 // - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
 // 【実行方法】
-// dotnet run --project FCAIAgent
+// dotnet run --project FCAIAgent2
 //
 // 【動作説明】
 // 1. チャットクライアント(Ollama / Azure OpenAI)を生成
@@ -56,16 +56,14 @@ using IChatClient       chatClient     = My.GetChatClient(chatClientType);
 
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
-    chatClient,
-    new ChatClientAgentOptions {
-        Name         = My.AgentName   ,
-        Instructions = My.Instructions
-    }
+    chatClient                   ,
+    instructions: My.Instructions,
+    name        : My.AgentName
 );
 
 try {
     // エージェントを実行して結果を表示する
-    AgentRunResponse response = await agent.RunAsync(My.UserPrompt);
+    AgentResponse response = await agent.RunAsync(My.UserPrompt);
     Console.WriteLine(response.Text);
 } catch (Exception ex) {
     Console.WriteLine($"Error running agent: {ex.Message}");
@@ -88,14 +86,14 @@ static class My
         // 使用するモデルを指定
         // クラウドベースのモデルを使用(実行速度の向上のため)
         // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
-        ollama.SelectedModel = "gpt-oss:20b-cloud";
+        ollama.SelectedModel = "minimax-m3:cloud";
 
         // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
         IChatClient chatClient = ollama;
         chatClient = chatClient.AsBuilder()
                                .UseFunctionInvocation() // ツール呼び出しを使う
                                .Build();
-        return chatClient
+        return chatClient;
     }
 
     // 新: ここから Azure OpenAI を使う場合のクライアント生成
@@ -118,28 +116,28 @@ static class My
 
         static string GetEndPoint()
         {
-            //const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
-            //var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
-            //if (string.IsNullOrEmpty(azureOpenAIEndPoint))
-            //    throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
-            //return azureOpenAIEndPoint;
+            const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
+            var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
+            if (string.IsNullOrEmpty(azureOpenAIEndPoint))
+                throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
+            return azureOpenAIEndPoint;
 
             // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
             // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-            return @"[Azure OpenAI のエンドポイント]";
+            //return @"[Azure OpenAI のエンドポイント]";
         }
 
         static string GetKey()
         {
-            //const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
-            //var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
-            //if (string.IsNullOrEmpty(openAIApiKey))
-            //    throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
-            //return openAIApiKey!;
+            const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
+            var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
+            if (string.IsNullOrEmpty(openAIApiKey))
+                throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
+            return openAIApiKey!;
 
             // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
             //例: https://your-resource-name.openai.azure.com/
-            return @"[Azure OpenAI の APIキー]";
+            //return @"[Azure OpenAI の APIキー]";
         }
     }
 
@@ -159,7 +157,6 @@ static class My
     }
     // 新: ここまで
 }
-
 ```
 
 ○ 動作確認

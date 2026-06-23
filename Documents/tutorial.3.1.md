@@ -29,17 +29,17 @@ dotnet add package ModelContextProtocol --prerelease
 //
 // 【前提条件】
 // - Ollama がインストールされ、http://localhost:11434 で起動していること
-// - Ollama でモデル "gpt-oss:20b-cloud" が利用可能であること
+// - Ollama でモデル "minimax-m3:cloud" が利用可能であること
 // - Azure OpenAI が作成され、エンドポイントと API キーが取得できていること
 //
 // 【実行方法】
-// dotnet run --project FCAIAgent
+// dotnet run --project FCAIAgent4
 //
 // 【動作説明】
 // 1. 使用するチャットクライアントを作成
 // 2. STDIO 経由の MCP サーバーへ接続しツール一覧を取得
 // 3. 取得したツールを ChatClientAgent に渡してエージェントを作成
-// 4. AgentThread を使った複数ターン対話ループを実行
+// 4. AgentSession を使った複数ターン対話ループを実行
 // 5. 終了時に MCP クライアントを破棄
 //
 // 【注意】
@@ -70,20 +70,18 @@ var (mcpClient, tools) = await My.GetMcpTools();
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
     chatClient,
-    new ChatClientAgentOptions {
-        Name          = My.AgentName   ,
-        Instructions  = My.Instructions
-        // 新: ツールをエージェントに渡す
-        , ChatOptions = new ChatOptions { Tools = tools.Cast<AITool>().ToList() }
-    }
+    instructions : My.Instructions,
+    name         : My.AgentName,
+    description  : null,
+    tools        : tools.Cast<AITool>().ToList()
 );
 
-// 複数ターンに対応するために AgentThread (会話の状態・履歴などを管理) を作成
-AgentThread thread = agent.GetNewThread();
+// 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
+AgentSession session = await agent.CreateSessionAsync();
 
 // システムメッセージを作成して最初に送信
 ChatMessage systemMessage = new(ChatRole.System, My.SystemPrompt);
-await My.RunAsync(agent, systemMessage, thread);
+await My.RunAsync(agent, systemMessage, session);
 
 Console.WriteLine($"(Interactive chat started. Type '{My.ExitPrompt}' to quit.)\n");
 
@@ -92,7 +90,7 @@ for (; ;) {
     var (isValid, userMessage) = My.GetUserMessage();
     if (!isValid)
         break;
-    await My.RunAsync(agent, userMessage, thread);
+    await My.RunAsync(agent, userMessage, session);
 }
 
 // 新: 終了処理 MCP クライアントを破棄
@@ -116,7 +114,7 @@ static class My
         // 使用するモデルを指定
         // クラウドベースのモデルを使用(実行速度の向上のため)
         // ローカル LLM を使用する場合は "gemma3:latest" などに変更してください
-        ollama.SelectedModel = "gpt-oss:20b-cloud";
+        ollama.SelectedModel = "minimax-m3:cloud";
 
         // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
         IChatClient chatClient = ollama;
@@ -146,28 +144,28 @@ static class My
 
         static string GetEndPoint()
         {
-            //const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
-            //var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
-            //if (string.IsNullOrEmpty(azureOpenAIEndPoint))
-            //    throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
-            //return azureOpenAIEndPoint;
+            const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
+            var azureOpenAIEndPoint = Environment.GetEnvironmentVariable(AzureOpenAIEndpointEnvironmentVariable);
+            if (string.IsNullOrEmpty(azureOpenAIEndPoint))
+                throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
+            return azureOpenAIEndPoint;
 
             // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
             // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-            return @"[Azure OpenAI のエンドポイント]";
+            //return @"[Azure OpenAI のエンドポイント]";
         }
 
         static string GetKey()
         {
-            //const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
-            //var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
-            //if (string.IsNullOrEmpty(openAIApiKey))
-            //    throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
-            //return openAIApiKey!;
+            const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
+            var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
+            if (string.IsNullOrEmpty(openAIApiKey))
+                throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
+            return openAIApiKey!;
 
             // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
             //例: https://your-resource-name.openai.azure.com/
-            return @"[Azure OpenAI の APIキー]";
+            //return @"[Azure OpenAI の APIキー]";
         }
     }
 
@@ -199,7 +197,7 @@ static class My
     }
 
     // エージェントに ChatMessage を投げて応答を取得
-    public static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentThread? thread = null)
+    public static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentSession? thread = null)
     {
         try {
             var response = await agent.RunAsync(chatMessage, thread);
@@ -230,8 +228,8 @@ static class My
                 Name      = "time",
                 Command   = "dotnet",
                 // [MCPServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
-                Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
-                //Arguments = ["run", "--project", @"C:\Source\FCAIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
+                //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
+                Arguments = ["run", "--project", @"C:\Source\FCAIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
             });
     }
     // 新: ここまで
