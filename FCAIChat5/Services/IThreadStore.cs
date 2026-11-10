@@ -5,17 +5,17 @@ namespace FCAIChat.Services;
 /// <summary>Interface for storing and retrieving AgentSession data</summary>
 public interface IThreadStore
 {
-    /// <summary>Saves a serialized thread for a specific connection</summary>
-    /// <param name="connectionId">The SignalR connection ID</param>
+    /// <summary>Saves a serialized thread for a specific user</summary>
+    /// <param name="userKey">The key of the conversation (the signed-in user ID)</param>
     /// <param name="serializedThread">The serialized thread as JsonElement</param>
-    Task SaveThreadAsync(string connectionId, JsonElement serializedThread);
+    Task SaveThreadAsync(string userKey, JsonElement serializedThread);
 
-    /// <summary>Retrieves a serialized thread for a specific connection</summary>
-    /// <param name="connectionId">The SignalR connection ID</param>
+    /// <summary>Retrieves a serialized thread for a specific user</summary>
+    /// <param name="userKey">The key of the conversation (the signed-in user ID)</param>
     /// <returns>The serialized thread as JsonElement, or null if not found</returns>
-    Task<JsonElement?> GetThreadAsync(string connectionId);
+    Task<JsonElement?> GetThreadAsync(string userKey);
 
-    /// <summary>Deletes a stored thread for a specific connection</summary>
-    /// <param name="connectionId">The SignalR connection ID</param>
-    Task DeleteThreadAsync(string connectionId);
+    /// <summary>Deletes a stored thread for a specific user</summary>
+    /// <param name="userKey">The key of the conversation (the signed-in user ID)</param>
+    Task DeleteThreadAsync(string userKey);
 }

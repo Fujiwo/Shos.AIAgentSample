@@ -15,6 +15,11 @@ function run() {
         addMessagePartial(user, message, createdAt);
     });
 
+    // 履歴がクリアされたら再表示
+    connection.on("Cleared", function () {
+        location.reload();
+    });
+
     connection.start().then(function () {
         document.getElementById("sendButton" ).disabled = false;
         document.getElementById("clearButton").disabled = false;
@@ -27,15 +32,15 @@ function run() {
         var message = document.getElementById("messageInput").value;
         console.log("Sending message:", user, message);
         if (user.trim() !== "" && message.trim() !== "")
-            connection.invoke("SendMessage", user, message)
+            connection.invoke("SendMessage", message)
                       .catch(err => console.error(err.toString()));
         event.preventDefault();
     });
 
     document.getElementById("clearButton").addEventListener("click", function (event) {
+        // サーバー側でクリアが完了すると "Cleared" が全クライアントに通知され、再表示される
         connection.invoke("Clear")
                   .catch(err => console.error(err.toString()));
-        location.reload();
         event.preventDefault();
     });
 

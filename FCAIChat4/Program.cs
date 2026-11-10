@@ -1,3 +1,4 @@
+using FCAIChat.AIAgents;
 using FCAIChat.Data;
 using FCAIChat.Hubs;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
+
+// ユーザーごとのエージェントを管理するサービスを登録
+// (SignalR の Hub は呼び出しごとに生成されるため、エージェントは Singleton のサービスで保持する)
+builder.Services.AddSingleton<ChatAgentManager>();
 
 var app = builder.Build();
 

@@ -19,13 +19,16 @@ using System.Diagnostics;
 
 namespace FCAIChat.AIAgents
 {
-    public abstract class ChatAgent : IDisposable
+    public abstract class ChatAgent : IAsyncDisposable
     {
-        AIAgent?               agent      = null;
-        IEnumerable<McpClient> mcpClients = [];
+        IEnumerable<McpClient> mcpClients           = [];
+        bool                   isStarted            = false;
+        // 同じエージェントへの同時呼び出し (同じユーザーの複数タブなど) を直列化する
+        readonly SemaphoreSlim gate                 = new(1, 1);
+
+        AIAgent?               agent                = null;
         // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
-        AgentSession?          session     = null;
-        bool                   isFirst    = true;
+        AgentSession?          session              = null;
 
         // エージェント名と指示
         public abstract string    Name         { get; }
@@ -33,45 +36,80 @@ namespace FCAIChat.AIAgents
         // エージェントのシステムロールに与える文脈的な指示
         protected abstract string SystemPrompt { get; }
 
-        public async void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            // 終了処理 MCP クライアントを破棄
-            foreach (var mcpClient in mcpClients)
-                await mcpClient.DisposeAsync();
+            // 実行中の呼び出しが終わるのを待ってから、MCP クライアントを破棄
+            await gate.WaitAsync();
+            try {
+                await DisposeMcpClientsAsync(mcpClients);
+                mcpClients = [];
+                agent      = null;
+                session    = null;
+                isStarted  = false;
+            } finally {
+                gate.Release();
+            }
+            GC.SuppressFinalize(this);
         }
 
         public async Task<string> GetResponseAsync(string userPrompt)
         {
-            await Start();
-
-            // ユーザープロンプトをエージェントスレッドに送信し、応答を取得
-            return await RunAgentAsync(ToUserMessage(userPrompt)) ?? string.Empty;
+            await gate.WaitAsync();
+            try {
+                try {
+                    await StartAsync();
+                } catch (Exception ex) {
+                    // MCP サーバーの起動失敗や環境変数の未設定など
+                    Debug.WriteLine($"Failed to start agent: {ex}");
+                    return $"(エージェントを開始できませんでした: {ex.Message})";
+                }
+                // ユーザープロンプトをエージェントのセッションに送信し、応答を取得
+                return await RunAgentAsync(new ChatMessage(ChatRole.User, userPrompt));
+            } finally {
+                gate.Release();
+            }
         }
 
         // ファクトリ関数
         protected abstract IChatClient GetChatClient();
-        
-        protected virtual async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
+
+        protected virtual Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
+            => Task.FromResult<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)>(([], []));
+
+        protected static async Task DisposeMcpClientsAsync(IEnumerable<McpClient> mcpClients)
         {
-            await Task.Delay(0);
-            return ([], []);
+            foreach (var mcpClient in mcpClients) {
+                try {
+                    await mcpClient.DisposeAsync();
+                } catch (Exception ex) {
+                    Debug.WriteLine($"Failed to dispose MCP client: {ex.Message}");
+                }
+            }
         }
 
-        async Task Start()
+        async Task StartAsync()
         {
-            if (!isFirst)
+            if (isStarted)
                 return;
 
             var (mcpClients, tools) = await GetMcpToolsAsync();
+            try {
+                agent = CreateAgent(tools);
+
+                session = await agent.CreateSessionAsync();
+
+                // システムメッセージを最初に送信
+                await RunAgentAsync(new ChatMessage(ChatRole.System, SystemPrompt));
+            } catch {
+                // 開始に失敗したら MCP クライアントを破棄し、次回の呼び出しで再試行する
+                await DisposeMcpClientsAsync(mcpClients);
+                agent   = null;
+                session = null;
+                throw;
+            }
+
             this.mcpClients = mcpClients;
-
-            agent = CreateAgent(tools);
-            session = await agent.CreateSessionAsync();
-
-            // システムメッセージを最初に送信
-            await SendSystemMessageAsync();
-
-            isFirst = false;
+            isStarted       = true;
 
             AIAgent CreateAgent(IEnumerable<McpClientTool> tools)
                 => new ChatClientAgent(
@@ -81,12 +119,7 @@ namespace FCAIChat.AIAgents
                     description : null,
                     tools       : tools.Any() ? tools.Cast<AITool>().ToList() : null
                 );
-
-            // システムメッセージを作成して送信
-            async Task SendSystemMessageAsync() => await RunAgentAsync(new(ChatRole.System, SystemPrompt));
         }
-
-        static ChatMessage ToUserMessage(string userPrompt) => new ChatMessage(ChatRole.User, userPrompt);
 
         // エージェントに ChatMessage を投げて応答を取得
         async Task<string> RunAgentAsync(ChatMessage chatMessage)
@@ -98,8 +131,8 @@ namespace FCAIChat.AIAgents
                 var response = await agent.RunAsync(chatMessage, session);
                 return response?.Text ?? string.Empty;
             } catch (Exception ex) {
-                Debug.WriteLine($"Error running agent: {ex.Message}");
-                return "……";
+                Debug.WriteLine($"Error running agent: {ex}");
+                return $"(エラー: {ex.Message})";
             }
         }
     }
@@ -107,7 +140,8 @@ namespace FCAIChat.AIAgents
     public class MyChatAgent : ChatAgent
     {
         // エージェント名と指示
-        public override string    Name         => "Agent";   
+        public const string       AgentName    = "Agent";
+        public override string    Name         => AgentName;
         protected override string Instructions => "あなたはAIエージェントです";
         // エージェントのシステムロールに与える文脈的な指示
         protected override string SystemPrompt => "あなたはAIエージェントです";
@@ -161,13 +195,17 @@ namespace FCAIChat.AIAgents
         // - 戻り値は (IEnumerable<McpClient>, IEnumerable<McpClientTool>) で、終了時にすべての McpClient について DisposeAsync() を呼ぶ必要がある
         protected override async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
         {
-            IClientTransport clientTransport = GetPlaywrightToolClientTransport();
-            McpClient        client          = await McpClient.CreateAsync(clientTransport);
-            IList<McpClientTool> tools       = await client.ListToolsAsync();
-            foreach (var tool in tools)
-                Debug.WriteLine($"{tool.Name} ({tool.Description})");
-
-            return ([client], tools);
+            McpClient client = await McpClient.CreateAsync(GetPlaywrightToolClientTransport());
+            try {
+                IList<McpClientTool> tools = await client.ListToolsAsync();
+                foreach (var tool in tools)
+                    Debug.WriteLine($"{tool.Name} ({tool.Description})");
+                return ([client], tools);
+            } catch {
+                // ツール一覧の取得に失敗したら、起動した MCP サーバーを破棄する
+                await client.DisposeAsync();
+                throw;
+            }
 
             // Playwright ツールを使うためのクライアント生成
             static IClientTransport GetPlaywrightToolClientTransport()

@@ -2,124 +2,69 @@
 {
     using FCAIChat.AIAgents;
     using FCAIChat.Data;
-    using FCAIChat.Services;
-//    using Microsoft.AspNetCore.Session;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.EntityFrameworkCore;
-    using System.Collections.Concurrent;
-    using System.Diagnostics;
+    using System.Text.RegularExpressions;
 
-    public class ChatHub : Hub
+    // ログインしているユーザーだけが利用できる
+    [Authorize]
+    public class ChatHub(MessagesDbContext dbContext, ChatAgentManager chatAgentManager) : Hub
     {
-        readonly MessagesDbContext dbContext;
-        readonly IThreadStore threadStore;
-        
-        static readonly ConcurrentDictionary<string, MyChatAgent> chatAgents = new();
-
-        public ChatHub(MessagesDbContext dbContext, IThreadStore threadStore)
-            => (this.dbContext, this.threadStore) = (dbContext, threadStore);
+        // ログインユーザーの ID (エージェントと会話の状態をユーザー単位で管理するためのキー)
+        string UserKey  => Context.UserIdentifier ?? Context.ConnectionId;
+        // 送信者名はクライアントから受け取らず、サーバー側の認証情報から取得する
+        string UserName => Context.User?.Identity?.Name ?? "(unknown)";
 
         public async Task Clear()
         {
-            var connectionId = Context.ConnectionId;
-            if (chatAgents.TryRemove(connectionId, out var agent))
-                agent.Dispose();
-            await threadStore.DeleteThreadAsync(connectionId);
+            // 呼び出したユーザーの会話 (エージェントの状態) をリセット
+            await chatAgentManager.ResetAsync(UserKey);
 
-            dbContext.Messages.Clear();
-            await dbContext.SaveChangesAsync();
+            // メッセージ履歴 (全ユーザー共通) を削除し、全クライアントに再表示を通知
+            await dbContext.Messages.ExecuteDeleteAsync();
+            await Clients.All.SendAsync("Cleared");
         }
 
-        public async Task SendMessage(string user, string prompt)
+        public async Task SendMessage(string prompt)
         {
-            var connectionId = Context.ConnectionId;
-            var chatAgent = await GetOrCreateChatAgentAsync(connectionId);  
+            var chatAgent = await chatAgentManager.AcquireAsync(UserKey, Context.ConnectionId);
 
-            DateTime createdAt = GetDateTime();
-            var message = new Message() { UserName = user, Content = prompt, CreatedAt = createdAt };
-
-            await SendAsync(user, prompt, createdAt, message);
+            await SendAsync(UserName, prompt);
 
             var (isForAgent, promptForAgent) = GetPromptForAgent(prompt);
             if (isForAgent) {
-                var responce = await chatAgent.GetResponseAsync(promptForAgent);
-                
-                // Save the thread after agent response
-                await SaveThreadAsync(connectionId, chatAgent);
-                
-                createdAt = GetDateTime();
-                message = new Message() { UserName = chatAgent.Name, Content = responce, CreatedAt = createdAt };
-                await SendAsync(chatAgent.Name, responce, createdAt, message);
+                var response = await chatAgent.GetResponseAsync(promptForAgent);
+
+                // エージェントの応答後に会話の状態を保存
+                await chatAgentManager.SaveAsync(UserKey, chatAgent);
+
+                await SendAsync(chatAgent.Name, response);
             }
 
-            static DateTime GetDateTime()
+            async Task SendAsync(string user, string content)
             {
-                var createdAt = DateTime.UtcNow;
-                createdAt = DateTime.SpecifyKind(createdAt, DateTimeKind.Utc);
-                return createdAt;
-            }
-
-            async Task SendAsync(string user, string prompt, DateTime createdAt, Message message)
-            {
-                dbContext.Messages.Add(message);
+                var createdAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+                dbContext.Messages.Add(new Message() { UserName = user, Content = content, CreatedAt = createdAt });
                 await dbContext.SaveChangesAsync();
-                await Clients.All.SendAsync("ReceiveMessage", user, prompt, createdAt.ToString("o"));
+                await Clients.All.SendAsync("ReceiveMessage", user, content, createdAt.ToString("o"));
             }
 
             (bool isForAgent, string prompt) GetPromptForAgent(string prompt)
             {
-                var chatAgentReference = $"@{chatAgent.Name}";
-                return prompt.Contains(chatAgentReference, StringComparison.OrdinalIgnoreCase)
-                       ? (true, prompt.Replace(chatAgentReference, ""))
+                // "@Agent" のような宛先が含まれていればエージェント宛て (大文字・小文字は区別しない)
+                var chatAgentReference = new Regex(Regex.Escape($"@{chatAgent.Name}"), RegexOptions.IgnoreCase);
+                return chatAgentReference.IsMatch(prompt)
+                       ? (true, chatAgentReference.Replace(prompt, string.Empty).Trim())
                        : (false, string.Empty);
-            }
-        }
-
-        private async Task<MyChatAgent> GetOrCreateChatAgentAsync(string connectionId)
-        {
-            if (chatAgents.TryGetValue(connectionId, out var existingAgent))
-                return existingAgent;
-
-            var agent = new MyChatAgent();
-            // Try to restore thread from store
-            var serializedSession = await threadStore.GetThreadAsync(connectionId);
-            if (serializedSession.HasValue) {
-                try {
-                    await agent.DeserializeSessionAsync(serializedSession);
-                    //agent.RestoreThread(serializedThread.Value);
-                } catch (Exception ex) {
-                    // Log the exception - thread restoration failed, will create new thread
-                    Debug.WriteLine($"Thread restoration failed for connection {connectionId}: {ex.Message}");
-                }
-            }
-            
-            return chatAgents.GetOrAdd(connectionId, agent);
-        }
-
-        private async Task SaveThreadAsync(string connectionId, MyChatAgent chatAgent)
-        {
-            if (chatAgent.Session is not null && chatAgent.Agent is not null) {
-                var serializedSession = await chatAgent.SerializeSessionAsync();
-                if (serializedSession.HasValue)
-                    await threadStore.SaveThreadAsync(connectionId, serializedSession.Value);
             }
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            var connectionId = Context.ConnectionId;
-            if (chatAgents.TryRemove(connectionId, out var agent))
-                agent.Dispose();
-
-            // Note: We keep the thread in storage for potential reconnection
-            // To clean up old threads, implement a separate cleanup mechanism
+            // ユーザーの接続がすべて切れたら、会話を保存してエージェントを破棄する (再接続時に復元される)
+            await chatAgentManager.ReleaseAsync(UserKey, Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
-    }
-
-    public static class EntityExtensions
-    {
-        public static void Clear<T>(this DbSet<T> dbSet) where T : class
-            => dbSet.RemoveRange(dbSet);
     }
 }

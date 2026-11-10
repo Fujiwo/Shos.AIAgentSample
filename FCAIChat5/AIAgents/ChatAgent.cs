@@ -19,86 +19,125 @@ using System.Text.Json;
 
 namespace FCAIChat.AIAgents
 {
-    public abstract class ChatAgent : IDisposable
+    public abstract class ChatAgent : IAsyncDisposable
     {
         IEnumerable<McpClient> mcpClients           = [];
-        bool                   isFirst              = true;
+        bool                   isStarted            = false;
+        // 同じエージェントへの同時呼び出し (同じユーザーの複数タブなど) を直列化する
+        readonly SemaphoreSlim gate                 = new(1, 1);
 
-        JsonElement?           pendingThreadRestore = null;
-        bool                   wasThreadRestored    = false;
+        // 復元待ちのセッション (Start() でエージェントを作成した後にデシリアライズする)
+        JsonElement?           pendingSessionRestore = null;
 
-        // AIAgent を公開してスレッドのシリアライズに使用
-        public AIAgent?           Agent        { get; private set; }
+        AIAgent?               agent                = null;
         // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
-        public AgentSession?      Session      { get; set; } = null;
+        AgentSession?          session              = null;
+
         // エージェント名と指示
         public abstract string    Name         { get; }
         protected abstract string Instructions { get; }
         // エージェントのシステムロールに与える文脈的な指示
         protected abstract string SystemPrompt { get; }
 
-        public async Task<JsonElement?> SerializeSessionAsync()
-            => Agent is null || Session is null
-               ? null
-               : await Agent.SerializeSessionAsync(Session);
+        /// <summary>保存しておいたセッションを復元する。最初の GetResponseAsync() より前に呼ぶ。</summary>
+        public void RestoreSession(JsonElement serializedSession) => pendingSessionRestore = serializedSession;
 
-        public async Task<bool> DeserializeSessionAsync(JsonElement? jsonElement)
+        /// <summary>現在のセッションをシリアライズする。まだ会話していない場合は null。</summary>
+        public async Task<JsonElement?> SerializeSessionAsync()
         {
-            if (Agent is not null && jsonElement.HasValue) {
-                Session = await Agent.DeserializeSessionAsync(jsonElement.Value);
-                return true;
+            await gate.WaitAsync();
+            try {
+                return agent is null || session is null
+                       ? null
+                       : await agent.SerializeSessionAsync(session);
+            } finally {
+                gate.Release();
             }
-            return false;
         }
 
-        public async void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            // 終了処理 MCP クライアントを破棄
-            foreach (var mcpClient in mcpClients)
-                await mcpClient.DisposeAsync();
+            // 実行中の呼び出しが終わるのを待ってから、MCP クライアントを破棄
+            await gate.WaitAsync();
+            try {
+                await DisposeMcpClientsAsync(mcpClients);
+                mcpClients = [];
+                agent      = null;
+                session    = null;
+                isStarted  = false;
+            } finally {
+                gate.Release();
+            }
+            GC.SuppressFinalize(this);
         }
 
         public async Task<string> GetResponseAsync(string userPrompt)
         {
-            await Start();
-            // ユーザープロンプトをエージェントスレッドに送信し、応答を取得
-            return await RunAgentAsync(ToUserMessage(userPrompt)) ?? string.Empty;
-
-            static ChatMessage ToUserMessage(string userPrompt) => new ChatMessage(ChatRole.User, userPrompt);
+            await gate.WaitAsync();
+            try {
+                try {
+                    await StartAsync();
+                } catch (Exception ex) {
+                    // MCP サーバーの起動失敗や環境変数の未設定など
+                    Debug.WriteLine($"Failed to start agent: {ex}");
+                    return $"(エージェントを開始できませんでした: {ex.Message})";
+                }
+                // ユーザープロンプトをエージェントのセッションに送信し、応答を取得
+                return await RunAgentAsync(new ChatMessage(ChatRole.User, userPrompt));
+            } finally {
+                gate.Release();
+            }
         }
 
         // ファクトリ関数
         protected abstract IChatClient GetChatClient();
-        
-        protected virtual async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
+
+        protected virtual Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
+            => Task.FromResult<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)>(([], []));
+
+        protected static async Task DisposeMcpClientsAsync(IEnumerable<McpClient> mcpClients)
         {
-            await Task.Delay(0);
-            return ([], []);
+            foreach (var mcpClient in mcpClients) {
+                try {
+                    await mcpClient.DisposeAsync();
+                } catch (Exception ex) {
+                    Debug.WriteLine($"Failed to dispose MCP client: {ex.Message}");
+                }
+            }
         }
 
-        async Task Start()
+        async Task StartAsync()
         {
-            if (!isFirst)
+            if (isStarted)
                 return;
 
             var (mcpClients, tools) = await GetMcpToolsAsync();
-            this.mcpClients = mcpClients;
+            try {
+                agent = CreateAgent(tools);
 
-            Agent = CreateAgent(tools);
-            
-            // Restore thread if there's a pending restoration, otherwise create new
-            if (pendingThreadRestore.HasValue) {
-                Session = await Agent.DeserializeSessionAsync(pendingThreadRestore.Value);
-                pendingThreadRestore = null;
-            } else if (Session is null) {
-                Session = await Agent.CreateSessionAsync();
+                // 保存されたセッションがあれば復元し、なければ新規作成
+                var isRestored = false;
+                if (pendingSessionRestore.HasValue) {
+                    session               = await agent.DeserializeSessionAsync(pendingSessionRestore.Value);
+                    pendingSessionRestore = null;
+                    isRestored            = true;
+                } else {
+                    session = await agent.CreateSessionAsync();
+                }
+
+                // システムメッセージを最初に送信 (新しいセッションの場合のみ)
+                if (!isRestored)
+                    await RunAgentAsync(new ChatMessage(ChatRole.System, SystemPrompt));
+            } catch {
+                // 開始に失敗したら MCP クライアントを破棄し、次回の呼び出しで再試行する
+                await DisposeMcpClientsAsync(mcpClients);
+                agent   = null;
+                session = null;
+                throw;
             }
 
-            // システムメッセージを最初に送信 (only for new threads)
-            if (!wasThreadRestored)
-                await SendSystemMessageAsync();
-
-            isFirst = false;
+            this.mcpClients = mcpClients;
+            isStarted       = true;
 
             AIAgent CreateAgent(IEnumerable<McpClientTool> tools)
                 => new ChatClientAgent(
@@ -108,35 +147,20 @@ namespace FCAIChat.AIAgents
                     description : null,
                     tools       : tools.Any() ? tools.Cast<AITool>().ToList() : null
                 );
-
-            async Task SendSystemMessageAsync()
-            {
-                // システムメッセージを作成して送信
-                ChatMessage systemMessage = new(ChatRole.System, SystemPrompt);
-                if (Agent is not null)
-                    await Agent.RunAsync(systemMessage, Session);
-            }
-        }
-
-        /// <summary>Restores a thread from serialized state. Should be called before Start().</summary>
-        public void RestoreThread(JsonElement serializedThread)
-        {
-            pendingThreadRestore = serializedThread;
-            wasThreadRestored = true;
         }
 
         // エージェントに ChatMessage を投げて応答を取得
         async Task<string> RunAgentAsync(ChatMessage chatMessage)
         {
-            if (Agent is null)
+            if (agent is null)
                 return string.Empty;
 
             try {
-                var response = await Agent.RunAsync(chatMessage, Session);
+                var response = await agent.RunAsync(chatMessage, session);
                 return response?.Text ?? string.Empty;
             } catch (Exception ex) {
-                Debug.WriteLine($"Error running agent: {ex.Message}");
-                return "……";
+                Debug.WriteLine($"Error running agent: {ex}");
+                return $"(エラー: {ex.Message})";
             }
         }
     }
@@ -144,7 +168,7 @@ namespace FCAIChat.AIAgents
     public class MyChatAgent : ChatAgent
     {
         // エージェント名と指示
-        public override string    Name         => "Agent";   
+        public override string    Name         => "Agent";
         protected override string Instructions => "あなたはAIエージェントです";
         // エージェントのシステムロールに与える文脈的な指示
         protected override string SystemPrompt => "あなたはAIエージェントです";
@@ -198,13 +222,17 @@ namespace FCAIChat.AIAgents
         // - 戻り値は (IEnumerable<McpClient>, IEnumerable<McpClientTool>) で、終了時にすべての McpClient について DisposeAsync() を呼ぶ必要がある
         protected override async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
         {
-            IClientTransport clientTransport = GetBraveSearchToolClientTransport();
-            McpClient client = await McpClient.CreateAsync(clientTransport);
-            IList<McpClientTool> tools = await client.ListToolsAsync();
-            foreach (var tool in tools)
-                Debug.WriteLine($"{tool.Name} ({tool.Description})");
-
-            return ([client], tools);
+            McpClient client = await McpClient.CreateAsync(GetBraveSearchToolClientTransport());
+            try {
+                IList<McpClientTool> tools = await client.ListToolsAsync();
+                foreach (var tool in tools)
+                    Debug.WriteLine($"{tool.Name} ({tool.Description})");
+                return ([client], tools);
+            } catch {
+                // ツール一覧の取得に失敗したら、起動した MCP サーバーを破棄する
+                await client.DisposeAsync();
+                throw;
+            }
 
             //// Playwright ツールを使うためのクライアント生成
             //static IClientTransport GetPlaywrightToolClientTransport()
