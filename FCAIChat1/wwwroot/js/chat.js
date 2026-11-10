@@ -1,51 +1,56 @@
-﻿"use strict";
+﻿// チャット画面のスクリプト
+// - ES モジュールとして読み込む (<script type="module">)。モジュールは strict モードで、HTML の解析後に実行される
+// - ES2022 のトップレベル await で SignalR の接続を待つ
 
-document.addEventListener('DOMContentLoaded', run);
+const sendButton   = document.getElementById("sendButton");
+const userInput    = document.getElementById("userInput");
+const messageInput = document.getElementById("messageInput");
 
-function run() {
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+const connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-    //Disable the send button until connection is established.
-    document.getElementById("sendButton").disabled = true;
+// 接続が確立するまで送信ボタンを無効にする
+sendButton.disabled = true;
 
-    connection.on("ReceiveMessage", function (user, message, createdAt) {
-        console.log("Receiving message:", user, message);
-        addMessageRow(user, message, createdAt);
-    });
+connection.on("ReceiveMessage", (user, message, createdAt) => {
+    console.log("Receiving message:", user, message);
+    addMessageRow(user, message, createdAt);
+});
 
-    connection.start().then(function () {
-        document.getElementById("sendButton").disabled = false;
-    }).catch(function (err) {
-        return console.error(err.toString());
-    });
+sendButton.addEventListener("click", async event => {
+    event.preventDefault();
+    const user    = userInput.value;
+    const message = messageInput.value;
+    console.log("Sending message:", user, message);
+    if (user.trim() === "" || message.trim() === "")
+        return;
+    try {
+        await connection.invoke("SendMessage", user, message);
+    } catch (error) {
+        console.error(error.toString());
+    }
+});
 
-    document.getElementById("sendButton").addEventListener("click", function (event) {
-        var user = document.getElementById("userInput").value;
-        var message = document.getElementById("messageInput").value;
-        console.log("Sending message:", user, message);
-        if (user.trim() !== "" && message.trim() !== "")
-            connection.invoke("SendMessage", user, message)
-                .catch(err => console.error(err.toString()));
-        event.preventDefault();
-    });
+// 接続を開始 (ES2022 のトップレベル await)
+try {
+    await connection.start();
+    sendButton.disabled = false;
+} catch (error) {
+    console.error(error.toString());
 }
 
+// メッセージの行をクライアント側で組み立てて追加
 function addMessageRow(user, message, createdAt) {
-    var li = document.createElement("li");
-    document.getElementById("messagesList").appendChild(li);
-    setToLI(li, user, message, createdAt);
-}
+    const row = document.createElement("li");
+    row.textContent = `${user} says ${message} - `;
 
-function setToLI(li, user, message, createdAt) {
-    li.textContent = `${user} says ${message} - `;
+    const time = document.createElement("span");
+    time.className   = "utc-time";
+    time.textContent = toLocalTimeString(createdAt);
+    row.append(time);
 
-    var span = document.createElement("span");
-    span.innerHTML = `${toLocalTimeString(createdAt)}`;
-    span.className = "utc-time";
-    li.appendChild(span);
+    document.getElementById("messagesList").append(row);
 }
 
 function toLocalTimeString(utcDateString) {
-    const date = new Date(utcDateString);
-    return date.toLocaleString();
+    return new Date(utcDateString).toLocaleString();
 }

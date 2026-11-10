@@ -69,6 +69,7 @@ Windows Forms の CAD アプリ。`Toolbox.cs` の静的メソッド (`GetPaperS
 - 拡張メンバーは C# 14 の拡張ブロック (`extension(T receiver) { ... }`) で書く (例: `FCAICad1/Helpers.cs`、`Model.cs` の `GeometryExtensions`)
 - バッキングフィールドが必要なプロパティは C# 14 の `field` キーワードを使う (例: `PointsFigure.Points`)
 - 例外として、コンソール版の `AIAgent agent = new ChatClientAgent(...)` のように、教材として型名を見せている箇所は明示的な型のままにする
+- JavaScript (`FCAIChat*/wwwroot/js/chat.js`) は ES2022 の ES モジュールとして書き、`<script type="module">` で読み込む。`DOMContentLoaded` を待たず、SignalR の接続はトップレベル await で開始する。`const`/`let`、アロー関数、`async`/`await` を使う (`wwwroot/lib/` のサードパーティは対象外)
 
 ## その他
 
