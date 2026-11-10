@@ -110,8 +110,9 @@ public abstract class ChatAgent : IAsyncDisposable
             var response = await Agent.RunAsync(chatMessage, Session);
             return response?.Text ?? string.Empty;
         } catch (Exception ex) {
-            Debug.WriteLine($"Error running agent: {ex.Message}");
-            return "……";
+            // エラーを握りつぶさず、内容を応答欄に表示する (詳細はデバッグ出力へ)
+            Debug.WriteLine($"Error running agent: {ex}");
+            return $"(エラー: {ex.Message})";
         }
     }
 }
