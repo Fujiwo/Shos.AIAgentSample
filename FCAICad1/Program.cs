@@ -2,8 +2,8 @@ namespace FCAICad;
 
 class Program
 {
-    MainForm?   mainForm;
-    MyChatAgent chatAgent = new();
+    MainForm?            mainForm;
+    readonly MyChatAgent chatAgent = new();
 
     /// <summary> The main entry point for the application.</summary>
     [STAThread]

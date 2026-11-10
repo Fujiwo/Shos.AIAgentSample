@@ -1,17 +1,23 @@
 ﻿using System.Diagnostics;
 
-namespace FCAICad
-{
-    public static class Extensions
-    {
-        public static void Log(this object @this) => Debug.WriteLine(@this);
-    }
+namespace FCAICad;
 
-    public static class EnumerableExtensions
+// C# 14 の拡張ブロック (extension) による拡張メンバー
+public static class Extensions
+{
+    extension(object value)
     {
-        public static void ForEach<TElement>(this IEnumerable<TElement> @this, Action<TElement> action)
+        public void Log() => Debug.WriteLine(value);
+    }
+}
+
+public static class EnumerableExtensions
+{
+    extension<TElement>(IEnumerable<TElement> source)
+    {
+        public void ForEach(Action<TElement> action)
         {
-            foreach (var element in @this)
+            foreach (var element in source)
                 action(element);
         }
     }

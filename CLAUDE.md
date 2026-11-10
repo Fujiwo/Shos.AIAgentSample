@@ -63,6 +63,13 @@ ASP.NET Core Razor Pages + SignalR + Identity + EF Core (SQL Server LocalDB)。
 
 Windows Forms の CAD アプリ。`Toolbox.cs` の静的メソッド (`GetPaperSize` / `DrawLine` など) を `AIFunctionFactory.Create` で AI 関数ツールとして公開し、自然言語の指示で図形を描画する。ツールは UI スレッド以外から呼ばれうるため、フォーム操作は `MainForm.InvokeOnUIThread` 経由で行う。Brave Search MCP は任意 (なくても動作)。Windows 専用だが、Linux でも `-p:EnableWindowsTargeting=true` でビルド (コンパイル確認) はできる。
 
+## コーディングスタイル (C# 14 / .NET 10)
+
+- ファイルスコープの名前空間、プライマリコンストラクター、コレクション式 (`[]`)、ターゲット型の `new()` を使う
+- 拡張メンバーは C# 14 の拡張ブロック (`extension(T receiver) { ... }`) で書く (例: `FCAICad1/Helpers.cs`、`Model.cs` の `GeometryExtensions`)
+- バッキングフィールドが必要なプロパティは C# 14 の `field` キーワードを使う (例: `PointsFigure.Points`)
+- 例外として、コンソール版の `AIAgent agent = new ChatClientAgent(...)` のように、教材として型名を見せている箇所は明示的な型のままにする
+
 ## その他
 
 - `Reviews/` は過去のコード/ドキュメントレビュー結果

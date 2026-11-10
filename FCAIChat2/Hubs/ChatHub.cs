@@ -1,24 +1,17 @@
-﻿namespace FCAIChat.Hubs
+﻿using FCAIChat.Data;
+using Microsoft.AspNetCore.SignalR;
+
+namespace FCAIChat.Hubs;
+
+public class ChatHub(MessagesDbContext dbContext) : Hub
 {
-    using FCAIChat.Data;
-    using Microsoft.AspNetCore.SignalR;
-    using Microsoft.EntityFrameworkCore;
-
-    public class ChatHub : Hub
+    public async Task SendMessage(string user, string message)
     {
-        readonly MessagesDbContext dbContext;
+        var createdAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
 
-        public ChatHub(MessagesDbContext dbContext) => this.dbContext = dbContext;
+        dbContext.Messages.Add(new() { UserName = user, Content = message, CreatedAt = createdAt });
+        await dbContext.SaveChangesAsync();
 
-        public async Task SendMessage(string user, string message)
-        {
-            var createdAt = DateTime.UtcNow;
-            createdAt = DateTime.SpecifyKind(createdAt, DateTimeKind.Utc);
-
-            dbContext.Messages.Add(new () { UserName = user, Content = message, CreatedAt = createdAt });
-            await dbContext.SaveChangesAsync();
-
-            await Clients.All.SendAsync("ReceiveMessage", user, message, createdAt.ToString("o"));
-        }
+        await Clients.All.SendAsync("ReceiveMessage", user, message, createdAt.ToString("o"));
     }
 }

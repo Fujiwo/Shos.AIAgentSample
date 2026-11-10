@@ -133,7 +133,7 @@ static class My
             var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
             if (string.IsNullOrEmpty(openAIApiKey))
                 throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
-            return openAIApiKey!;
+            return openAIApiKey;
 
             // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましい。ハードコードする場合は、上記の代わりに以下のように書く
             // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef

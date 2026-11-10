@@ -4,16 +4,16 @@ namespace FCAICad;
 
 public class Model : IEnumerable<Figure>
 {
-    public SizeF Size = new SizeF(width: 3000.0f, height: 2000.0f);
+    public SizeF Size { get; } = new(width: 3000.0f, height: 2000.0f);
 
     public event EventHandler<Figure?>? Update;
 
-    readonly List<Figure> figures = new();
+    readonly List<Figure> figures = [];
 
     public RectangleF Bounds {
         get {
             if (figures.Count <= 0)
-                return new RectangleF(PointF.Empty, SizeF.Empty);
+                return RectangleF.Empty;
             var bounds = figures[0].Bounds;
             for (var index = 1; index < figures.Count; index++)
                 bounds = RectangleF.Union(bounds, figures[index].Bounds);
@@ -172,29 +172,28 @@ public class EllipseFigure : Figure
 
 public abstract class PointsFigure : Figure
 {
-    List<PointF> position = new List<PointF>();
-
+    // C# 14 の field キーワードで、自動生成されるバッキングフィールドを参照する
     public IList<PointF> Points
     {
-        get { return position; }
+        get;
         set {
-            position.Clear();
+            field.Clear();
             value.ForEach(point => Add(point));
         }
-    }
+    } = [];
 
     public bool IsClosed { get; set; } = false;
 
     public override RectangleF ShapeBounds
     {
         get {
-            if (position.Count <= 0)
+            if (Points.Count <= 0)
                 return RectangleF.Empty;
-            var minX = position[0].X;
-            var minY = position[0].Y;
-            var maxX = position[0].X;
-            var maxY = position[0].Y;
-            position.ForEach(point => {
+            var minX = Points[0].X;
+            var minY = Points[0].Y;
+            var maxX = Points[0].X;
+            var maxY = Points[0].Y;
+            Points.ForEach(point => {
                 if (point.X < minX) minX = point.X;
                 if (point.Y < minY) minY = point.Y;
                 if (point.X > maxX) maxX = point.X;
@@ -209,12 +208,12 @@ public abstract class PointsFigure : Figure
 
     public virtual bool Add(PointF point)
     {
-        position.Add(point);
+        Points.Add(point);
         return true;
     }
 
     public override string ToString()
-        => $"{base.ToString()}, Points: {string.Join(", ", position)}";
+        => $"{base.ToString()}, Points: {string.Join(", ", Points)}";
 }
 
 public class PolylineFigure : PointsFigure
@@ -325,7 +324,7 @@ public static class GraphicHelper
         //}
 
         if (points.Count > 2)
-            graphics.DrawLine(pen, points[points.Count - 2], points[points.Count - 1]);
+            graphics.DrawLine(pen, points[^2], points[^1]);
     }
 }
 
@@ -342,74 +341,59 @@ public static class Geometry
     }
 }
 
+// C# 14 の拡張ブロック (extension) で、レシーバーの型ごとに拡張メンバーをまとめる
 public static class GeometryExtensions
 {
-    public static float Distance(this PointF point1, PointF point2)
-    { return point1.Subtract(point2).Absolute(); }
-
-    public static PointF Add(this PointF point, SizeF size)
-    { return new PointF(point.X + size.Width, point.Y + size.Height); }
-
-    //public static PointF Subtract(this PointF point, SizeF size)
-    //{ return new PointF(point.X - size.Width, point.Y - size.Height); }
-
-    public static SizeF Subtract(this PointF point1, PointF point2)
-    { return new SizeF(point1.X - point2.X, point1.Y - point2.Y); }
-
-    public static SizeF Multiply(this SizeF size, float rate)
-    { return new SizeF(size.Width * rate, size.Height * rate); }
-
-    public static float Absolute(this SizeF size)
-    { return (size.Width.Square() + size.Height.Square()).SquareRoot(); }
-
-    public static float Square(this float value)
-    { return value * value; }
-
-    public static float SquareRoot(this float value)
-    { return (float)Math.Sqrt(value); }
-
-    public static bool IsValidForBezier(this PointF point, IList<PointF> points, float MinimumDistance)
-    { return points.Count <= 0 || points[points.Count - 1].Distance(point) >= MinimumDistance; }
-
-    //public static IList<PointF> ForBezier(this IList<PointF> points, float minimumDistance)
-    //{
-    //    var newPoints = new List<PointF>();
-    //    foreach (var point in points) {
-    //        if (point.IsValidForBezier(newPoints, minimumDistance))
-    //            newPoints.Add(point);
-    //    }
-    //    return newPoints;
-    //}
-
-    //public static IEnumerable<PointF> ToBezierPolyline(this IList<PointF> points, float minimumDistance)
-    //{ return points.ForBezier(minimumDistance).ToBezierPolyline(); }
-
-    //public static IEnumerable<PointF> ToBezierPolygon(this IList<PointF> points, float minimumDistance)
-    //{ return points.ForBezier(minimumDistance).ToBezierPolygon(); }
-
-    public static IEnumerable<PointF> ToBezierPolyline(this IList<PointF> points)
+    extension(PointF point)
     {
-        if (points.Count < 4) {
-            foreach (var point in points)
-                yield return point;
-        } else {
-            const float a = 1.0f / 3.0f / 2.0f;
-            yield return points[1];
-            for (var index = 0; index < points.Count - 3; index++) {
-                yield return points[index + 1].Add(points[index + 2].Subtract(points[index + 0]).Multiply(a));
-                yield return points[index + 2].Add(points[index + 1].Subtract(points[index + 3]).Multiply(a));
-                yield return points[index + 2];
-            }
-        }
+        public float Distance(PointF other) => point.Subtract(other).Absolute();
+
+        public PointF Add(SizeF size) => new(point.X + size.Width, point.Y + size.Height);
+
+        public SizeF Subtract(PointF other) => new(point.X - other.X, point.Y - other.Y);
+
+        public bool IsValidForBezier(IList<PointF> points, float minimumDistance)
+            => points.Count <= 0 || points[^1].Distance(point) >= minimumDistance;
     }
 
-    public static IEnumerable<PointF> ToBezierPolygon(this IList<PointF> points)
+    extension(SizeF size)
     {
-        if (points.Count < 3)
-            return points;
-        var polygonPoints = new List<PointF>(points);
-        for (var index = 0; index < 3; index++)
-            polygonPoints.Add(points[index]);
-        return polygonPoints.ToBezierPolyline();
+        public SizeF Multiply(float rate) => new(size.Width * rate, size.Height * rate);
+
+        public float Absolute() => (size.Width.Square() + size.Height.Square()).SquareRoot();
+    }
+
+    extension(float value)
+    {
+        public float Square() => value * value;
+
+        public float SquareRoot() => MathF.Sqrt(value);
+    }
+
+    extension(IList<PointF> points)
+    {
+        public IEnumerable<PointF> ToBezierPolyline()
+        {
+            if (points.Count < 4) {
+                foreach (var point in points)
+                    yield return point;
+            } else {
+                const float a = 1.0f / 3.0f / 2.0f;
+                yield return points[1];
+                for (var index = 0; index < points.Count - 3; index++) {
+                    yield return points[index + 1].Add(points[index + 2].Subtract(points[index + 0]).Multiply(a));
+                    yield return points[index + 2].Add(points[index + 1].Subtract(points[index + 3]).Multiply(a));
+                    yield return points[index + 2];
+                }
+            }
+        }
+
+        public IEnumerable<PointF> ToBezierPolygon()
+        {
+            if (points.Count < 3)
+                return points;
+            List<PointF> polygonPoints = [.. points, points[0], points[1], points[2]];
+            return polygonPoints.ToBezierPolyline();
+        }
     }
 }

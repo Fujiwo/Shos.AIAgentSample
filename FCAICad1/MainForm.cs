@@ -66,13 +66,7 @@ public partial class MainForm : Form
                     promptButton.Text = buttonTexts[0];
                     return false;
                 }
-                promptButton.Text = (frame % buttonTexts.Length) switch {
-                    1 => "🧠",
-                    2 => "💡",
-                    3 => "🧬",
-                    4 => "📡",
-                    _ => "🤖"
-                };
+                promptButton.Text = buttonTexts[frame % buttonTexts.Length];
                 return true;
             });
         }

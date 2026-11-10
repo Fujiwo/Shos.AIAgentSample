@@ -34,7 +34,7 @@ public abstract class ChatAgent : IAsyncDisposable
     // AIAgent を公開してスレッドのシリアライズに使用
     public AIAgent?           Agent        { get; private set; }
     // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
-    public AgentSession?      Session       { get; set; } = null;
+    public AgentSession?      Session      { get; set; }
     // エージェント名と指示
     public abstract string    Name         { get; }
     protected abstract string Instructions { get; }
@@ -54,17 +54,14 @@ public abstract class ChatAgent : IAsyncDisposable
         // ユーザープロンプトをエージェントスレッドに送信し、応答を取得
         return await RunAgentAsync(ToUserMessage(userPrompt)) ?? string.Empty;
 
-        static ChatMessage ToUserMessage(string userPrompt) => new ChatMessage(ChatRole.User, userPrompt);
+        static ChatMessage ToUserMessage(string userPrompt) => new(ChatRole.User, userPrompt);
     }
 
     // ファクトリ関数
     protected abstract IChatClient GetChatClient();
     
-    protected virtual async Task<(IEnumerable<McpClient>, IEnumerable<AITool>)> GetToolsAsync()
-    {
-        await Task.Delay(0);
-        return ([], []);
-    }
+    protected virtual Task<(IEnumerable<McpClient>, IEnumerable<AITool>)> GetToolsAsync()
+        => Task.FromResult<(IEnumerable<McpClient>, IEnumerable<AITool>)>(([], []));
 
     async Task Start()
     {
@@ -100,7 +97,7 @@ public abstract class ChatAgent : IAsyncDisposable
                 );
 
         // システムメッセージを作成して送信
-        async Task SendSystemMessageAsync() => await RunAgentAsync(new (ChatRole.System, SystemPrompt));
+        async Task SendSystemMessageAsync() => await RunAgentAsync(new(ChatRole.System, SystemPrompt));
     }
 
     // エージェントに ChatMessage を投げて応答を取得
@@ -191,7 +188,7 @@ public class MyChatAgent : ChatAgent
             var openAIApiKey = Environment.GetEnvironmentVariable(AzureOpenAIApiKeyEnvironmentVariable);
             if (string.IsNullOrEmpty(openAIApiKey))
                 throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
-            return openAIApiKey!;
+            return openAIApiKey;
 
             // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましい。ハードコードする場合は、上記の代わりに以下のように書く
             // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef

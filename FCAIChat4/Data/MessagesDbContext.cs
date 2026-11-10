@@ -1,18 +1,10 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace FCAIChat.Data;
 
-public class MessagesDbContext : DbContext
+public class MessagesDbContext(DbContextOptions<MessagesDbContext> options) : DbContext(options)
 {
     public virtual DbSet<Message> Messages { get; set; }
-
-    //public MessagesDbContext()
-    //{}
-
-    public MessagesDbContext(DbContextOptions<MessagesDbContext> options)
-        : base(options)
-    {}
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //{
@@ -25,8 +17,8 @@ public class MessagesDbContext : DbContext
 
 public class Message
 {
-    public int Id { get; set; }
-    public string Content { get; set; } = string.Empty;
-    public string UserName { get; set; } = string.Empty;
+    public int      Id        { get; set; }
+    public string   Content   { get; set; } = string.Empty;
+    public string   UserName  { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

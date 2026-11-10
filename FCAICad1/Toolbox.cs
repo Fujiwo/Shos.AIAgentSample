@@ -8,7 +8,7 @@ static class Toolbox
     public static MainForm? MainForm { get; set; }
 
     [Description("Get the paper size (width and height).")]
-    public static SizeF GetPaperSize() => MainForm?.PaperSize ?? new SizeF();
+    public static SizeF GetPaperSize() => MainForm?.PaperSize ?? SizeF.Empty;
 
     [Description("Clear all drawn shapes to make the paper blank.")]
     public static string ClearAll()
