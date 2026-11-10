@@ -4,611 +4,735 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 [![C#](https://img.shields.io/badge/C%23-14.0-239120)](https://docs.microsoft.com/dotnet/csharp/)
 
-AIエージェント開発ハンズオンセミナー (開発者向け) のサンプルコードとチュートリアル
+**日本語** | [English](./README.en.md)
+
+**C# / .NET で AI エージェントを作る方法を、ゼロから段階的に学べるハンズオン教材です。**
+
+「AIエージェント開発ハンズオンセミナー (開発者向け)」のサンプルコードと、日本語のチュートリアルをまとめています。**Microsoft Agent Framework** で AI エージェントを作り、**Model Context Protocol (MCP)** で外部のツールを使えるようにするまでを、1 ステップずつ動かしながら学べます。
 
 **リポジトリ**: https://github.com/Fujiwo/Shos.AIAgentSample
 
 ## 目次
 
-- [概要](#概要)
-- [特徴](#特徴)
-- [クイックスタート](#クイックスタート)
-- [内容一覧](#内容一覧)
-- [チュートリアルの実施方法](#チュートリアルの実施方法)
-  - [前提条件](#前提条件)
-  - [学習の進め方](#学習の進め方)
-  - [学習のヒント](#学習のヒント)
-- [プロジェクト構成](#プロジェクト構成)
-- [ファイル・ディレクトリ構成](#ファイルディレクトリ構成)
-- [技術スタックと実施環境](#技術スタックと実施環境)
+- [このリポジトリについて](#このリポジトリについて)
+- [本リポジトリのポイント](#本リポジトリのポイント)
+- [全体像](#全体像)
+- [プロジェクト一覧](#プロジェクト一覧)
+- [手順書](#手順書)
+  - [手順 1 必要なものをそろえる](#手順-1-必要なものをそろえる)
+  - [手順 2 リポジトリを取得してビルドする](#手順-2-リポジトリを取得してビルドする)
+  - [手順 3 LLM を準備する](#手順-3-llm-を準備する)
+  - [手順 4 コードの設定を自分の環境に合わせる](#手順-4-コードの設定を自分の環境に合わせる)
+  - [手順 5 コンソールの AI エージェントを動かす](#手順-5-コンソールの-ai-エージェントを動かす)
+  - [手順 6 MCP サーバーを動かして確かめる](#手順-6-mcp-サーバーを動かして確かめる)
+  - [手順 7 MCP サーバーのツールを AI エージェントから使う](#手順-7-mcp-サーバーのツールを-ai-エージェントから使う)
+  - [手順 8 Web チャットを動かす](#手順-8-web-チャットを動かす)
+  - [手順 9 CAD アプリを動かす](#手順-9-cad-アプリを動かす)
+  - [手順 10 後片付け](#手順-10-後片付け)
+- [チュートリアルで自分で作る](#チュートリアルで自分で作る)
+- [ファイル構成](#ファイル構成)
+- [技術スタック](#技術スタック)
+- [用語集](#用語集)
 - [トラブルシューティング](#トラブルシューティング)
+- [注意事項](#注意事項)
 - [ライセンス](#ライセンス)
 - [作者](#作者)
 - [謝辞](#謝辞)
 - [貢献](#貢献)
 
-## 概要
+## このリポジトリについて
 
-このリポジトリは、**Microsoft Agent Framework** と **Model Context Protocol (MCP)** を使用した AI エージェント開発の実践的なチュートリアルを提供します。ローカル LLM (Ollama) や Azure OpenAI を利用した AI エージェントの作成から、MCP サーバーの実装、そしてエージェントと MCP サーバーの統合まで、段階的に学習できます。
+このリポジトリでは、次のことを順に学べます。
 
-### 🎯 このリポジトリで学べること
+| 学べること | 内容 | 対応するプロジェクト |
+|---|---|---|
+| **AI エージェントの基本** | LLM に質問して答えを受け取る、最小の AI エージェントを作る | FCAIAgent1 |
+| **LLM の切り替え** | ローカルの Ollama と、クラウドの Azure OpenAI を切り替えて使う | FCAIAgent2 |
+| **会話の継続** | 前の発言を覚えたまま、何往復も会話する | FCAIAgent3 |
+| **MCP サーバーを作る** | AI エージェントに道具 (ツール) を提供するサーバーを、STDIO と HTTP の 2 方式で作る | McpServer.Con / McpServer.Sse |
+| **MCP サーバーのツールを使う** | 自作のサーバーと既製のサーバーのツールを、AI エージェントから使う | FCAIAgent4 / FCAIAgent5 |
+| **アプリに組み込む** | AI エージェントを Web チャットやデスクトップアプリに組み込む | FCAIChat1〜5 / FCAICad1 |
 
-| 学習内容 | 説明 |
-|---------|------|
-| ✅ **AI エージェントの基礎** | AI エージェントの基本概念から実装まで体系的に学習 |
-| ✅ **複数の LLM 利用** | ローカル LLM (Ollama) と Azure OpenAI の両方の利用方法 |
-| ✅ **MCP サーバー開発** | Model Context Protocol サーバーの作成と統合 |
-| ✅ **多様なアプリケーション** | コンソールアプリ、Web アプリ、CAD アプリの実装 |
-| ✅ **実践的な統合** | 複数の外部ツールを活用した実践的なエージェント開発 |
+> [!IMPORTANT]
+> Microsoft Agent Framework と MCP の SDK は、バージョンが上がると API が変わることがあります。このリポジトリは `Microsoft.Agents.AI` 1.28.0 と `ModelContextProtocol` 2.4.0 で動作を確認しています (チュートリアルの執筆当初はプレビュー版を基にしていました)。
 
-> **⚠️ 重要な注意事項**
-> 
-> このサンプルコードとチュートリアルは、執筆時点のプレビュー版の Microsoft Agent Framework が基になっています。
-> Microsoft Agent Framework は、今後のバージョンアップで内容が変わる可能性があります。
+## 本リポジトリのポイント
 
-## 特徴
+### 1. 前のステップとの「差分」が一目で分かる
 
-- 🔧 **.NET ベースの実装** - C# と .NET を使用した実装例
-- 🤖 **複数の LLM 対応** - ローカル LLM (Ollama) と Azure OpenAI の両方に対応
-- 🔌 **MCP サーバーの実装** - STDIO と HTTP (Streamable HTTP) の両方のトランスポート方式をサポート
-- 📖 **段階的な学習** - 基礎から応用まで、ステップバイステップで学習
-- 💡 **実践的なサンプル** - コンソールアプリ、Web アプリ、CAD アプリを提供
-- 🇯🇵 **日本語ドキュメント** - すべてのチュートリアルを日本語で提供
+FCAIAgent1〜5 と FCAIChat1〜5 は、前のステップのコードに少しずつ機能を足していく構成です。どこを変えたかがすぐ分かるように、コードに **`旧` / `新` の印**を付けています。
 
-## クイックスタート
-
-最も簡単に AI エージェントを試すには、以下の手順に従ってください：
-
-### 手順
-
-1. **リポジトリをクローン**
-   ```bash
-   git clone https://github.com/Fujiwo/Shos.AIAgentSample.git
-   cd Shos.AIAgentSample
-   ```
-
-2. **Ollama をインストール**（ローカル LLM を使用）
-   - [https://ollama.com/](https://ollama.com/) からダウンロードしてインストール
-
-3. **Ollama にサインインしてモデルを確認**
-   サンプルコードは既定でクラウドモデル `minimax-m3:cloud` を使います。クラウドモデルの利用には Ollama アカウントでのサインインが必要です。
-   ```bash
-   ollama signin
-   ollama run minimax-m3:cloud
-   ```
-   ローカル LLM を使う場合は、`ollama pull gemma3` などでモデルをダウンロードし、各プロジェクトの `ollama.SelectedModel = "minimax-m3:cloud";` を変更してください。
-
-4. **Visual Studio でソリューションを開く**
-   - `Shos.AIAgentSample.sln` を Visual Studio で開く
-
-5. **サンプルプロジェクトを実行**
-   - `FCAIAgent1` プロジェクトを右クリックし、「スタートアップ プロジェクトに設定」を選択
-   - F5 キーを押してデバッグ実行
-
-詳細な手順とオプション設定は、[チュートリアルの実施方法](#チュートリアルの実施方法)を参照してください。
-
-## 内容一覧
-
-### 0. 準備
-
-- [インストール](./Documents/tutorial.0.1.md) - .NET、Node.js、Ollama のセットアップ
-- [Azure OpenAI](./Documents/tutorial.0.2.md) - Azure OpenAI の設定
-
-### 1. AI エージェントの作成 (LLM 利用)
-
-- [ローカル LLM の利用](./Documents/tutorial.1.1.md) - Ollama を使った AI エージェントの作成
-- [Azure OpenAI の利用](./Documents/tutorial.1.2.md) - Azure OpenAI を使った AI エージェントの作成
-- [複数ターンのチャット](./Documents/tutorial.1.3.md) - 会話履歴を保持したチャット機能の実装
-
-### 2. MCP サーバーの作成
-
-- [MCP サーバー (STDIO) の作成](./Documents/tutorial.2.1.md) - 標準入出力を使った MCP サーバーの実装
-- [MCP サーバー (SSE) の作成](./Documents/tutorial.2.2.md) - HTTP (Streamable HTTP) を使った MCP サーバーの実装
-- [MCP サーバーの動作確認](./Documents/tutorial.2.3.md) - MCP サーバーの動作確認手順
-
-### 3. AI エージェントでの MCP サーバーの利用
-
-- [MCP サーバーの利用 (単数)](./Documents/tutorial.3.1.md) - 単一の MCP サーバーとの連携
-- [MCP サーバーの利用 (複数)](./Documents/tutorial.3.2.md) - 複数の MCP サーバーとの連携
-
-### 4. [後片付け](./Documents/tutorial.4.1.md)
-
-## チュートリアルの実施方法
-
-このチュートリアルは、AI エージェント開発の基礎から応用まで、段階的に学習できるように設計されています。
-
-### 前提条件
-
-#### 必須要件
-
-以下のツールがインストールされている必要があります:
-
-| ツール | バージョン | 説明 |
-|--------|-----------|------|
-| **.NET SDK** | 10.0 以上（必須） | すべてのプロジェクトが .NET 10 を対象としているため、10.0 未満ではビルドできません |
-| **Visual Studio** または **VS Code** | .NET 10 に対応した Visual Studio (2026 以降) または VS Code | 開発環境（チュートリアルは Visual Studio を前提） |
-| **Node.js** | v24.0 以上推奨 | MCP サーバーの動作確認ツールに必要 |
-
-詳細なインストール手順は [インストールガイド](./Documents/tutorial.0.1.md) を参照してください。
-
-#### LLM の選択（いずれかを選択）
-
-使用する LLM に応じて、以下のいずれかを選択してください:
-
-| 選択肢 | メリット | 必要なもの | ガイド |
-|--------|----------|------------|--------|
-| **Ollama** | ・無料枠で利用可能<br>・ローカルモデルならインターネット接続不要・プライバシー保護 | ・Ollama のインストール<br>・既定のクラウドモデル (`minimax-m3:cloud`) を使う場合は Ollama アカウントでのサインイン | [インストールガイド](./Documents/tutorial.0.1.md) |
-| **Azure OpenAI** | ・高性能<br>・最新モデルが利用可能<br>・スケーラブル | ・Azure アカウント<br>・Azure OpenAI リソース<br>・API キー | [設定ガイド](./Documents/tutorial.0.2.md) |
-
-> **注意**: Azure OpenAI を使用する場合、API の利用に応じて課金が発生します。
-
-#### 推奨される前提知識
-
-- **プログラミング**: C# の基礎、.NET アプリケーション開発経験
-- **コマンドライン**: 基本的なコマンド操作（`cd`, `dotnet` コマンドなど）
-- **Git**: リポジトリのクローンと基本操作
-
-#### 推奨される参考資料
-
-事前学習として以下の資料が役立ちます：
-- [AIエージェント開発ハンズオンセミナー資料 (PDF)](./Documents/2025010.AIエージェント開発ハンズオンセミナー.pdf) - セミナーの詳細資料（前提知識を含む）
-
-### 学習の進め方
-
-#### ステップ 1: 環境準備
-
-1. **リポジトリのクローン**
-
-   ```bash
-   git clone https://github.com/Fujiwo/Shos.AIAgentSample.git
-   cd Shos.AIAgentSample
-   ```
-
-2. **必要なツールのインストール**
-
-   [インストールガイド](./Documents/tutorial.0.1.md)に従って、必要なツールをインストールしてください。
-
-3. **ソリューションを開く**
-
-   Visual Studio で `Shos.AIAgentSample.sln` を開きます。
-
-#### ステップ 2: チュートリアルの実施
-
-推奨される学習順序：
-
-1. **準備編**（所要時間：30分〜1時間）
-   - [0.1 インストール](./Documents/tutorial.0.1.md) - 開発環境のセットアップ
-   - [0.2 Azure OpenAI](./Documents/tutorial.0.2.md) - Azure OpenAI の設定（Azure OpenAI を使用する場合）
-
-2. **基礎編**（所要時間：1〜2時間）
-   - [1.1 ローカル LLM の利用](./Documents/tutorial.1.1.md) - 最初の AI エージェントを作成
-   - [1.2 Azure OpenAI の利用](./Documents/tutorial.1.2.md) - クラウド LLM への接続
-   - [1.3 複数ターンのチャット](./Documents/tutorial.1.3.md) - 対話型エージェントの実装
-
-3. **MCP サーバー編**（所要時間：1〜2時間）
-   - [2.1 MCP サーバー (STDIO) の作成](./Documents/tutorial.2.1.md) - 最初の MCP サーバー
-   - [2.2 MCP サーバー (SSE) の作成](./Documents/tutorial.2.2.md) - HTTP (Streamable HTTP) サーバー
-   - [2.3 MCP サーバーの動作確認](./Documents/tutorial.2.3.md) - サーバーの検証
-
-4. **応用編**（所要時間：1〜2時間）
-   - [3.1 MCP サーバーの利用（単数）](./Documents/tutorial.3.1.md) - ツールとエージェントの統合
-   - [3.2 MCP サーバーの利用（複数）](./Documents/tutorial.3.2.md) - 複数ツールの活用
-
-5. **後片付け**
-   - [4.1 後片付け](./Documents/tutorial.4.1.md) - Azure リソースのクリーンアップ
-
-#### ステップ 3: サンプルプロジェクトの実行
-
-各プロジェクトは独立して実行できます。チュートリアルに従って作成することもできますが、既存のサンプルプロジェクトを参照・実行することもできます。
-
-> **⚠️ 注意**: 既存のサンプルを実行する場合、API キーやエンドポイント、プロジェクトのパスなどを、環境に合わせてソースコード内に追記する必要があります。
-
-##### コンソールアプリケーションの実行例
-
-```bash
-# 基本的な AI エージェント (FCAIAgent1〜5)
-cd FCAIAgent1
-dotnet run
-
-# MCP サーバーの例
-cd McpServer.Con
-dotnet run
+```csharp
+// 旧: using IChatClient chatClient = GetOllamaClient();
+// 新: ここから
+// 使用するチャットクライアント種別
+const My.ChatClientType chatClientType = My.ChatClientType.AzureOpenAI;
+using IChatClient       chatClient     = My.GetChatClient(chatClientType);
+// 新: ここまで
 ```
 
-##### Web アプリケーションの実行例
+- `// 新: ここから` 〜 `// 新: ここまで` が、このステップで追加・変更したコードです。
+- `// 旧:` の後ろのコメントは、前のステップのコードです (このステップでは使いません)。
+- 印は直前のステップからの差分にだけ付いています。前のステップの印は、次のステップでは外しています。
 
-```bash
-# Web チャットアプリケーション (FCAIChat1〜5)
-cd FCAIChat1
-dotnet run
+完成形だけを読みたいときは、FCAIAgent5 から印を取り除いた **FCAIAgent** を見てください。
 
-# ブラウザで以下にアクセス:
-# - HTTPS: https://localhost:5001
-# - HTTP: http://localhost:5000
+### 2. ローカルとクラウドの LLM を同じコードで使える
+
+`IChatClient` という共通のインターフェイスを通して LLM を使うので、**Ollama** (ローカル、または Ollama のクラウドモデル) と **Azure OpenAI** を、1 行の切り替えで使い分けられます。
+
+### 3. MCP を「作る側」と「使う側」の両方から学べる
+
+- **作る側**: 時刻を返す STDIO のサーバー (McpServer.Con) と、天気予報を返す HTTP のサーバー (McpServer.Sse) を自作します。
+- **使う側**: 自作のサーバーに加えて、既製のサーバー (ファイルシステム・Playwright・Brave Search) のツールも AI エージェントから使います。
+
+### 4. コンソール・Web・デスクトップの 3 種類のアプリで試せる
+
+| 種類 | プロジェクト | 何ができるか |
+|---|---|---|
+| コンソール | FCAIAgent1〜5 | ターミナルで AI エージェントと会話する |
+| Web | FCAIChat1〜5 | 複数人のチャットに AI エージェントが参加する (`@Agent` で呼びかける) |
+| デスクトップ | FCAICad1 | 「海辺の夕焼けを描いて」のように、言葉で指示すると AI がイラストを描く |
+
+### 5. 最新の C# と、丁寧な日本語のコメント
+
+- C# 14 / .NET 10 の書き方 (プライマリコンストラクター、コレクション式、拡張ブロック、`field` キーワードなど) を使っています。
+- ソースコードには、初めて読む人にも分かるように日本語のコメントを付けています。
+- 自分で定義した型・定数・メソッドは `static class My` にまとめています。`My.` が付いていれば自作のもの、付いていなければライブラリのもの、と見分けられます。
+
+## 全体像
+
+AI エージェントは、LLM (考える役) とツール (手を動かす役) を組み合わせて動きます。
+
+```mermaid
+flowchart LR
+    User["ユーザー"] -->|プロンプト| Agent["AI エージェント<br/>(ChatClientAgent)"]
+    Agent -->|IChatClient| LLM["LLM<br/>Ollama / Azure OpenAI"]
+    Agent -->|ツールの呼び出し| MCP["MCP クライアント"]
+    MCP -->|STDIO| Con["McpServer.Con<br/>(時刻)"]
+    MCP -->|HTTP| Sse["McpServer.Sse<br/>(天気予報)"]
+    MCP -->|STDIO| Ext["既製の MCP サーバー<br/>(ファイルシステム・Playwright・Brave Search)"]
 ```
 
-##### Visual Studio での実行
+1. ユーザーがプロンプト (質問や指示) を送ります。
+2. AI エージェントは LLM に、使えるツールの一覧と一緒にプロンプトを渡します。
+3. LLM がツールを使うと判断したら、AI エージェントが MCP 経由でツールを呼び出し、結果を LLM に返します。
+4. LLM がツールの結果を基に答えをまとめ、ユーザーに返します。
 
-1. Visual Studio で `Shos.AIAgentSample.sln` を開く
-2. ソリューションエクスプローラーで実行したいプロジェクトを右クリック
-3. 「スタートアップ プロジェクトに設定」を選択
-4. F5 キーまたは「デバッグの開始」を押して実行
+## プロジェクト一覧
 
-### 学習のヒント
+### コンソールの AI エージェント (FCAIAgent シリーズ)
 
-効果的に学習を進めるためのポイント：
+| プロジェクト | ステップ | できること | チュートリアル |
+|---|---|---|---|
+| **FCAIAgent1** | 1 | Ollama に 1 回だけ質問して、答えを表示する | [1.1](./Documents/tutorial.1.1.md) |
+| **FCAIAgent2** | 2 | Ollama と Azure OpenAI を切り替えて使う (`ChatClientType`) | [1.2](./Documents/tutorial.1.2.md) |
+| **FCAIAgent3** | 3 | `AgentSession` で会話を覚えたまま、何往復も会話する | [1.3](./Documents/tutorial.1.3.md) |
+| **FCAIAgent4** | 4 | STDIO の MCP サーバー (McpServer.Con) の時刻ツールを使う | [3.1](./Documents/tutorial.3.1.md) |
+| **FCAIAgent5** | 5 | 複数の MCP サーバー (時刻・天気予報・ファイルシステム) のツールを使う | [3.2](./Documents/tutorial.3.2.md) |
+| **FCAIAgent** | 完成形 | FCAIAgent5 と同じコードから、`旧` / `新` の印を取り除いたもの | — |
 
-| ヒント | 説明 |
-|--------|------|
-| 📚 **順番に進める** | 各チュートリアルは前のステップの知識を前提としています。順番に進めることを強く推奨します |
-| 💭 **コードを理解する** | 単にコピー＆ペーストするのではなく、各コードの意味を理解しながら進めてください |
-| 🔬 **実験する** | サンプルコードを改変して、動作を確認することで理解が深まります |
-| 🐛 **エラーに慣れる** | エラーメッセージを読み、問題を解決するプロセスも重要な学習です |
-| 📝 **コメントを読む** | サンプルコードには詳細なコメントが付いています。よく読んで理解を深めてください |
+### MCP サーバー
 
-## プロジェクト構成
-
-このリポジトリには、段階的に学習できる複数のサンプルプロジェクトが含まれています。
-
-### AI エージェントプロジェクト
-
-各プロジェクトは前のプロジェクトの機能を拡張していく形になっています：
-
-#### 🤖 コンソールアプリケーション (FCAIAgent シリーズ)
-
-| プロジェクト | 学習ステップ | 主な機能 | チュートリアル |
-|------------|------------|---------|--------------|
-| **FCAIAgent1** | ステップ 1 | ・Ollama を使用したローカル LLM との通信<br>・シンプルな1回のプロンプトと応答 | [1.1](./Documents/tutorial.1.1.md) |
-| **FCAIAgent2** | ステップ 2 | ・Ollama と Azure OpenAI の両方に対応<br>・チャットクライアントの切り替え機能 | [1.2](./Documents/tutorial.1.2.md) |
-| **FCAIAgent3** | ステップ 3 | ・会話履歴を保持したチャット機能<br>・AgentSession を使用した対話セッション管理 | [1.3](./Documents/tutorial.1.3.md) |
-| **FCAIAgent4** | ステップ 4 | ・STDIO トランスポートを使用した MCP サーバー接続<br>・外部ツール（時刻取得など）の利用 | [3.1](./Documents/tutorial.3.1.md) |
-| **FCAIAgent5** | ステップ 5 | ・複数の MCP サーバー（時刻、天気、ファイルシステム）の同時利用<br>・より実践的なツール統合の例 | [3.2](./Documents/tutorial.3.2.md) |
-| **FCAIAgent** | 最終形態 | FCAIAgent5 と同じ機能。FCAIAgent5 にある「旧/新」の差分コメントを取り除いた、完成形として読むためのコード | - |
-
-### 🔧 MCP サーバープロジェクト
-
-| プロジェクト | トランスポート | 主な機能 | チュートリアル |
-|------------|--------------|---------|--------------|
-| **McpServer.Con** | STDIO | ・標準入出力を通じた通信<br>・時刻取得ツールの実装例<br>・ローカルプロセス間通信向け | [2.1](./Documents/tutorial.2.1.md) |
-| **McpServer.Sse** | HTTP (Streamable HTTP) | ・`http://localhost:3001/` で待ち受け<br>・天気予報ツールの実装例<br>・ネットワーク経由での利用が可能<br>・旧来の SSE エンドポイント (`/sse`) は既定で無効 | [2.2](./Documents/tutorial.2.2.md) |
-
-### 🌐 Web アプリケーション (FCAIChat シリーズ)
-
-ASP.NET Core Razor Pages + SignalR によるチャットアプリを段階的に作り、最後に AI エージェントを組み込むプロジェクト群です。ステップ 1〜3 はチャットアプリ自体の作成で、LLM は使いません。
-
-| プロジェクト | 学習ステップ | 主な機能 |
-|------------|------------|---------|
-| **FCAIChat1** | ステップ 1 | ・Razor Pages + SignalR によるリアルタイムチャット<br>・ASP.NET Core Identity によるログイン |
-| **FCAIChat2** | ステップ 2 | ・メッセージを EF Core (SQL Server LocalDB) に保存<br>・ページ表示時に過去のメッセージを表示 |
-| **FCAIChat3** | ステップ 3 | ・部分ビュー (`_MessagePartial`) による吹き出し形式のメッセージ表示 |
-| **FCAIChat4** | ステップ 4 | ・AI エージェント (Azure OpenAI) をチャットに参加させる (`@Agent` 宛てのメッセージに応答)<br>・Playwright MCP サーバーのツールを利用 |
-| **FCAIChat5** | ステップ 5 | ・Brave Search MCP サーバーのツールを利用 (環境変数 `BRAVE_API_KEY` が必要)<br>・ログインユーザー単位で会話の状態を保存・復元<br>・会話のクリア機能 |
+| プロジェクト | 通信方式 | 提供するツール | チュートリアル |
+|---|---|---|---|
+| **McpServer.Con** | STDIO (標準入出力) | `GetCurrentTime` (現在時刻)、`GetTimeInTimezone` (指定したタイムゾーンの時刻) | [2.1](./Documents/tutorial.2.1.md) |
+| **McpServer.Sse** | HTTP (Streamable HTTP)。`http://localhost:3001/` で待ち受ける | `GetWeatherForecast` (都道府県の天気予報。北海道・東京都・石川県・福井県だけ固定の値を返す学習用のデータ) | [2.2](./Documents/tutorial.2.2.md) |
 
 > [!NOTE]
-> FCAIChat シリーズは SQL Server LocalDB を使うため、既定の設定のままでは Windows でのみ動作します。macOS / Linux で動かす場合は、`appsettings.json` の接続文字列を SQL Server などに変更してください。
+> McpServer.Sse は名前に「Sse」と付いていますが、通信方式は現行の Streamable HTTP です。旧来の SSE 用のエンドポイント (`/sse`) は既定で無効です。
 
-### 🎨 CAD アプリケーション (FCAICad1)
+### Web チャット (FCAIChat シリーズ)
 
-Windows Forms を使用した、AI エージェントを統合した CAD (Computer-Aided Design) アプリケーションです。自然言語で図形描画を指示でき、AI エージェントがそれを解釈して実際に描画を実行します。
+ASP.NET Core Razor Pages と SignalR でチャットアプリを作り、最後に AI エージェントを参加させます。ステップ 1〜3 はチャットアプリそのものを作る段階で、LLM は使いません。
 
-#### プロジェクト概要
+| プロジェクト | ステップ | できること |
+|---|---|---|
+| **FCAIChat1** | 1 | SignalR によるリアルタイムチャット。ASP.NET Core Identity によるログイン |
+| **FCAIChat2** | 2 | メッセージをデータベース (EF Core + SQL Server LocalDB) に保存し、ページを開いたときに過去のメッセージを表示する |
+| **FCAIChat3** | 3 | 部分ビュー (`_MessagePartial`) で、メッセージを吹き出しの形で表示する |
+| **FCAIChat4** | 4 | AI エージェント (Azure OpenAI) がチャットに参加する。`@Agent` を含むメッセージに答える。Playwright MCP サーバーでブラウザーを操作できる |
+| **FCAIChat5** | 5 | Brave Search MCP サーバーで Web を検索できる。ログインしたユーザーごとに会話を保存・復元する。会話をクリアできる |
 
-| プロジェクト | プラットフォーム | 主な機能 |
-|------------|----------------|---------|
-| **FCAICad1** | Windows Forms | ・自然言語による図形描画指示<br>・AI エージェントによる描画コマンド自動実行<br>・リアルタイム図形表示<br>・Windows Forms を使った GUI 実装 |
+### CAD アプリ (FCAICad1)
 
-#### AI エージェントに提供されるツール
+Windows Forms のお絵描き (CAD) アプリです。「森の中の小さな家を描いて」のように言葉で指示すると、AI エージェントが描画ツールを何度も呼び出してイラストを描きます。AI エージェントを**デスクトップアプリに組み込み、言葉でアプリを操作する**例になっています。
 
-FCAICad1 では、以下のツール（関数）を AI エージェントに提供しています：
+AI エージェントには、`Toolbox.cs` の静的メソッドを `AIFunctionFactory.Create` でツールとして渡しています。
 
-| ツール | 説明 |
-|--------|------|
-| `GetPaperSize` | 用紙サイズ（幅と高さ）を取得 |
-| `GetAvailableColors` | 使用できる色名の一覧を取得 |
-| `ClearAll` | すべての図形を消去 |
-| `DrawLine` | 直線を描画 |
-| `DrawRectangle` / `DrawRoundedRectangle` | 矩形 / 角丸矩形を描画 |
-| `DrawCircle` / `DrawEllipse` | 円 / 楕円を描画 |
-| `DrawPolylineOrPolygon` | 折れ線または多角形を描画 |
-| `DrawCurve` / `DrawFreeFormCurve` | 曲線 / 自由曲線を描画 |
+| ツール | 内容 |
+|---|---|
+| `GetPaperSize` | 用紙のサイズ (幅 3000・高さ 2000) を返す |
+| `GetAvailableColors` | 使える色の名前の一覧を返す |
+| `ClearAll` | すべての図形を消す |
+| `DrawLine` | 直線を描く |
+| `DrawRectangle` / `DrawRoundedRectangle` | 矩形 / 角丸矩形を描く |
+| `DrawCircle` / `DrawEllipse` | 円 / 楕円を描く |
+| `DrawPolylineOrPolygon` | 折れ線 / 多角形を描く |
+| `DrawCurve` / `DrawFreeFormCurve` | 点を滑らかにつなぐ曲線 / 自由曲線を描く |
 
-ツールは `Toolbox.cs` の静的メソッドとして定義され、`AIFunctionFactory.Create` でエージェントに渡されます。このほか、Brave Search MCP サーバーが利用できる場合は Web 検索のツールも使えます (環境変数 `BRAVE_API_KEY`。未設定の場合は CAD ツールだけで動作します)。
+AI エージェントへの指示 (システムプロンプト) と、ツールの説明 (`[Description]`) には、イラストをきれいに描くためのコツ (構図・配色・重ね順・部品の描き方など) を書いています。プロンプトの書き方で結果がどう変わるかを試す教材としても使えます。環境変数 `BRAVE_API_KEY` を設定すると、Brave Search のツールで Web も検索できます (設定しなくても描画はできます)。
 
-#### 実装のポイント
+## 手順書
 
-- **自然言語インターフェース**: ユーザーは「右上から左下に線を引いて」といった自然な指示を入力できます
-- **AI による解釈**: エージェントが指示を解釈し、適切なツールを呼び出します
-- **即座の可視化**: 描画結果がリアルタイムに画面に表示されます
+ここからは、このリポジトリのサンプルを**実際に動かすまでの手順**を順に説明します。Windows 11 と Visual Studio 2026 を使う前提で書いています。macOS / Linux でのやり方も、違うところだけ書いています。
 
-このプロジェクトは、**AI エージェントをデスクトップアプリケーションに統合し、自然言語でアプリケーションを制御する実例**を提供します。今後、より多くの描画ツール（テキストなど）を追加することで、より高度な CAD システムへと発展させることができます。
+全体の流れは次のとおりです。
 
-> [!NOTE]  
-> FCAICad1 は Windows Forms を使用しているため、**Windows でのみ動作**します。
+| 手順 | やること | 所要時間の目安 | 必須かどうか |
+|---|---|---|---|
+| 1 | 必要なソフトウェアをインストールする | 30〜60 分 | 必須 |
+| 2 | リポジトリを取得してビルドする | 5 分 | 必須 |
+| 3 | LLM (Ollama か Azure OpenAI) を準備する | 10〜30 分 | 必須 (どちらか一方) |
+| 4 | コードの設定を自分の環境に合わせる | 10 分 | 必須 |
+| 5 | コンソールの AI エージェントを動かす | 15 分 | 必須 |
+| 6 | MCP サーバーを動かして確かめる | 15 分 | 推奨 |
+| 7 | MCP サーバーのツールを AI エージェントから使う | 15 分 | 必須 |
+| 8 | Web チャットを動かす | 30 分 | 任意 |
+| 9 | CAD アプリを動かす | 10 分 | 任意 |
+| 10 | 後片付け | 5 分 | Azure を使った場合は必須 |
 
-### 📚 ドキュメントとリソース
+### 手順 1 必要なものをそろえる
 
-- **Documents/** - チュートリアルドキュメントと画像
-  - 各ステップの詳細な説明
-  - スクリーンショットによる視覚的なガイド
-  - PDF およびスライド形式のセミナー資料
+#### 1-1. ソフトウェアをインストールする
 
-### ⚙️ 設定ファイル
+| ソフトウェア | バージョン | 何に使うか | 入手先 |
+|---|---|---|---|
+| **.NET SDK** | 10.0 以上 (必須) | ビルドと実行。すべてのプロジェクトが .NET 10 向けなので、10.0 未満ではビルドできない | [.NET のダウンロード](https://dotnet.microsoft.com/download) |
+| **Visual Studio 2026** (または VS Code) | .NET 10 に対応したもの | コードの編集と実行。Visual Studio では「ASP.NET と Web 開発」と「.NET デスクトップ開発」のワークロードを選ぶ | [Visual Studio](https://visualstudio.microsoft.com/ja/) |
+| **Node.js** | v24 以上を推奨 | 既製の MCP サーバーの起動 (`npx`) | [Node.js](https://nodejs.org/ja/download) |
+| **Git** | 最新版 | リポジトリの取得 | [Git](https://git-scm.com/) |
+| **Ollama** | 最新版 | ローカルや Ollama のクラウドで LLM を動かす (Azure OpenAI だけを使う場合は不要) | [Ollama](https://ollama.com/) |
 
-- **.mcp.json** - ルートディレクトリの MCP サーバー設定（サンプル）
-- **.vscode/mcp.json** - Visual Studio Code 用の MCP サーバー設定
-- **Shos.AIAgentSample.sln** - Visual Studio ソリューションファイル
+画面の画像付きのインストール手順は、[0.1 インストール](./Documents/tutorial.0.1.md) にあります。
 
-## 技術スタックと実行環境
+#### 1-2. インストールできたか確かめる
 
-### 開発・実行環境
+ターミナル (Windows では「ターミナル」や PowerShell) で、次のコマンドを実行します。
 
-| カテゴリ | 内容 |
-|----------|------|
-| **言語** | C# 14.0 |
-| **ランタイム** | .NET 10.0（必須） |
-| **IDE** | .NET 10 に対応した Visual Studio (Visual Studio 2026 以降)、または Visual Studio Code |
-| **対応 OS** | Windows 11/10（全機能）、macOS、Linux（FCAICad1 を除く。FCAIChat は接続文字列の変更が必要） |
-
-### 実行環境
-
-#### オペレーティングシステム
-
-| OS | サポート状況 | 備考 |
-|----|------------|------|
-| **Windows 11/10** | ✅ すべてのプロジェクト | FCAICad1 を含むすべてのプロジェクトが動作 |
-| **macOS** | ✅ 一部対応 | FCAIAgent、MCP サーバープロジェクトをサポート (FCAIChat は LocalDB 以外のデータベースへの変更が必要) |
-| **Linux** | ✅ 一部対応 | FCAIAgent、MCP サーバープロジェクトをサポート (FCAIChat は LocalDB 以外のデータベースへの変更が必要) |
-
-> [!NOTE]  
-> **FCAICad1** プロジェクトは Windows Forms を使用しているため、Windows でのみ動作します。macOS および Linux では実行できません。
-
-#### 言語とランタイム
-
-- **言語**: C# 14.0
-- **ランタイム**: .NET 10.0（必須）
-- **IDE**: .NET 10 に対応した Visual Studio (Visual Studio 2026 以降)、または Visual Studio Code
-
-### 主要な依存パッケージ
-
-#### AI エージェント関連
-- `Microsoft.Agents.AI` / `Microsoft.Agents.AI.OpenAI`
-- `Microsoft.Extensions.AI`
-- `ModelContextProtocol` / `ModelContextProtocol.AspNetCore`
-- `OllamaSharp` - ローカル LLM との通信
-- `Azure.AI.OpenAI` - Azure OpenAI との通信
-
-#### Web アプリケーション関連（FCAIChat）
-- `Microsoft.AspNetCore.Identity.EntityFrameworkCore` - 認証・認可
-- `Microsoft.AspNetCore.SignalR` - リアルタイム通信
-- `Microsoft.EntityFrameworkCore.SqlServer` - データベースアクセス
-
-#### デスクトップアプリケーション関連（FCAICad）
-- Windows Forms (.NET 10.0)
-
-### 技術用語の補足
-
-<details>
-<summary><strong>AI エージェント関連用語</strong></summary>
-
-- **AI エージェント**: LLM を活用して、ユーザーの要求に応じた処理を自律的に実行するソフトウェアコンポーネント
-- **LLM (Large Language Model)**: 大規模言語モデル。自然言語を理解し生成する AI モデル
-- **Microsoft Agent Framework**: Microsoft が提供する AI エージェント開発用のフレームワーク（プレビュー版）
-- **IChatClient**: .NET の AI 拡張における、チャット機能を提供する標準インターフェース
-- **AgentSession**: 複数ターンの対話を管理するためのオブジェクト
-</details>
-
-<details>
-<summary><strong>MCP 関連用語</strong></summary>
-
-- **MCP (Model Context Protocol)**: AI エージェントと外部ツールやデータソースを接続するための標準プロトコル
-- **STDIO**: 標準入出力。プロセス間通信の基本的な方式
-- **Streamable HTTP**: MCP の現行の HTTP トランスポート。HTTP POST で要求を送り、必要に応じて応答をストリーミングする
-- **SSE (Server-Sent Events)**: サーバーからクライアントへの一方向リアルタイム通信プロトコル (MCP の旧来の HTTP トランスポートで使われていた方式)
-</details>
-
-<details>
-<summary><strong>LLM プラットフォーム</strong></summary>
-
-- **Ollama**: ローカル環境で大規模言語モデルを実行するためのツール
-- **Azure OpenAI**: Microsoft Azure が提供するクラウド型の LLM サービス
-</details>
-
-## ファイル・ディレクトリ構成
-
+```console
+dotnet --version
+node -v
+npx -v
+git --version
+ollama --version
 ```
+
+`dotnet --version` が `10.0.` で始まる番号を表示すれば OK です。ほかのコマンドも、バージョン番号が表示されれば OK です。
+
+#### 1-3. (任意) 使うものに応じて用意するもの
+
+| 使いたいもの | 必要なもの |
+|---|---|
+| Azure OpenAI | Azure のアカウントと、Azure OpenAI のリソース (手順 3 で作る) |
+| FCAIChat5 と FCAICad1 の Web 検索 | Brave Search API の API キー ([Brave Search API](https://brave.com/search/api/) で取得) |
+| FCAIChat1〜5 | SQL Server LocalDB (Visual Studio の「ASP.NET と Web 開発」ワークロードに含まれる) と、EF Core のコマンドラインツール (手順 8 で入れる) |
+
+#### 1-4. (推奨) セミナー資料を読む
+
+AI エージェント・LLM・MCP の考え方は、セミナー資料で先に押さえておくと理解が速くなります。
+
+- [2025010.AIエージェント開発ハンズオンセミナー.pdf](./Documents/2025010.AIエージェント開発ハンズオンセミナー.pdf)
+- [20251220.AIエージェント開発ハンズオンセミナー.pdf](./Documents/20251220.AIエージェント開発ハンズオンセミナー.pdf)
+
+### 手順 2 リポジトリを取得してビルドする
+
+#### 2-1. リポジトリを取得する
+
+```console
+git clone https://github.com/Fujiwo/Shos.AIAgentSample.git
+cd Shos.AIAgentSample
+```
+
+> [!TIP]
+> サンプルのコードは、リポジトリを `C:\Source\FCAIAgentSample` に置いた前提で書かれている箇所があります (手順 4 で説明します)。このフォルダーに取得すると、パスを書き換える手間が減ります。
+>
+> ```console
+> git clone https://github.com/Fujiwo/Shos.AIAgentSample.git C:\Source\FCAIAgentSample
+> ```
+
+#### 2-2. ビルドする
+
+**Visual Studio の場合**: `Shos.AIAgentSample.sln` を開き、メニューの「ビルド」→「ソリューションのビルド」を選びます。
+
+**コマンドの場合**:
+
+```console
+dotnet build Shos.AIAgentSample.sln
+```
+
+最後に `ビルドに成功しました。` (英語の環境では `Build succeeded.`) と表示されれば OK です。
+
+> [!NOTE]
+> macOS / Linux では、Windows 専用の FCAICad1 がビルドできないため、ソリューション全体のビルドは失敗します。`dotnet build FCAIAgent5` のように、プロジェクトごとにビルドしてください。
+
+### 手順 3 LLM を準備する
+
+**A (Ollama)** と **B (Azure OpenAI)** のどちらか一方を準備します。両方を準備しておくと、すべてのサンプルを試せます。
+
+| | A. Ollama | B. Azure OpenAI |
+|---|---|---|
+| 費用 | 無料枠あり | 使った分だけ課金される |
+| 必要なもの | Ollama と Ollama のアカウント | Azure のアカウント |
+| 使えるサンプル | FCAIAgent1〜5、FCAIAgent、FCAICad1 | FCAIAgent2〜5、FCAIAgent、FCAIChat4 / 5、FCAICad1 |
+
+#### A. Ollama を準備する
+
+1. Ollama を起動し、Ollama のアカウントでサインインします。
+
+   ```console
+   ollama signin
+   ```
+
+2. サンプルが既定で使うクラウドモデル `minimax-m3:cloud` を試します。返事が返ってくれば OK です (`/bye` で終了します)。
+
+   ```console
+   ollama run minimax-m3:cloud
+   ```
+
+3. Ollama が `http://localhost:11434` で動いていることを確かめます。ブラウザーでこの URL を開き、`Ollama is running` と表示されれば OK です。
+
+> [!TIP]
+> **インターネットにつながないローカルの LLM を使う場合**は、`ollama pull gemma3` などでモデルをダウンロードし、コードの `ollama.SelectedModel = "minimax-m3:cloud";` をそのモデル名に変えてください。ただし、小さいモデルはツールの呼び出しが苦手なことがあります。
+
+#### B. Azure OpenAI を準備する
+
+1. [0.2 Azure OpenAI](./Documents/tutorial.0.2.md) の手順で、Azure OpenAI のリソースを作り、モデルをデプロイします。
+   - デプロイ名は、コードの `deploymentName` と同じ **`MAI-Thinking-1`** にします。別の名前にした場合は、手順 4 でコードの `deploymentName` も変えてください。
+2. Azure AI Foundry ポータルで、**エンドポイント**と **API キー**をコピーしておきます。
+3. 環境変数を設定します。サンプルは、エンドポイントと API キーを環境変数から読み込みます。
+
+   **Windows (コマンド プロンプト / PowerShell)**: 設定は次に開くターミナルや Visual Studio から有効になります。
+
+   ```console
+   setx AZURE_OPENAI_ENDPOINT "https://<リソース名>.openai.azure.com/"
+   setx AZURE_OPENAI_API_KEY "<API キー>"
+   ```
+
+   **macOS / Linux**: `~/.bashrc` や `~/.zshrc` に書いておくと、毎回入力しなくて済みます。
+
+   ```bash
+   export AZURE_OPENAI_ENDPOINT="https://<リソース名>.openai.azure.com/"
+   export AZURE_OPENAI_API_KEY="<API キー>"
+   ```
+
+4. **設定したら、ターミナルと Visual Studio をいったん閉じて開き直します。** 開いたままだと、新しい環境変数が読み込まれません。
+
+> [!CAUTION]
+> API キーはパスワードと同じです。ソースコードに直接書いたり、Git にコミットしたりしないでください。
+
+#### 環境変数の一覧
+
+| 環境変数 | 必須かどうか | 使うプロジェクト | 内容 |
+|---|---|---|---|
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI を使う場合は必須 | FCAIAgent2〜5、FCAIAgent、FCAIChat4 / 5、FCAICad1 | Azure OpenAI のエンドポイント |
+| `AZURE_OPENAI_API_KEY` | Azure OpenAI を使う場合は必須 | 同上 | Azure OpenAI の API キー |
+| `BRAVE_API_KEY` | FCAIChat5 では必須、FCAICad1 では任意 | FCAIChat5、FCAICad1 | Brave Search API の API キー |
+| `WEATHER_MCP_ENDPOINT` | 任意 | FCAIAgent5、FCAIAgent | McpServer.Sse の URL。設定しない場合は `http://localhost:3001/` |
+
+### 手順 4 コードの設定を自分の環境に合わせる
+
+サンプルには、環境によって書き換えが必要な設定があります。**使うプロジェクトの分だけ**直してください。
+
+| 設定 | 場所 | 既定値 | いつ変えるか |
+|---|---|---|---|
+| **使う LLM の種類** | FCAIAgent2〜5、FCAIAgent の `Program.cs` の `chatClientType` | `My.ChatClientType.AzureOpenAI` | **Ollama を使うときは `My.ChatClientType.Ollama` に変える** |
+| Ollama のモデル名 | 各プロジェクトの `ollama.SelectedModel` | `"minimax-m3:cloud"` | 別のモデルを使うとき |
+| Azure OpenAI のデプロイ名 | 各プロジェクトの `deploymentName` | `"MAI-Thinking-1"` | 別のデプロイ名にしたとき |
+| **McpServer.Con のパス** | FCAIAgent4 / 5、FCAIAgent の `Program.cs` の `Arguments` | `C:\Source\FCAIAgentSample\McpServer.Con\McpServer.Con.csproj` | **リポジトリを別の場所に置いたとき (必ず変える)** |
+| ファイルシステム ツールのフォルダー | FCAIAgent5、FCAIAgent の `Program.cs` の `"/work"` | `/work` (Windows では `C:\work`) | 別のフォルダーを使うとき。**フォルダーは事前に作っておく** |
+| FCAICad1 の LLM | `FCAICad1/ChatAgent.cs` の先頭の `#define AZURE_OPENAI` | Azure OpenAI | Ollama を使うときは、この行を `//#define AZURE_OPENAI` にする |
+| MCP クライアントの設定 | `.mcp.json`、`.vscode/mcp.json` | McpServer.Con のパスは上と同じ | Visual Studio / VS Code から McpServer.Con を使うとき |
+
+例として、リポジトリを `D:\Work\Shos.AIAgentSample` に置いた場合は、FCAIAgent4 の `Program.cs` を次のように直します。
+
+```csharp
+Arguments = ["run", "--project", @"D:\Work\Shos.AIAgentSample\McpServer.Con\McpServer.Con.csproj"]
+```
+
+### 手順 5 コンソールの AI エージェントを動かす
+
+#### 実行のしかた
+
+**Visual Studio の場合**:
+
+1. ソリューション エクスプローラーで、動かしたいプロジェクト (例: `FCAIAgent1`) を右クリックします。
+2. 「スタートアップ プロジェクトに設定」を選びます。
+3. F5 キー (デバッグ実行) か Ctrl+F5 キー (デバッグなしで実行) を押します。
+
+**コマンドの場合** (リポジトリのフォルダーで実行):
+
+```console
+dotnet run --project FCAIAgent1
+```
+
+#### 5-1. FCAIAgent1: 1 回だけ質問する (Ollama)
+
+FCAIAgent1 を実行すると、コードに書かれた質問「「AIエージェント」とはどのようなものですか?」を Ollama に送り、答えを表示して終了します。答えの文章が表示されれば成功です。
+
+#### 5-2. FCAIAgent2: LLM を切り替える
+
+FCAIAgent2 の `chatClientType` を `AzureOpenAI` か `Ollama` にして実行し、同じ質問への答えを比べてみてください。
+
+#### 5-3. FCAIAgent3: 会話を続ける
+
+FCAIAgent3 を実行すると、会話の画面になります。
+
+```console
+(Interactive chat started. Type 'exit' to quit.)
+
+You: 私の名前は太郎です
+Agent: ...
+You: 私の名前を覚えていますか?
+Agent: はい、太郎さんですね。...
+You: exit
+```
+
+2 回目の質問に正しく答えられれば、会話の内容を覚えている (`AgentSession` が働いている) ことが分かります。`exit` か空行を入力すると終了します。
+
+### 手順 6 MCP サーバーを動かして確かめる
+
+#### 6-1. McpServer.Sse (HTTP) を起動する
+
+```console
+dotnet run --project McpServer.Sse
+```
+
+`http://localhost:3001` で待ち受けを始めます。このターミナルは、手順 7 が終わるまで**閉じずにそのまま**にしておきます。
+
+#### 6-2. GitHub Copilot からツールを呼び出してみる
+
+AI エージェントから使う前に、MCP サーバーが正しく動くかを、Visual Studio や VS Code の GitHub Copilot (エージェント モード) で確かめます。
+
+1. MCP サーバーの設定ファイルを開き、McpServer.Con のパスを自分の環境に合わせます (手順 4)。
+   - VS Code: `.vscode/mcp.json`
+   - Visual Studio: `.mcp.json`
+2. McpServer.Sse を起動したままにしておきます (手順 6-1)。
+3. GitHub Copilot のチャットをエージェント モードで開き、ツールの一覧に `McpServer.Con` と `McpServer.Sse` のツールがあるか確かめます。
+4. 「今何時?」「東京都の天気は?」と質問し、ツールが呼び出されて答えが返れば OK です。
+
+詳しい手順と画面は、[2.3 MCP サーバーの動作確認](./Documents/tutorial.2.3.md) にあります。
+
+> [!TIP]
+> GitHub Copilot を使わない場合は、MCP Inspector (`npx @modelcontextprotocol/inspector`) でも確かめられます。ブラウザーに開く画面で、McpServer.Sse には Streamable HTTP で `http://localhost:3001/` に、McpServer.Con には STDIO でコマンド `dotnet`・引数 `run --project <McpServer.Con.csproj のフルパス>` で接続し、ツールを呼び出します。
+
+> [!NOTE]
+> McpServer.Con は、AI エージェントや GitHub Copilot などの MCP クライアントが子プロセスとして起動するサーバーです。自分で `dotnet run` して使うものではありません。
+
+### 手順 7 MCP サーバーのツールを AI エージェントから使う
+
+#### 7-1. FCAIAgent4: 時刻ツールを使う
+
+手順 4 で McpServer.Con のパスを直してから、FCAIAgent4 を実行します。
+
+```console
+You: 今何時ですか?
+Agent: 現在の時刻は ... です。
+You: ニューヨークは今何時?
+```
+
+LLM は時刻を知りませんが、McpServer.Con の時刻ツールを呼び出して正しい時刻を答えます。
+
+#### 7-2. FCAIAgent5: 複数の MCP サーバーのツールを使う
+
+1. ファイルシステム ツール用のフォルダー `C:\work` を作り、何かテキストファイルを入れておきます。
+2. McpServer.Sse を起動したままにしておきます (手順 6-1)。
+3. FCAIAgent5 を実行して、次のように質問します。
+
+```console
+You: 東京都の天気を教えて          ← McpServer.Sse の天気予報ツール
+You: 今の時刻を教えて              ← McpServer.Con の時刻ツール
+You: work フォルダーのファイルを一覧にして   ← ファイルシステム ツール
+```
+
+1 つの AI エージェントが、質問に合わせて複数のサーバーのツールを使い分けることを確かめてください。
+
+### 手順 8 Web チャットを動かす
+
+FCAIChat1〜5 は Windows で動かす前提です (データベースに SQL Server LocalDB を使うため)。
+
+#### 8-1. EF Core のツールを入れる (最初の 1 回だけ)
+
+```console
+dotnet tool install --global dotnet-ef
+```
+
+#### 8-2. データベースを作る
+
+FCAIChat1〜5 は、同じデータベース名を使います。動かすプロジェクトのフォルダーで、次のコマンドを実行します。
+
+**FCAIChat1 の場合**:
+
+```console
+cd FCAIChat1
+dotnet ef database update
+```
+
+**FCAIChat2〜5 の場合** (データベースの設定が 2 つあるので、それぞれ実行します):
+
+```console
+cd FCAIChat2
+dotnet ef database update --context ApplicationDbContext
+dotnet ef database update --context MessagesDbContext
+```
+
+> [!WARNING]
+> FCAIChat1 と FCAIChat2〜5 では、ユーザー情報のテーブルを作るマイグレーションが違います。FCAIChat1 の後に FCAIChat2〜5 を動かすときに `There is already an object named 'AspNetRoles'` のようなエラーが出たら、次のコマンドでデータベースを削除してから作り直してください (登録したユーザーとメッセージは消えます)。
+>
+> ```console
+> dotnet ef database drop --context ApplicationDbContext --force
+> ```
+
+Visual Studio のパッケージ マネージャー コンソールを使う場合は、`Update-Database -Context ApplicationDbContext` のように実行します。
+
+#### 8-3. 起動してログインする
+
+1. プロジェクトを実行します (例: `dotnet run --project FCAIChat5`)。Visual Studio から実行すると、ブラウザーが自動で開きます。
+2. ブラウザーで `https://localhost:7274` (または `http://localhost:5138`) を開きます。
+3. 画面右上の「Register」から、メールアドレスとパスワードを登録します。
+4. 「Click here to confirm your account」のリンクを押して、アカウントを確認済みにします (メールは送られません)。
+5. 「Login」からログインします。
+6. 別のブラウザー (またはシークレット ウィンドウ) で別のユーザーとしてログインすると、メッセージがリアルタイムに届くことを確かめられます。
+
+#### 8-4. AI エージェントと会話する (FCAIChat4 / 5)
+
+- 環境変数 `AZURE_OPENAI_ENDPOINT` と `AZURE_OPENAI_API_KEY` が必要です。FCAIChat5 は `BRAVE_API_KEY` も必要です。
+- メッセージに **`@Agent`** を入れると、AI エージェントが答えます (入れないと、人どうしのメッセージとして扱われます)。
+
+```text
+@Agent https://github.com を開いて、ページのタイトルを教えて      ← FCAIChat4 (Playwright)
+@Agent .NET 10 の新機能を検索して、3 つにまとめて              ← FCAIChat5 (Brave Search)
+```
+
+- FCAIChat5 では、ページを開き直しても、ログインしたユーザーごとに会話の続きができます。クリア ボタンで会話を最初からやり直せます。
+
+### 手順 9 CAD アプリを動かす
+
+FCAICad1 は Windows 専用です。
+
+1. 使う LLM を決めます。既定は Azure OpenAI です (環境変数 `AZURE_OPENAI_ENDPOINT` と `AZURE_OPENAI_API_KEY` が必要)。Ollama を使う場合は、手順 4 のとおり `#define AZURE_OPENAI` をコメントにします。
+2. `FCAICad1` をスタートアップ プロジェクトにして実行します。
+3. 画面の下の入力欄に指示を書き、🤖 ボタンを押します。AI が考えている間は、ボタンの絵文字が切り替わります。
+
+   ```text
+   青空の下の草原に、赤い屋根の家と大きな木を描いて
+   夜の海に浮かぶ満月と、ヨットを描いて
+   左の木にリンゴを 3 つ描き足して
+   ```
+
+4. 描き終わると、入力欄の下の応答欄に AI の説明が表示されます。
+
+| 操作 | 内容 |
+|---|---|
+| 🆑 ボタン | 図形をすべて消す |
+| Ctrl+C | 描いた絵を画像としてクリップボードにコピーする |
+
+> [!TIP]
+> 指示に「絵本のような」「シンプルなアイコン風に」などの画風や、「左下に」「大きく」などの位置や大きさを書くと、思いどおりの絵に近づきます。続けて「〜を描き足して」と頼むと、前の絵に描き足します。
+
+### 手順 10 後片付け
+
+- **Azure OpenAI を使った場合**: 使わなくなったら、[Azure Portal](https://portal.azure.com) でリソース グループごと削除します (削除しないと課金が続くことがあります)。詳しくは [4.1 後片付け](./Documents/tutorial.4.1.md) を見てください。
+- **環境変数**: 不要になったら削除します (Windows では「システムの詳細設定」→「環境変数」から削除できます)。
+- **データベース**: FCAIChat のデータベースが不要なら、`dotnet ef database drop --context ApplicationDbContext --force` で削除します。
+
+## チュートリアルで自分で作る
+
+サンプルを動かすだけでなく、**自分でコードを書きながら**学ぶこともできます。各チュートリアルには、作るコードの全体、実行結果、画面の画像が載っています。
+
+1. [チュートリアルのトップ](./Documents/tutorial.md) を開きます。
+2. 新しいコンソール アプリのプロジェクトを作り、チュートリアルのコードを書きます。
+3. 次のステップでは、コードの `旧` の部分を `新` の部分に書き換えます。
+4. うまく動かないときは、同じステップのサンプル (FCAIAgent1〜5) と見比べます。
+
+| 章 | チュートリアル | 作るもの | 所要時間の目安 |
+|---|---|---|---|
+| 0. 準備 | [0.1 インストール](./Documents/tutorial.0.1.md) / [0.2 Azure OpenAI](./Documents/tutorial.0.2.md) | 開発環境と LLM | 30〜60 分 |
+| 1. AI エージェントの作成 | [1.1 ローカル LLM の利用](./Documents/tutorial.1.1.md) / [1.2 Azure OpenAI の利用](./Documents/tutorial.1.2.md) / [1.3 複数ターンのチャット](./Documents/tutorial.1.3.md) | FCAIAgent1〜3 | 1〜2 時間 |
+| 2. MCP サーバーの作成 | [2.1 STDIO](./Documents/tutorial.2.1.md) / [2.2 HTTP](./Documents/tutorial.2.2.md) / [2.3 動作確認](./Documents/tutorial.2.3.md) | McpServer.Con / McpServer.Sse | 1〜2 時間 |
+| 3. MCP サーバーの利用 | [3.1 単数](./Documents/tutorial.3.1.md) / [3.2 複数](./Documents/tutorial.3.2.md) | FCAIAgent4 / 5 | 1〜2 時間 |
+| 4. 後片付け | [4.1 後片付け](./Documents/tutorial.4.1.md) | — | 5 分 |
+
+学習のコツ:
+
+- **順番に進めてください。** 各ステップは、前のステップの内容を前提にしています。
+- **コピーして終わりにせず、コードの意味を考えながら進めてください。** コードのコメントが理解の助けになります。
+- **コードを変えて試してください。** エージェントへの指示 (`Instructions`) や質問を変えると、答えがどう変わるかが分かります。
+- **エラーも学びの一部です。** エラーメッセージを読み、[トラブルシューティング](#トラブルシューティング) を参考に直してみてください。
+
+## ファイル構成
+
+```text
 Shos.AIAgentSample/
-├── 📄 README.md                                    # このファイル
-├── 📄 LICENSE.txt                                  # ライセンス情報（MIT License）
-├── 📄 Shos.AIAgentSample.sln                       # Visual Studio ソリューション
-├── 📄 .mcp.json                                    # MCP サーバー設定（ルート、サンプル）
+├── README.md                   このファイル (日本語)
+├── README.en.md                README (英語)
+├── CLAUDE.md                   AI コーディング エージェント向けの説明
+├── LICENSE.txt                 ライセンス (MIT License)
+├── Shos.AIAgentSample.sln      Visual Studio のソリューション
+├── .mcp.json                   MCP サーバーの設定の例
+├── .vscode/mcp.json            VS Code 用の MCP サーバーの設定の例
+├── .github/                    GitHub Copilot 向けの説明 (copilot-instructions.md)
 │
-├── 📁 .github/                                     # GitHub Actions とエージェント設定
-├── 📁 .vscode/
-│   └── 📄 mcp.json                                # Visual Studio Code 用 MCP 設定
+├── Documents/                  チュートリアルとセミナー資料
+│   ├── tutorial.md             チュートリアルのトップ
+│   ├── tutorial.0.1.md 〜 tutorial.4.1.md   各章のチュートリアル
+│   ├── maf.md                  Microsoft Agent Framework の補足
+│   ├── aiagentlog.md           AI エージェントの実行ログの例
+│   ├── *.pdf                   セミナー資料
+│   └── Images/                 チュートリアルの画像
 │
-├── 📁 Documents/                                   # 📚 チュートリアルとリソース
-│   ├── 📁 Images/                                 # チュートリアル用画像
-│   ├── 📄 tutorial.md                             # チュートリアルメインページ
-│   ├── 📄 tutorial.0.1.md                         # 0.1 インストールガイド
-│   ├── 📄 tutorial.0.2.md                         # 0.2 Azure OpenAI セットアップ
-│   ├── 📄 tutorial.1.1.md                         # 1.1 ローカル LLM の利用
-│   ├── 📄 tutorial.1.2.md                         # 1.2 Azure OpenAI の利用
-│   ├── 📄 tutorial.1.3.md                         # 1.3 複数ターンのチャット
-│   ├── 📄 tutorial.2.1.md                         # 2.1 MCP サーバー (STDIO)
-│   ├── 📄 tutorial.2.2.md                         # 2.2 MCP サーバー (SSE)
-│   ├── 📄 tutorial.2.3.md                         # 2.3 MCP サーバーの動作確認
-│   ├── 📄 tutorial.3.1.md                         # 3.1 MCP サーバー利用（単数）
-│   ├── 📄 tutorial.3.2.md                         # 3.2 MCP サーバー利用（複数）
-│   ├── 📄 tutorial.4.1.md                         # 4.1 後片付け
-│   ├── 📄 aiagentlog.md                           # AI エージェント開発ログ
-│   ├── 📄 maf.md                                  # Microsoft Agent Framework 情報
-│   └── 📄 2025010.AIエージェント開発ハンズオンセミナー.pdf # セミナー資料
+├── FCAIAgent1/ 〜 FCAIAgent5/  コンソールの AI エージェント (ステップ 1〜5。Program.cs 1 ファイル)
+├── FCAIAgent/                  コンソールの AI エージェントの完成形
 │
-├── 📁 FCAIAgent/                                   # 🤖 最終形態の AI エージェント (FCAIAgent5と同等)
-│   ├── 📄 Program.cs
-│   └── 📄 FCAIAgent.csproj
+├── McpServer.Con/              STDIO の MCP サーバー (時刻ツール)
+├── McpServer.Sse/              HTTP の MCP サーバー (天気予報ツール)
 │
-├── 📁 FCAIAgent1/                                  # 🤖 ステップ 1: 基本的な AI エージェント
-│   ├── 📄 Program.cs                              # メインプログラム
-│   └── 📄 FCAIAgent1.csproj                       # プロジェクトファイル
+├── FCAIChat1/ 〜 FCAIChat5/    Web チャット (ステップ 1〜5)
+│   ├── Pages/                  Razor Pages
+│   ├── Hubs/ChatHub.cs         SignalR のハブ (メッセージの配信と保存、AI エージェントへの転送)
+│   ├── Data/                   EF Core の DbContext
+│   ├── AIAgents/               AI エージェント (FCAIChat4 / 5)
+│   ├── Services/               会話の保存 (FCAIChat5)
+│   └── wwwroot/                CSS・JavaScript などの静的ファイル
 │
-├── 📁 FCAIAgent2/                                  # 🤖 ステップ 2: LLM 選択機能追加
-│   ├── 📄 Program.cs
-│   └── 📄 FCAIAgent2.csproj
+├── FCAICad1/                   CAD アプリ (Windows Forms)
+│   ├── Program.cs              起動処理 (フォームと AI エージェントをつなぐ)
+│   ├── ChatAgent.cs            AI エージェント (システムプロンプト、LLM、ツール)
+│   ├── Toolbox.cs              AI エージェントに渡す描画ツール
+│   ├── MainForm.cs / View.cs   画面
+│   └── Model.cs                図形のデータと描画
 │
-├── 📁 FCAIAgent3/                                  # 🤖 ステップ 3: 複数ターン対話
-│   ├── 📄 Program.cs
-│   └── 📄 FCAIAgent3.csproj
-│
-├── 📁 FCAIAgent4/                                  # 🤖 ステップ 4: MCP サーバー連携（単数）
-│   ├── 📄 Program.cs
-│   └── 📄 FCAIAgent4.csproj
-│
-├── 📁 FCAIAgent5/                                  # 🤖 ステップ 5: MCP サーバー連携（複数）
-│   ├── 📄 Program.cs
-│   └── 📄 FCAIAgent5.csproj
-│
-├── 📁 FCAIChat1/                                   # 🌐 ステップ 1: SignalR による Web チャット
-│   ├── 📁 Pages/                                  # Razor Pages
-│   ├── 📁 Hubs/                                   # SignalR ハブ (ChatHub)
-│   ├── 📁 Data/                                   # EF Core / Identity
-│   ├── 📁 wwwroot/                                # 静的ファイル (CSS, JS, etc.)
-│   └── 📄 FCAIChat1.csproj
-│
-├── 📁 FCAIChat2/                                   # 🌐 ステップ 2: メッセージの DB 保存
-│   └── 📄 FCAIChat2.csproj
-│
-├── 📁 FCAIChat3/                                   # 🌐 ステップ 3: 部分ビューによるメッセージ表示
-│   └── 📄 FCAIChat3.csproj
-│
-├── 📁 FCAIChat4/                                   # 🌐 ステップ 4: AI エージェント + Playwright MCP
-│   ├── 📁 AIAgents/                               # ChatAgent / ChatAgentManager
-│   └── 📄 FCAIChat4.csproj
-│
-├── 📁 FCAIChat5/                                   # 🌐 ステップ 5: Brave Search MCP + 会話の保存・復元
-│   ├── 📁 AIAgents/                               # ChatAgent / ChatAgentManager
-│   ├── 📁 Services/                               # 会話状態の保存 (IThreadStore)
-│   └── 📄 FCAIChat5.csproj
-│
-├── 📁 FCAICad1/                                    # 🎨 CAD アプリケーション
-│   ├── 📄 Program.cs                              # エントリポイント
-│   ├── 📄 Toolbox.cs                              # AI エージェントに渡す描画ツール
-│   ├── 📄 ChatAgent.cs                            # AI エージェント実装
-│   ├── 📄 MainForm.cs                             # メインフォーム
-│   ├── 📄 View.cs                                 # 描画ビュー
-│   ├── 📄 Model.cs                                # データモデル
-│   └── 📄 FCAICad1.csproj
-│
-├── 📁 McpServer.Con/                               # 🔧 STDIO MCP サーバー
-│   ├── 📄 Program.cs                              # 時刻取得ツール実装
-│   └── 📄 McpServer.Con.csproj
-│
-├── 📁 McpServer.Sse/                               # 🔧 HTTP (Streamable HTTP) MCP サーバー
-│   ├── 📄 Program.cs                              # 天気予報ツール実装
-│   └── 📄 McpServer.Sse.csproj
-│
-└── 📁 Reviews/                                     # コードレビュー記録
+├── Plans/                      修正計画
+└── Reviews/                    コードとドキュメントのレビュー結果
 ```
+
+## 技術スタック
+
+| 分類 | 内容 |
+|---|---|
+| 言語 | C# 14 |
+| ランタイム | .NET 10 (FCAICad1 は `net10.0-windows`) |
+| AI エージェント | `Microsoft.Agents.AI` / `Microsoft.Agents.AI.OpenAI` 1.28.0、`Microsoft.Extensions.AI` |
+| MCP | `ModelContextProtocol` / `ModelContextProtocol.AspNetCore` 2.4.0 |
+| LLM との接続 | `OllamaSharp` 5.5.2 (Ollama)、`Azure.AI.OpenAI` 2.1.0 (Azure OpenAI) |
+| Web | ASP.NET Core Razor Pages、SignalR、ASP.NET Core Identity、EF Core 10 (SQL Server LocalDB) |
+| デスクトップ | Windows Forms |
+| 既製の MCP サーバー | `@modelcontextprotocol/server-filesystem`、`@playwright/mcp`、`@modelcontextprotocol/server-brave-search` |
+
+| OS | 動くプロジェクト |
+|---|---|
+| Windows 11 / 10 | すべて |
+| macOS / Linux | FCAIAgent シリーズと MCP サーバー。FCAIChat シリーズは `appsettings.json` の接続文字列を LocalDB 以外の SQL Server などに変えれば動く。FCAICad1 は動かない |
+
+## 用語集
+
+| 用語 | 意味 |
+|---|---|
+| **LLM** (大規模言語モデル) | 文章を理解し、文章を作る AI のモデル。GPT など |
+| **AI エージェント** | LLM で考え、必要に応じてツールを使いながら、頼まれた仕事を自分で進めるプログラム |
+| **Microsoft Agent Framework** | Microsoft の AI エージェント開発用のフレームワーク。`ChatClientAgent` や `AgentSession` を提供する |
+| **IChatClient** | .NET で LLM とやり取りするための共通のインターフェイス (`Microsoft.Extensions.AI`)。LLM の種類を問わず同じ書き方で使える |
+| **AgentSession** | 会話の履歴などを保持するオブジェクト。これを使うと、前の発言を覚えたまま会話できる |
+| **ツール** (関数呼び出し) | AI エージェントが使える関数。LLM が「この関数をこの引数で呼んで」と判断し、エージェントが実行する |
+| **MCP** (Model Context Protocol) | AI エージェントとツールをつなぐ標準の通信規約。一度 MCP サーバーを作れば、MCP に対応したどの AI エージェントからも使える |
+| **MCP サーバー / MCP クライアント** | ツールを提供する側 / ツールを使う側 |
+| **STDIO** | 標準入出力。MCP クライアントが MCP サーバーを子プロセスとして起動し、標準入出力でやり取りする方式 |
+| **Streamable HTTP** | MCP の現行の HTTP の通信方式。ネットワーク越しに MCP サーバーを使える |
+| **SSE** (Server-Sent Events) | サーバーからクライアントへ一方向にデータを送る仕組み。MCP の旧来の HTTP の通信方式で使われていた |
+| **Ollama** | LLM を手元のパソコンや Ollama のクラウドで動かすためのツール |
+| **Azure OpenAI** | Microsoft Azure 上で OpenAI などのモデルを使えるクラウドサービス |
 
 ## トラブルシューティング
 
-### よくある問題と解決方法
-
 <details>
-<summary><strong>ビルドエラーが発生する</strong></summary>
+<summary><strong>ビルドできない</strong></summary>
 
-- **.NET SDK のバージョン確認**
-  ```bash
-  dotnet --version
-  ```
-  .NET 10.0 以上がインストールされているか確認してください (10.0 未満ではビルドできません)。
+- `dotnet --version` で、.NET SDK 10.0 以上が入っているか確かめてください。
+- パッケージを復元し直してから、ビルドし直してください。
 
-- **パッケージの復元**
-  ```bash
+  ```console
   dotnet restore
-  ```
-  
-- **プロジェクトのクリーンとリビルド**
-  ```bash
   dotnet clean
   dotnet build
   ```
+
+- macOS / Linux では、FCAICad1 はビルドできません。プロジェクトごとにビルドしてください。
+
+</details>
+
+<details>
+<summary><strong>「Please set the AZURE_OPENAI_ENDPOINT environment variable.」と表示される</strong></summary>
+
+- 環境変数が設定されていません。[手順 3 の B](#b-azure-openai-を準備する) のとおりに設定してください。
+- 設定した後に、**ターミナルと Visual Studio を開き直しましたか?** 開いたままだと、新しい環境変数は読み込まれません。
+- Ollama を使いたい場合は、`chatClientType` を `My.ChatClientType.Ollama` に変えてください (手順 4)。
+
 </details>
 
 <details>
 <summary><strong>Ollama に接続できない</strong></summary>
 
-- **Ollama が起動しているか確認**
-  - Windows: タスクトレイに Ollama アイコンが表示されているか確認
-  - ブラウザで `http://localhost:11434` にアクセスして動作確認
+- Ollama が起動しているか確かめてください (Windows ではタスク トレイに Ollama のアイコンが出ます)。ブラウザーで `http://localhost:11434` を開くと `Ollama is running` と表示されます。
+- クラウドモデル (`minimax-m3:cloud`) を使う場合は、`ollama signin` でサインインしてください。
+- ローカルの LLM を使う場合は、`ollama list` でモデルがダウンロードされているか確かめ、コードの `SelectedModel` をそのモデル名にしてください。
 
-- **モデルがダウンロードされているか確認**
-  ```bash
-  ollama list
-  ```
-  
-- **クラウドモデル (`minimax-m3:cloud`) を使う場合はサインイン**
-  ```bash
-  ollama signin
-  ```
-
-- **ローカル LLM を使う場合はモデルをダウンロード**
-  ```bash
-  ollama pull gemma3   # ローカル LLM を使う場合 (コードの SelectedModel も変更)
-  ```
 </details>
 
 <details>
-<summary><strong>Azure OpenAI に接続できない</strong></summary>
+<summary><strong>Azure OpenAI に接続できない (401 / 404 エラー)</strong></summary>
 
-- **API キーとエンドポイントの確認**
-  - Azure Portal で正しい API キーとエンドポイントを取得しているか確認
-  - コード内の設定値が正しいか確認
+- **401 (認証エラー)**: API キーが間違っています。Azure AI Foundry ポータルからコピーし直してください。
+- **404 (見つからない)**: デプロイ名がコードの `deploymentName` と違うか、エンドポイントが間違っています。
+- 会社のネットワークでは、ファイアウォールやプロキシの設定も確かめてください。
 
-- **デプロイ名の確認**
-  - Azure OpenAI Studio でデプロイしたモデル名が正しいか確認
-  
-- **ネットワーク接続の確認**
-  - ファイアウォールやプロキシ設定を確認
 </details>
 
 <details>
-<summary><strong>MCP サーバーが見つからない</strong></summary>
+<summary><strong>MCP サーバーにつながらない / ツールが使われない</strong></summary>
 
-- **.mcp.json のパス確認**
-  - `.mcp.json` 内のパスが環境に合っているか確認
-  - Windows の場合: バックスラッシュ (`\`) を使用
-  - Linux/Mac の場合: スラッシュ (`/`) を使用
+- **McpServer.Con**: `Arguments` のパスが、自分の環境の `McpServer.Con.csproj` のフルパスになっているか確かめてください (手順 4)。
+- **McpServer.Sse**: 別のターミナルで `dotnet run --project McpServer.Sse` を実行し、起動したままにしているか確かめてください。
+- **ファイルシステム ツール**: `C:\work` フォルダーがあるか確かめてください。
+- **npx で起動するサーバー**: `npx -v` でバージョンが表示されるか確かめてください。初回はパッケージのダウンロードに時間がかかります。
+- **Playwright** (FCAIChat4): ブラウザーが無いというエラーが出たら、`npx playwright install chrome` を実行してください。
+- ツールを呼び出すのが苦手な LLM もあります。動かないときは、別のモデルで試してください。
 
-- **MCP サーバーのビルド確認**
-  ```bash
-  cd McpServer.Con
-  dotnet build
-  ```
 </details>
 
 <details>
-<summary><strong>Web アプリケーションが起動しない</strong></summary>
+<summary><strong>Web チャットが起動しない / ログインできない</strong></summary>
 
-- **ポートの競合確認**
-  - 他のアプリケーションが同じポートを使用していないか確認
-  - `launchSettings.json` でポート番号を変更可能
+- **データベースのエラー**: 手順 8-2 の `dotnet ef database update` を実行したか確かめてください。
+- **`There is already an object named ...`**: 手順 8-2 の注意のとおり、データベースを作り直してください。
+- **HTTPS の証明書のエラー**: `dotnet dev-certs https --trust` を実行してください。
+- **ポートが使われている**: `Properties/launchSettings.json` でポート番号を変えられます。
+- **`@Agent` に答えない**: Azure OpenAI の環境変数 (FCAIChat5 では `BRAVE_API_KEY` も) を設定し、Visual Studio を開き直してください。
 
-- **HTTPS 証明書の問題**
-  ```bash
-  dotnet dev-certs https --trust
-  ```
 </details>
 
 <details>
-<summary><strong>CAD アプリケーションが起動しない</strong></summary>
+<summary><strong>CAD アプリが起動しない / 思ったように描けない</strong></summary>
 
-- **Windows Forms の要件**
-  - FCAICad1 は Windows でのみ動作します
-  - .NET デスクトップ開発ワークロードがインストールされているか確認
+- FCAICad1 は Windows 専用です。Visual Studio に「.NET デスクトップ開発」のワークロードが入っているか確かめてください。
+- 応答欄に `(エラー: ...)` と表示される場合は、LLM との接続を確かめてください (Azure OpenAI の環境変数など)。
+- 絵が思ったようにならないときは、画風・位置・大きさ・色を具体的に指示してみてください。システムプロンプト (`FCAICad1/ChatAgent.cs`) を自分で書き換えて、結果の違いを試すこともできます。
+
 </details>
 
-問題が解決しない場合は、[Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) で質問してください。
+解決しないときは、[Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) で質問してください。
+
+## 注意事項
+
+> [!WARNING]
+> このリポジトリのコードは、学習とチュートリアルのためのものです。
+
+| 項目 | 注意 |
+|---|---|
+| ライブラリの変更 | Microsoft Agent Framework と MCP の SDK は、バージョンが上がると API が変わることがあります |
+| 本番での利用 | 本番で使う前に、セキュリティの確認と、エラー処理・性能の見直しをしてください |
+| API キー | API キーなどの秘密の情報は、環境変数や安全な設定管理の仕組みで扱い、コードに書かないでください |
+| 費用 | Azure OpenAI や Ollama のクラウドモデルは、使った量に応じて費用や利用制限がかかることがあります |
+| AI の操作 | AI エージェントはツールを自分の判断で呼び出します。ファイルシステムやブラウザーを操作するツールでは、アクセスできる範囲を必要最小限にしてください |
 
 ## ライセンス
 
@@ -616,20 +740,20 @@ MIT License
 
 Copyright (c) 2025 Fujio Kojima
 
-詳細は [LICENSE.txt](./LICENSE.txt) を参照してください。
+詳しくは [LICENSE.txt](./LICENSE.txt) を見てください。
 
 ## 作者
 
 **小島 富治雄 (Fujio Kojima)** - ソフトウェア開発エンジニア
 
-### 🏆 経歴・実績
+### 経歴・実績
 
 - **Microsoft MVP for Development Tools - Visual C#** (Jul. 2005 - Dec. 2014)
 - **Microsoft MVP for .NET** (Jan. 2015 - Oct. 2015)
 - **Microsoft MVP for Visual Studio and Development Technologies** (Nov. 2015 - Jun. 2018)
 - **Microsoft MVP for Developer Technologies** (Nov. 2018 - Jun. 2026)
 
-### 📫 連絡先・リンク
+### 連絡先・リンク
 
 - **GitHub**: [@Fujiwo](https://github.com/Fujiwo)
 - **MVP Profile**: [Microsoft MVP Profile](https://mvp.microsoft.com/en-us/PublicProfile/21482)
@@ -640,77 +764,55 @@ Copyright (c) 2025 Fujio Kojima
 
 ## 謝辞
 
-このプロジェクトは、以下のオープンソースプロジェクトと技術を使用しています：
+このプロジェクトは、次のオープンソースのプロジェクトと技術を使っています。
 
-- **[Microsoft Agent Framework](https://github.com/microsoft/agents)** - AI エージェント開発フレームワーク
-- **[Model Context Protocol (MCP)](https://modelcontextprotocol.io/)** - AI エージェントとツール連携の標準プロトコル
-- **[Ollama](https://ollama.com/)** - ローカル LLM 実行環境
-- **[Azure OpenAI Service](https://azure.microsoft.com/services/cognitive-services/openai-service/)** - クラウド LLM サービス
+- **[Microsoft Agent Framework](https://github.com/microsoft/agent-framework)** - AI エージェント開発のフレームワーク
+- **[Model Context Protocol (MCP)](https://modelcontextprotocol.io/)** - AI エージェントとツールをつなぐ標準の通信規約
+- **[Ollama](https://ollama.com/)** - LLM の実行環境
+- **[Azure OpenAI](https://azure.microsoft.com/products/ai-services/openai-service)** - クラウドの LLM サービス
 
-これらの素晴らしいツールとフレームワークを提供してくださった開発者とコミュニティの皆様に深く感謝いたします。
+素晴らしいツールとフレームワークを提供してくださっている開発者とコミュニティの皆様に、深く感謝いたします。
 
 ## 貢献
 
-このプロジェクトへの貢献を歓迎します！バグ報告、機能要望、ドキュメントの改善、プルリクエストなど、あらゆる形での貢献をお待ちしています。
+バグの報告、機能の要望、ドキュメントの改善、プルリクエストなど、あらゆる形の貢献を歓迎します。
 
-### 貢献の方法
+### プルリクエストの送り方
 
-1. **このリポジトリをフォーク**
-   - GitHub で「Fork」ボタンをクリック
+1. GitHub でこのリポジトリを Fork します。
+2. 作業用のブランチを作ります。
 
-2. **フィーチャーブランチを作成**
-   ```bash
+   ```console
    git checkout -b feature/amazing-feature
    ```
 
-3. **変更をコミット**
-   ```bash
-   git commit -m 'Add some amazing feature'
+3. 変更をコミットします。
+
+   ```console
+   git commit -m "Add some amazing feature"
    ```
 
-4. **ブランチにプッシュ**
-   ```bash
+4. ブランチを自分の Fork にプッシュします。
+
+   ```console
    git push origin feature/amazing-feature
    ```
 
-5. **プルリクエストを作成**
-   - GitHub でプルリクエストを作成してください
+5. GitHub でプルリクエストを作ります。
 
-### 報告とフィードバック
+> [!NOTE]
+> FCAIAgent1〜5 と FCAIChat1〜5 を変更するときは、前のステップとの差分が分かるように `旧` / `新` の印を付けてください。詳しい決まりは [CLAUDE.md](./CLAUDE.md) にあります。
+
+### 報告と質問
 
 | 種類 | 方法 |
-|------|------|
-| 🐛 **バグ報告** | [Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) でバグを報告 |
-| 💡 **機能要望** | [Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) で新機能を提案 |
-| ❓ **質問** | [Discussions](https://github.com/Fujiwo/Shos.AIAgentSample/discussions) で質問を投稿 |
-
-皆様からのフィードバックと貢献をお待ちしています！
+|---|---|
+| バグの報告 | [Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) |
+| 機能の要望 | [Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) |
+| 質問 | [Discussions](https://github.com/Fujiwo/Shos.AIAgentSample/discussions) |
 
 ---
 
-## 重要な注意事項
-
-> **⚠️ このリポジトリのコードは学習・チュートリアル目的で提供されています。**
-
-### 使用上の注意
-
-| 項目 | 注意事項 |
-|------|---------|
-| 🔬 **開発段階** | プレビュー版の Microsoft Agent Framework を使用しています |
-| 🏭 **本番環境** | 本番環境での使用前に、適切なセキュリティレビューと最適化を行ってください |
-| 🔐 **セキュリティ** | API キーやシークレットは環境変数や安全な設定管理ツールを使用してください |
-| 📦 **将来の変更** | Microsoft Agent Framework は今後のバージョンアップで仕様が変わる可能性があります |
-
-### 推奨事項
-
-- **学習目的**: このリポジトリは学習とプロトタイピングに最適です
-- **本番利用**: 本番環境に適用する場合は、コードのレビューと最適化を実施してください
-- **セキュリティ**: 機密情報の取り扱いには十分注意してください
-
----
-
-**Last Updated**: 2025-01  
-**Repository**: https://github.com/Fujiwo/Shos.AIAgentSample  
-**License**: MIT License
-
-このリポジトリに関するご質問やフィードバックは、[Issues](https://github.com/Fujiwo/Shos.AIAgentSample/issues) または [Discussions](https://github.com/Fujiwo/Shos.AIAgentSample/discussions) でお気軽にお寄せください。
+**最終更新**: 2026-11
+**リポジトリ**: https://github.com/Fujiwo/Shos.AIAgentSample
+**ライセンス**: MIT License
