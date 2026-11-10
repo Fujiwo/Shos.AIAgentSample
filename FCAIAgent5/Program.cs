@@ -47,38 +47,38 @@ using IChatClient       chatClient     = My.GetChatClient(chatClientType);
 // 新:
 var (mcpClients, tools) = await My.GetMcpTools();
 
-// ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
-AIAgent agent = new ChatClientAgent(
-    chatClient,
-    instructions : My.Instructions,
-    name         : My.AgentName,
-    description  : null,
-    tools        : tools.Cast<AITool>().ToList()
-);
+// 例外が発生しても MCP クライアントを確実に破棄するため、try/finally で囲む
+try {
+    // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
+    AIAgent agent = new ChatClientAgent(
+        chatClient,
+        instructions : My.Instructions,
+        name         : My.AgentName,
+        description  : null,
+        tools        : tools.Cast<AITool>().ToList()
+    );
 
+    // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
+    AgentSession session = await agent.CreateSessionAsync();
 
-// 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
-AgentSession session = await agent.CreateSessionAsync();
+    // システムメッセージを作成して最初に送信
+    ChatMessage systemMessage = new(ChatRole.System, My.SystemPrompt);
+    await My.RunAsync(agent, systemMessage, session);
 
-// システムメッセージを作成して最初に送信
-ChatMessage systemMessage = new(ChatRole.System, My.SystemPrompt);
-await My.RunAsync(agent, systemMessage, session);
+    Console.WriteLine($"(Interactive chat started. Type '{My.ExitPrompt}' to quit.)\n");
 
-Console.WriteLine($"(Interactive chat started. Type '{My.ExitPrompt}' to quit.)\n");
-
-// 対話ループ: ユーザー入力を受け取り exit で終了
-for (; ;) {
-    var (isValid, userMessage) = My.GetUserMessage();
-    if (!isValid)
-        break;
-    await My.RunAsync(agent, userMessage, session);
+    // 対話ループ: ユーザー入力を受け取り exit で終了
+    for (; ;) {
+        var (isValid, userMessage) = My.GetUserMessage();
+        if (!isValid)
+            break;
+        await My.RunAsync(agent, userMessage, session);
+    }
+} finally {
+    // 終了処理 MCP クライアントを破棄
+    foreach (var mcpClient in mcpClients)
+        await mcpClient.DisposeAsync();
 }
-
-// 終了処理 MCP クライアントを破棄
-// 新: ここから
-foreach (var mcpClient in mcpClients)
-// 新: ここまで
-    await mcpClient.DisposeAsync();
 
 // 上記コード中の型や定数、メソッドが自作のものかどうかを判別しやすくするためにクラスに格納
 static class My
@@ -134,8 +134,8 @@ static class My
                 throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
             return azureOpenAIEndPoint;
 
-            // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
-            // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+            // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましい。ハードコードする場合は、上記の代わりに以下のように書く
+            // 例: https://your-resource-name.openai.azure.com/
             //return @"[Azure OpenAI のエンドポイント]";
         }
 
@@ -147,8 +147,8 @@ static class My
                 throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
             return openAIApiKey!;
 
-            // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
-            //例: https://your-resource-name.openai.azure.com/
+            // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましい。ハードコードする場合は、上記の代わりに以下のように書く
+            // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
             //return @"[Azure OpenAI の APIキー]";
         }
     }
@@ -181,10 +181,10 @@ static class My
     }
 
     // エージェントに ChatMessage を投げて応答を取得
-    public static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentSession? thread = null)
+    public static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentSession? session = null)
     {
         try {
-            var response = await agent.RunAsync(chatMessage, thread);
+            var response = await agent.RunAsync(chatMessage, session);
             Console.WriteLine($"Agent: {response.Text ?? string.Empty}\n");
         } catch (Exception ex) {
             Console.WriteLine($"Error running agent: {ex.Message}");
@@ -225,14 +225,27 @@ static class My
     // - 戻り値は (IEnumerable<McpClient>, IEnumerable<McpClientTool>) で、終了時にすべての McpClient について DisposeAsync() を呼ぶ必要がある
     public static async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpTools()
     {
-        var (timeMcpClient      , timeTools      ) = await GetMcpTools(GetTimeToolClientTransport      );
-        var (weartherMcpClient  , weatherTools   ) = await GetMcpTools(GetWeatherToolClientTransport   );
-        var (fileSystemMcpClient, fileSystemTools) = await GetMcpTools(GetFileSystemToolClientTransport);
-
-        McpClient[] mcpClients = [timeMcpClient, weartherMcpClient, fileSystemMcpClient];
-        IEnumerable<McpClientTool> tools = [.. timeTools, .. weatherTools, .. fileSystemTools];
-
+        List<McpClient>     mcpClients = [];
+        List<McpClientTool> tools      = [];
+        try {
+            await AddMcpToolsAsync(GetTimeToolClientTransport      );
+            await AddMcpToolsAsync(GetWeatherToolClientTransport   );
+            await AddMcpToolsAsync(GetFileSystemToolClientTransport);
+        } catch {
+            // 途中で接続に失敗した場合は、接続済みの MCP クライアントを破棄してから例外を再送出
+            foreach (var mcpClient in mcpClients)
+                await mcpClient.DisposeAsync();
+            throw;
+        }
         return (mcpClients, tools);
+
+        // MCP サーバーに接続してツール一覧を取得し、結果に追加する
+        async Task AddMcpToolsAsync(Func<IClientTransport> getToolClientTransport)
+        {
+            var (mcpClient, mcpTools) = await GetMcpTools(getToolClientTransport);
+            mcpClients.Add(mcpClient);
+            tools.AddRange(mcpTools);
+        }
 
         // MCP サーバー (STDIO) を使うためのクライアント生成
         // - STDIO 経由で MCP サーバー(Time ツール)に接続するためのトランスポート
@@ -259,21 +272,26 @@ static class My
             => new StdioClientTransport(new() {
                 Name      = "filesystem",
                 Command   = "npx",
-                // アクセスさせるフォルダーを、仮に "/work" と指定
+                // アクセスさせるフォルダーとして "/work" を指定 (Windows では現在のドライブの \work。例: C:\work)
+                // - 事前にフォルダーを作成しておくこと。環境に合わせて変更してください
                 Arguments = ["-y", "@modelcontextprotocol/server-filesystem", "/work"]
             });
 
-        // MCP サーバー (STDIO) のツール一覧を取得して返す
+        // MCP サーバーに接続してツール一覧を取得して返す
         // - 戻り値は (McpClient, IEnumerable<McpClientTool>) で、終了時に McpClient.DisposeAsync() を呼ぶ必要がある
         static async Task<(McpClient, IEnumerable<McpClientTool>)> GetMcpTools(Func<IClientTransport> getToolClientTransport)
         {
             IClientTransport clientTransport = getToolClientTransport();
             McpClient client = await McpClient.CreateAsync(clientTransport);
-
-            IList<McpClientTool> tools = await client.ListToolsAsync();
-            foreach (var tool in tools)
-                Debug.WriteLine($"{tool.Name} ({tool.Description})");
-            return (client, tools);
+            try {
+                IList<McpClientTool> tools = await client.ListToolsAsync();
+                foreach (var tool in tools)
+                    Debug.WriteLine($"{tool.Name} ({tool.Description})");
+                return (client, tools);
+            } catch {
+                await client.DisposeAsync();
+                throw;
+            }
         }
     }
     // 新: ここまで

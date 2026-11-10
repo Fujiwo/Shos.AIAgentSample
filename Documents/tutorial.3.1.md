@@ -150,8 +150,8 @@ static class My
                 throw new InvalidOperationException($"Please set the {AzureOpenAIEndpointEnvironmentVariable} environment variable.");
             return azureOpenAIEndPoint;
 
-            // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましいが、ここではハードコードする
-            // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+            // 上記のように、セキュリティ上 Azure OpenAI のエンドポイントは環境変数から取得するのが望ましい。ハードコードする場合は、上記の代わりに以下のように書く
+            // 例: https://your-resource-name.openai.azure.com/
             //return @"[Azure OpenAI のエンドポイント]";
         }
 
@@ -163,8 +163,8 @@ static class My
                 throw new InvalidOperationException($"Please set the {AzureOpenAIApiKeyEnvironmentVariable} environment variable.");
             return openAIApiKey!;
 
-            // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましいが、ここではハードコードする
-            //例: https://your-resource-name.openai.azure.com/
+            // 上記のように、セキュリティ上 Azure OpenAI の APIキーは環境変数から取得するのが望ましい。ハードコードする場合は、上記の代わりに以下のように書く
+            // 例: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
             //return @"[Azure OpenAI の APIキー]";
         }
     }
@@ -197,10 +197,10 @@ static class My
     }
 
     // エージェントに ChatMessage を投げて応答を取得
-    public static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentSession? thread = null)
+    public static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentSession? session = null)
     {
         try {
-            var response = await agent.RunAsync(chatMessage, thread);
+            var response = await agent.RunAsync(chatMessage, session);
             Console.WriteLine($"Agent: {response.Text ?? string.Empty}\n");
         } catch (Exception ex) {
             Console.WriteLine($"Error running agent: {ex.Message}");

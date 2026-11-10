@@ -29,12 +29,14 @@ public static class TimeTools
     // 指定されたタイムゾーンの現在の時刻を取得するツール
     // 引数 `timezone` はシステムのタイムゾーン ID（例: "Pacific Standard Time" や "Asia/Tokyo"）。
     [McpServerTool, Description("指定されたタイムゾーンの現在の時刻を取得")] // ツールとして公開し、説明を付与
-    public static string GetTimeInTimezone(string timezone)
+    public static string GetTimeInTimezone(
+        [Description("タイムゾーン ID (例: \"Asia/Tokyo\" や \"Tokyo Standard Time\")")] // 引数に説明を付与
+        string timezone)
     {
         try {
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
             return TimeZoneInfo.ConvertTime(DateTimeOffset.Now, timeZone).ToString();
-        } catch {
+        } catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException) {
             // 無効なタイムゾーンが指定された場合はエラーメッセージを返す
             return "無効なタイムゾーンが指定されています";
         }
