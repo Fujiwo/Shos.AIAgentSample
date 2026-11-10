@@ -24,14 +24,15 @@ a {
 }
 
 .border-top {
-  border-top: 1px solid #e5e5e5;
+  border-block-start: 1px solid #e5e5e5;
 }
+
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+  border-block-end: 1px solid #e5e5e5;
 }
 
 .box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+  box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 5%);
 }
 
 button.accept-policy {
@@ -41,8 +42,8 @@ button.accept-policy {
 
 .footer {
   position: absolute;
-  bottom: 0;
-  width: 100%;
+  inset-block-end: 0;
+  inline-size: 100%;
   white-space: nowrap;
   line-height: 60px;
 }
