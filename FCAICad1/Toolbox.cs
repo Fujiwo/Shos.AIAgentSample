@@ -18,7 +18,7 @@ static class Toolbox
     public static SizeF GetPaperSize() => MainForm?.PaperSize ?? SizeF.Empty;
 
     // 描かれた図形をすべて消去し、結果を文字列で返す
-    [Description("Clear all drawn shapes to make the paper blank. This cannot be undone, so use it only when the user asks to start over.")]
+    [Description("Clear all drawn shapes to make the paper blank. This cannot be undone, so use it only when the user asks to start over. To change or remove only a part of the drawing, cover that part with a shape of the surrounding background color and draw again.")]
     public static string ClearAll()
     {
         MainForm?.Clear();
@@ -196,11 +196,11 @@ static class Toolbox
     // - 戻り値: 描いた図形の内容 ("Drawn: ...") またはエラー ("Error: ...")。AI はこれを見て次の操作を決める
 
     // 直線を描く (start から end まで)
-    [Description("Draw a straight line. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
+    [Description("Draw a straight line. Good for sun rays, whiskers, rain, window frames and sticks. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawLine(
         [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
+        [Description("The line width (3 to 30). The line is centered on the outline, so the shape extends outward by half the line width; use 3 for shapes that are only filled. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("The starting point of the line.")]
             PointF start,
@@ -210,11 +210,11 @@ static class Toolbox
         => AddFigure(color, () => new LineFigure { ColorName = color, LineWidth = lineWidth, Start = start, End = end });
 
     // 矩形を描く (shape は左上の座標と幅・高さ)
-    [Description("Draw an axis-aligned rectangle. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
+    [Description("Draw an axis-aligned rectangle. Good for the sky and the ground: start a scene with a filled rectangle that covers the paper (or the area below the horizon). Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawRectangle(
         [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
+        [Description("The line width (3 to 30). The line is centered on the outline, so the shape extends outward by half the line width; use 3 for shapes that are only filled. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("The position (top-left X, Y) and size (Width, Height) of the rectangle.")]
             RectangleF shape,
@@ -228,7 +228,7 @@ static class Toolbox
     public static string DrawRoundedRectangle(
         [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
+        [Description("The line width (3 to 30). The line is centered on the outline, so the shape extends outward by half the line width; use 3 for shapes that are only filled. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("The position (top-left X, Y) and size (Width, Height) of the rounded rectangle.")]
             RectangleF shape,
@@ -244,7 +244,7 @@ static class Toolbox
     public static string DrawCircle(
         [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
+        [Description("The line width (3 to 30). The line is centered on the outline, so the shape extends outward by half the line width; use 3 for shapes that are only filled. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("The center point of the circle.")]
             PointF center,
@@ -260,7 +260,7 @@ static class Toolbox
     public static string DrawEllipse(
         [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
+        [Description("The line width (3 to 30). The line is centered on the outline, so the shape extends outward by half the line width; use 3 for shapes that are only filled. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("The center point of the ellipse.")]
             PointF center,
@@ -278,9 +278,9 @@ static class Toolbox
     public static string DrawPolylineOrPolygon(
         [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
+        [Description("The line width (3 to 30). The line is centered on the outline, so the shape extends outward by half the line width; use 3 for shapes that are only filled. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
-        [Description("Points that make up the polyline or polygon.")]
+        [Description("Points that make up the polyline or polygon, in order along the outline.")]
             PointF[] points,
         [Description("If true, the last point is connected to the first point to make a polygon.")]
             bool isClosed,
@@ -290,13 +290,13 @@ static class Toolbox
         => AddFigure(color, () => new PolylineFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed, IsFilled = isFilled });
 
     // 点列を通る滑らかな曲線 (カーディナル スプライン) を描く。isClosed が true なら閉曲線 (塗りつぶしは閉じた場合のみ)
-    [Description("Draw a smooth curve that passes through all the points (cardinal spline). The curve may bulge slightly outside the points. A closed and filled curve is good for organic shapes such as leaves, clouds, hair and animal bodies; use 5 to 12 points placed in order along the outline. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
+    [Description("Draw a smooth curve that passes through all the points (cardinal spline). The curve may bulge slightly outside the points. A closed and filled curve is good for organic shapes such as leaves, clouds, hair and animal bodies; use 5 to 12 points placed in order along the outline. An open curve is good for smiles, eyebrows, stems and waves. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawCurve(
         [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
+        [Description("The line width (3 to 30). The line is centered on the outline, so the shape extends outward by half the line width; use 3 for shapes that are only filled. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
-        [Description("Points that make up the curve.")]
+        [Description("Points that the curve passes through, in order along the outline.")]
             PointF[] points,
         [Description("If true, the curve returns to the first point to make a closed shape.")]
             bool isClosed,
@@ -310,7 +310,7 @@ static class Toolbox
     public static string DrawFreeFormCurve(
         [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
+        [Description("The line width (3 to 30). The line is centered on the outline, so the shape extends outward by half the line width; use 3 for shapes that are only filled. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("Points that make up the free-form curve. Keep a distance of at least 10 between consecutive points.")]
             PointF[] points,
