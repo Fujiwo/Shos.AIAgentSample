@@ -1,4 +1,5 @@
-﻿/*
+﻿// 新: このステップで追加したファイル (AI エージェント本体)
+/*
 dotnet add package Microsoft.Agents.AI --prerelease
 dotnet add package Azure.AI.OpenAI
 dotnet add package Microsoft.Agents.AI.OpenAI --prerelease

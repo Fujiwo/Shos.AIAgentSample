@@ -5,15 +5,9 @@
 }
 
 <div class="container">
+    @* 新: ここから メッセージ一覧を入力欄の上に移動し、部分ビュー (_MessagePartial) を使ってふきだしで表示 *@
     <div class="row p-1">
         <div class="col-8">
-@*             <ul id="messagesList">
-                @foreach (var message in Model.Messages)
-                {
-                    <li>@message.UserName says @message.Content - <span class="utc-time hidden">@message.CreatedAt.ToString("o")</span></li>
-                }
-            </ul>
- *@
             <div id="messagesList" class="talk1">
                 @if (Model?.Messages is not null) {
                     @foreach (var message in Model.Messages) {
@@ -28,6 +22,7 @@
             <hr />
         </div>
     </div>
+    @* 新: ここまで *@
     <div class="row p-1" hidden="hidden">
         <div class="col-2">User</div>
         <div class="col-6"><input type="text" id="userInput" value="@User?.Identity?.Name" /></div>
@@ -41,8 +36,24 @@
             <input type="button" id="sendButton" value="Send Message" />
         </div>
     </div>
+    @* 旧: ここから
+    <div class="row p-1">
+        <div class="col-8">
+            <hr />
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-8">
+            <ul id="messagesList">
+                @foreach (var message in Model.Messages)
+                {
+                    <li>@message.UserName says @message.Content - <span class="utc-time hidden">@message.CreatedAt.ToString("o")</span></li>
+                }
+            </ul>
+        </div>
+    </div>
+    旧: ここまで *@
 </div>
-
 @section Scripts {
     <script type="module" src="~/js/chat.js"></script>
 }

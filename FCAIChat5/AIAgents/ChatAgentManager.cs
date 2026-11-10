@@ -1,4 +1,5 @@
-﻿using FCAIChat.Services;
+﻿// 新: 会話の状態を保存するストア (IThreadStore) 用
+using FCAIChat.Services;
 
 namespace FCAIChat.AIAgents;
 
@@ -8,6 +9,9 @@ namespace FCAIChat.AIAgents;
 /// - ユーザーの最後の接続が切れたら、会話の状態を保存してエージェント (と MCP サーバーのプロセス) を破棄する
 /// - 再接続時には、保存しておいた会話の状態を復元する
 /// </summary>
+// 旧:
+//public sealed class ChatAgentManager : IAsyncDisposable
+// 新: 会話の状態を保存するストアを受け取る
 public sealed class ChatAgentManager(IThreadStore threadStore) : IAsyncDisposable
 {
     sealed class Entry(MyChatAgent agent)
@@ -16,11 +20,51 @@ public sealed class ChatAgentManager(IThreadStore threadStore) : IAsyncDisposabl
         public HashSet<string> ConnectionIds { get; } = [];
     }
 
-    readonly Dictionary<string, Entry> entries         = [];
+    readonly Dictionary<string, Entry> entries = [];
+    readonly SemaphoreSlim             gate    = new(1, 1);
+    // 新: ここから
     // 保存・破棄の途中のエージェント (再接続時は、保存が終わるのを待ってから復元する)
     readonly Dictionary<string, Task>  pendingReleases = [];
-    readonly SemaphoreSlim             gate            = new(1, 1);
+    // 新: ここまで
 
+    // 旧: ここから
+    ///// <summary>ユーザーのエージェントを取得する。なければ作成する。</summary>
+    //public async Task<MyChatAgent> AcquireAsync(string userKey, string connectionId)
+    //{
+    //    await gate.WaitAsync();
+    //    try {
+    //        if (!entries.TryGetValue(userKey, out var entry)) {
+    //            entry = new Entry(new MyChatAgent());
+    //            entries[userKey] = entry;
+    //        }
+    //        entry.ConnectionIds.Add(connectionId);
+    //        return entry.Agent;
+    //    } finally {
+    //        gate.Release();
+    //    }
+    //}
+
+    ///// <summary>接続の終了を通知する。ユーザーの接続がなくなったら、エージェントを破棄する。</summary>
+    //public async Task ReleaseAsync(string userKey, string connectionId)
+    //{
+    //    MyChatAgent? agentToDispose = null;
+    //    await gate.WaitAsync();
+    //    try {
+    //        if (entries.TryGetValue(userKey, out var entry) &&
+    //            entry.ConnectionIds.Remove(connectionId) && entry.ConnectionIds.Count == 0) {
+    //            entries.Remove(userKey);
+    //            agentToDispose = entry.Agent;
+    //        }
+    //    } finally {
+    //        gate.Release();
+    //    }
+
+    //    if (agentToDispose is not null)
+    //        await agentToDispose.DisposeAsync();
+    //}
+    // 旧: ここまで
+
+    // 新: ここから
     /// <summary>ユーザーのエージェントを取得する。なければ作成し、保存済みの会話があれば復元する。</summary>
     public async Task<MyChatAgent> AcquireAsync(string userKey, string connectionId)
     {
@@ -115,6 +159,7 @@ public sealed class ChatAgentManager(IThreadStore threadStore) : IAsyncDisposabl
         if (agentToDispose is not null)
             await agentToDispose.DisposeAsync();
     }
+    // 新: ここまで
 
     /// <summary>アプリケーション終了時に、すべてのエージェント (と MCP サーバーのプロセス) を破棄する</summary>
     public async ValueTask DisposeAsync()

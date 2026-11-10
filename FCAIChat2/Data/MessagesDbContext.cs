@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// 新: このステップで追加したファイル (メッセージを保存する DB の定義)
+using Microsoft.EntityFrameworkCore;
 
 namespace FCAIChat.Data;
 

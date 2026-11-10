@@ -24,6 +24,11 @@
         </div>
     </div>
     <div class="row p-1">
+        @* 旧: ここから
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        旧: ここまで *@
+        @* 新: ここから DB に保存されたメッセージを表示 *@
         <div class="col-8">
             <ul id="messagesList">
                 @foreach (var message in Model.Messages)
@@ -31,6 +36,7 @@
                     <li>@message.UserName says @message.Content - <span class="utc-time hidden">@message.CreatedAt.ToString("o")</span></li>
                 }
             </ul>
+        @* 新: ここまで *@
         </div>
     </div>
 </div>

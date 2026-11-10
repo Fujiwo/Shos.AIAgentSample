@@ -85,8 +85,10 @@ static class My
     public const string SystemPrompt = "あなたはAIエージェントです";
     public const string ExitPrompt   = "exit";
     // 新: ここまで
-    // 旧: ユーザーからのプロンプトの例
-    //const string UserPrompt   = "「AIエージェント」とはどのようなものですか?";
+    // 旧: ここから
+    //// ユーザーからのプロンプトの例
+    //public const string UserPrompt   = "「AIエージェント」とはどのようなものですか?";
+    // 旧: ここまで
 
     // Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
     static IChatClient GetOllamaClient()

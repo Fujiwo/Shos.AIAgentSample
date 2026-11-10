@@ -36,6 +36,8 @@ body {
   color: var(--bs-secondary-color);
 }
 
+/* 新: ここから サーバーで描画した UTC 時刻は、ローカル時刻に変換するまで隠しておく */
 .hidden {
   visibility: hidden;
 }
+/* 新: ここまで */

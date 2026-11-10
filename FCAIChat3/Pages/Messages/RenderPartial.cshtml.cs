@@ -1,3 +1,4 @@
+// 新: このステップで追加したファイル (メッセージ 1 件分の部分ビューを HTML で返す)
 using FCAIChat.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

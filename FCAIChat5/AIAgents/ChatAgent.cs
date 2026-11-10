@@ -13,8 +13,10 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 // MCP クライアントとツールを利用するための名前空間
 using ModelContextProtocol.Client;
+
 // Debug.WriteLine を使うための名前空間
 using System.Diagnostics;
+// 新: JsonElement (セッションの保存・復元) 用
 using System.Text.Json;
 
 namespace FCAIChat.AIAgents;
@@ -26,8 +28,10 @@ public abstract class ChatAgent : IAsyncDisposable
     // 同じエージェントへの同時呼び出し (同じユーザーの複数タブなど) を直列化する
     readonly SemaphoreSlim gate                 = new(1, 1);
 
+    // 新: ここから
     // 復元待ちのセッション (Start() でエージェントを作成した後にデシリアライズする)
     JsonElement?           pendingSessionRestore = null;
+    // 新: ここまで
 
     AIAgent?               agent                = null;
     // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
@@ -39,6 +43,7 @@ public abstract class ChatAgent : IAsyncDisposable
     // エージェントのシステムロールに与える文脈的な指示
     protected abstract string SystemPrompt { get; }
 
+    // 新: ここから
     /// <summary>保存しておいたセッションを復元する。最初の GetResponseAsync() より前に呼ぶ。</summary>
     public void RestoreSession(JsonElement serializedSession) => pendingSessionRestore = serializedSession;
 
@@ -54,6 +59,7 @@ public abstract class ChatAgent : IAsyncDisposable
             gate.Release();
         }
     }
+    // 新: ここまで
 
     public async ValueTask DisposeAsync()
     {
@@ -115,6 +121,14 @@ public abstract class ChatAgent : IAsyncDisposable
         try {
             agent = CreateAgent(tools);
 
+            // 旧: ここから
+            //session = await agent.CreateSessionAsync();
+
+            //// システムメッセージを最初に送信
+            //await RunAgentAsync(new ChatMessage(ChatRole.System, SystemPrompt));
+            // 旧: ここまで
+
+            // 新: ここから
             // 保存されたセッションがあれば復元し、なければ新規作成
             var isRestored = false;
             if (pendingSessionRestore.HasValue) {
@@ -128,6 +142,7 @@ public abstract class ChatAgent : IAsyncDisposable
             // システムメッセージを最初に送信 (新しいセッションの場合のみ)
             if (!isRestored)
                 await RunAgentAsync(new ChatMessage(ChatRole.System, SystemPrompt));
+            // 新: ここまで
         } catch {
             // 開始に失敗したら MCP クライアントを破棄し、次回の呼び出しで再試行する
             await DisposeMcpClientsAsync(mcpClients);
@@ -168,7 +183,8 @@ public abstract class ChatAgent : IAsyncDisposable
 public class MyChatAgent : ChatAgent
 {
     // エージェント名と指示
-    public override string    Name         => "Agent";
+    public const string       AgentName    = "Agent";
+    public override string    Name         => AgentName;
     protected override string Instructions => "あなたはAIエージェントです";
     // エージェントのシステムロールに与える文脈的な指示
     protected override string SystemPrompt => "あなたはAIエージェントです";
@@ -222,6 +238,9 @@ public class MyChatAgent : ChatAgent
     // - 戻り値は (IEnumerable<McpClient>, IEnumerable<McpClientTool>) で、終了時にすべての McpClient について DisposeAsync() を呼ぶ必要がある
     protected override async Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
     {
+        // 旧:
+        //McpClient client = await McpClient.CreateAsync(GetPlaywrightToolClientTransport());
+        // 新: Playwright の代わりに Brave Search を使う
         McpClient client = await McpClient.CreateAsync(GetBraveSearchToolClientTransport());
         try {
             IList<McpClientTool> tools = await client.ListToolsAsync();
@@ -234,6 +253,7 @@ public class MyChatAgent : ChatAgent
             throw;
         }
 
+        // 旧: ここから
         //// Playwright ツールを使うためのクライアント生成
         //static IClientTransport GetPlaywrightToolClientTransport()
         //    => new StdioClientTransport(new() {
@@ -241,7 +261,9 @@ public class MyChatAgent : ChatAgent
         //        Command   = "npx"           ,
         //        Arguments = ["@playwright/mcp@latest"]
         //    });
+        // 旧: ここまで
 
+        // 新: ここから
         // BraveSearch ツールを使うためのクライアント生成
         static IClientTransport GetBraveSearchToolClientTransport()
         {
@@ -266,5 +288,6 @@ public class MyChatAgent : ChatAgent
                 //return @"[Brave の APIキー]";
             }
         }
+        // 新: ここまで
     }
 }

@@ -13,7 +13,9 @@ sendButton.disabled = true;
 
 connection.on("ReceiveMessage", (user, message, createdAt) => {
     console.log("Receiving message:", user, message);
-    // サーバーで部分ビューをレンダリングして取得
+    // 旧:
+    //addMessageRow(user, message, createdAt);
+    // 新: サーバーで部分ビューをレンダリングして取得
     addMessagePartial(user, message, createdAt);
 });
 
@@ -42,6 +44,7 @@ try {
     console.error(error.toString());
 }
 
+// 新: ここから サーバーで部分ビューをレンダリングしてメッセージを追加
 async function addMessagePartial(user, message, createdAt) {
     try {
         const query = new URLSearchParams({
@@ -70,9 +73,13 @@ async function addMessagePartial(user, message, createdAt) {
         addMessageRow(user, message, createdAt);
     }
 }
+// 新: ここまで
 
 // メッセージの行をクライアント側で組み立てて追加
 function addMessageRow(user, message, createdAt) {
+    // 旧:
+    //const row = document.createElement("li");
+    // 新: メッセージ一覧を ul から div に変えたので、li ではなく div で追加
     const row = document.createElement("div");
     row.textContent = `${user} says ${message} - `;
 

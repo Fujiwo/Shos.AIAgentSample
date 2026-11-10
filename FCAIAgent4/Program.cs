@@ -47,10 +47,14 @@ var (mcpClient, tools) = await My.GetMcpTools();
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
     chatClient,
-    instructions : My.Instructions,
-    name         : My.AgentName,
-    description  : null,
-    tools        : tools.Cast<AITool>().ToList()
+    instructions: My.Instructions,
+    // 旧:
+    //name        : My.AgentName
+    // 新: ここから MCP サーバーのツールを渡す
+    name        : My.AgentName,
+    description : null,
+    tools       : tools.Cast<AITool>().ToList()
+    // 新: ここまで
 );
 
 // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成

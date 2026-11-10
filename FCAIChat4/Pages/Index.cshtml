@@ -7,13 +7,6 @@
 <div class="container">
     <div class="row p-1">
         <div class="col-8">
-@*             <ul id="messagesList">
-                @foreach (var message in Model.Messages)
-                {
-                    <li>@message.UserName says @message.Content - <span class="utc-time hidden">@message.CreatedAt.ToString("o")</span></li>
-                }
-            </ul>
- *@
             <div id="messagesList" class="talk1">
                 @if (Model?.Messages is not null) {
                     @foreach (var message in Model.Messages) {
@@ -42,7 +35,6 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script type="module" src="~/js/chat.js"></script>
 }

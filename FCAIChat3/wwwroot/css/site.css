@@ -40,6 +40,7 @@ body {
   visibility: hidden;
 }
 
+/* 新: ここから */
 /* トーク画面 (LINE 風のふきだし) */
 :root {
   --talk-icon-size: 64px;
@@ -133,3 +134,4 @@ body {
     }
   }
 }
+/* 新: ここまで */

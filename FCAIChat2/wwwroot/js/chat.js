@@ -30,7 +30,7 @@ sendButton.addEventListener("click", async event => {
     }
 });
 
-// サーバーで描画された UTC 時刻をローカル時刻で表示
+// 新: サーバーで描画された UTC 時刻をローカル時刻で表示
 toLocalTimeStringAll();
 
 // 接続を開始 (ES2022 のトップレベル await)
@@ -54,6 +54,7 @@ function addMessageRow(user, message, createdAt) {
     document.getElementById("messagesList").append(row);
 }
 
+// 新: ここから
 // まだ変換していない (hidden クラスが付いている) UTC 時刻だけをローカル時刻に変換して表示
 function toLocalTimeStringAll() {
     for (const element of document.querySelectorAll(".utc-time.hidden")) {
@@ -61,6 +62,7 @@ function toLocalTimeStringAll() {
         element.classList.remove("hidden");
     }
 }
+// 新: ここまで
 
 function toLocalTimeString(utcDateString) {
     return new Date(utcDateString).toLocaleString();

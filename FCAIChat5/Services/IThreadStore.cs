@@ -1,3 +1,4 @@
+// 新: このステップで追加したファイル (会話の状態の保存先)
 using System.Text.Json;
 
 namespace FCAIChat.Services;

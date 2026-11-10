@@ -28,7 +28,10 @@ using Azure;
 using Azure.AI.OpenAI;
 // 新: ここまで
 
-// 旧: using IChatClient chatClient = GetOllamaClient();
+// 旧: ここから
+//// Ollama を使うためのクライアント生成
+//using IChatClient chatClient = My.GetOllamaClient();
+// 旧: ここまで
 // 新: ここから
 // 使用するチャットクライアント種別
 const My.ChatClientType chatClientType = My.ChatClientType.AzureOpenAI;
@@ -37,7 +40,7 @@ using IChatClient       chatClient     = My.GetChatClient(chatClientType);
 
 // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
 AIAgent agent = new ChatClientAgent(
-    chatClient                   ,
+    chatClient,
     instructions: My.Instructions,
     name        : My.AgentName
 );
@@ -60,6 +63,9 @@ static class My
     public const string UserPrompt   = "「AIエージェント」とはどのようなものですか?";
 
     // Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
+    // 旧:
+    //public static IChatClient GetOllamaClient()
+    // 新: GetChatClient() から呼び出すようにしたので、外部には公開しない
     static IChatClient GetOllamaClient()
     {
         var uri    = new Uri("http://localhost:11434");

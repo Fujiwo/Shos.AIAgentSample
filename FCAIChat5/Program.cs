@@ -1,6 +1,7 @@
 using FCAIChat.AIAgents;
 using FCAIChat.Data;
 using FCAIChat.Hubs;
+// 新: 会話の状態を保存するストア (IThreadStore) 用
 using FCAIChat.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +18,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 
-// 会話の状態を保存するストアと、ユーザーごとのエージェントを管理するサービスを登録
-// (SignalR の Hub は呼び出しごとに生成されるため、エージェントは Singleton のサービスで保持する)
+// 新: ここから
+// 会話の状態を保存するストアを登録 (ユーザーごとの会話の状態をメモリーに保存する)
 builder.Services.AddSingleton<IThreadStore, InMemoryThreadStore>();
+// 新: ここまで
+// ユーザーごとのエージェントを管理するサービスを登録
+// (SignalR の Hub は呼び出しごとに生成されるため、エージェントは Singleton のサービスで保持する)
 builder.Services.AddSingleton<ChatAgentManager>();
 
 var app = builder.Build();

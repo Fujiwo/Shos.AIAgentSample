@@ -1,4 +1,5 @@
-﻿namespace FCAIChat.AIAgents;
+﻿// 新: このステップで追加したファイル (ユーザーごとのエージェントの管理)
+namespace FCAIChat.AIAgents;
 
 /// <summary>
 /// ユーザーごとの AI エージェントを管理する (DI に Singleton として登録する)

@@ -47,15 +47,17 @@ using IChatClient       chatClient     = My.GetChatClient(chatClientType);
 // 新:
 var (mcpClients, tools) = await My.GetMcpTools();
 
+// 新: ここから try/finally で囲む (囲んだ部分は字下げ以外の変更なし)
 // 例外が発生しても MCP クライアントを確実に破棄するため、try/finally で囲む
 try {
+// 新: ここまで
     // ChatClientAgent の作成 (Agent の名前やインストラクションを指定する)
     AIAgent agent = new ChatClientAgent(
         chatClient,
-        instructions : My.Instructions,
-        name         : My.AgentName,
-        description  : null,
-        tools        : tools.Cast<AITool>().ToList()
+        instructions: My.Instructions,
+        name        : My.AgentName,
+        description : null,
+        tools       : tools.Cast<AITool>().ToList()
     );
 
     // 複数ターンに対応するために AgentSession (会話の状態・履歴などを管理) を作成
@@ -74,11 +76,17 @@ try {
             break;
         await My.RunAsync(agent, userMessage, session);
     }
+// 新: ここから
 } finally {
-    // 終了処理 MCP クライアントを破棄
+    // 旧: ここから
+    //// 終了処理 MCP クライアントを破棄
+    //await mcpClient.DisposeAsync();
+    // 旧: ここまで
+    // 終了処理 すべての MCP クライアントを破棄
     foreach (var mcpClient in mcpClients)
         await mcpClient.DisposeAsync();
 }
+// 新: ここまで
 
 // 上記コード中の型や定数、メソッドが自作のものかどうかを判別しやすくするためにクラスに格納
 static class My
@@ -228,9 +236,9 @@ static class My
         List<McpClient>     mcpClients = [];
         List<McpClientTool> tools      = [];
         try {
-            await AddMcpToolsAsync(GetTimeToolClientTransport      );
-            await AddMcpToolsAsync(GetWeatherToolClientTransport   );
-            await AddMcpToolsAsync(GetFileSystemToolClientTransport);
+            await AddMcpToolsAsync(GetTimeToolClientTransport      , "time");
+            await AddMcpToolsAsync(GetWeatherToolClientTransport   , "weather", isOptional: true);
+            await AddMcpToolsAsync(GetFileSystemToolClientTransport, "filesystem");
         } catch {
             // 途中で接続に失敗した場合は、接続済みの MCP クライアントを破棄してから例外を再送出
             foreach (var mcpClient in mcpClients)
@@ -240,12 +248,21 @@ static class My
         return (mcpClients, tools);
 
         // MCP サーバーに接続してツール一覧を取得し、結果に追加する
-        async Task AddMcpToolsAsync(Func<IClientTransport> getToolClientTransport)
+        async Task AddMcpToolsAsync(Func<IClientTransport> getToolClientTransport, string toolGroupName, bool isOptional = false)
         {
-            var (mcpClient, mcpTools) = await GetMcpTools(getToolClientTransport);
-            mcpClients.Add(mcpClient);
-            tools.AddRange(mcpTools);
+            try {
+                var (mcpClient, mcpTools) = await GetMcpTools(getToolClientTransport);
+                mcpClients.Add(mcpClient);
+                tools.AddRange(mcpTools);
+            } catch (HttpRequestException ex) when (isOptional && IsConnectionRefused(ex)) {
+                Debug.WriteLine($"[WARN] Optional MCP '{toolGroupName}' is unavailable. Skipped. {ex.Message}");
+            }
         }
+
+        static bool IsConnectionRefused(HttpRequestException ex)
+            => ex.InnerException is System.Net.Sockets.SocketException {
+                SocketErrorCode: System.Net.Sockets.SocketError.ConnectionRefused
+            };
 
         // MCP サーバー (STDIO) を使うためのクライアント生成
         // - STDIO 経由で MCP サーバー(Time ツール)に接続するためのトランスポート
@@ -263,7 +280,8 @@ static class My
         // MCP サーバー (HTTP) を使うためのクライアント生成
         static IClientTransport GetWeatherToolClientTransport()
         {
-            const string endPoint = "http://localhost:3001/";
+            const string defaultEndPoint = "http://localhost:3001/";
+            string endPoint = Environment.GetEnvironmentVariable("WEATHER_MCP_ENDPOINT") ?? defaultEndPoint;
             return new HttpClientTransport(new() { Endpoint = new(endPoint) });
         }
 

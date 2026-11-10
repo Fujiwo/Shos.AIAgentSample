@@ -11,6 +11,7 @@
     <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
     <PackageReference Include="Microsoft.Agents.AI" Version="1.28.0" />
     <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.28.0" />
+    <!-- 新: MCP クライアント用 -->
     <PackageReference Include="ModelContextProtocol" Version="2.4.0" />
     <PackageReference Include="OllamaSharp" Version="5.5.2" />
   </ItemGroup>

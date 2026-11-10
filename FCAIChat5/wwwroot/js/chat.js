@@ -5,12 +5,14 @@
 const sendButton   = document.getElementById("sendButton");
 const userInput    = document.getElementById("userInput");
 const messageInput = document.getElementById("messageInput");
+// 新: クリア ボタン
 const clearButton  = document.getElementById("clearButton");
 
 const connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-// 接続が確立するまで送信ボタンとクリア ボタンを無効にする
-sendButton.disabled  = true;
+// 接続が確立するまで送信ボタンを無効にする
+sendButton.disabled = true;
+// 新: クリア ボタンも無効にする
 clearButton.disabled = true;
 
 connection.on("ReceiveMessage", (user, message, createdAt) => {
@@ -19,7 +21,7 @@ connection.on("ReceiveMessage", (user, message, createdAt) => {
     addMessagePartial(user, message, createdAt);
 });
 
-// 履歴がクリアされたら再表示
+// 新: 履歴がクリアされたら再表示
 connection.on("Cleared", () => location.reload());
 
 sendButton.addEventListener("click", async event => {
@@ -30,12 +32,16 @@ sendButton.addEventListener("click", async event => {
     if (user.trim() === "" || message.trim() === "")
         return;
     try {
+        // 旧:
+        //await connection.invoke("SendMessage", user, message);
+        // 新: 送信者名はサーバー側で認証情報から取得するので、送らない
         await connection.invoke("SendMessage", message);
     } catch (error) {
         console.error(error.toString());
     }
 });
 
+// 新: ここから クリア ボタンで会話とメッセージ履歴をクリア
 clearButton.addEventListener("click", async event => {
     event.preventDefault();
     try {
@@ -45,6 +51,7 @@ clearButton.addEventListener("click", async event => {
         console.error(error.toString());
     }
 });
+// 新: ここまで
 
 // サーバーで描画された UTC 時刻をローカル時刻で表示
 toLocalTimeStringAll();
@@ -52,7 +59,8 @@ toLocalTimeStringAll();
 // 接続を開始 (ES2022 のトップレベル await)
 try {
     await connection.start();
-    sendButton.disabled  = false;
+    sendButton.disabled = false;
+    // 新: クリア ボタンも有効にする
     clearButton.disabled = false;
 } catch (error) {
     console.error(error.toString());
