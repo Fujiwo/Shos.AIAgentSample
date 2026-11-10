@@ -110,7 +110,7 @@ static class My
     static IChatClient GetAzureOpenAIClient()
     {
         // 使用するモデルを指定
-        const string deploymentName = "gpt-5-mini";
+        const string deploymentName = "MAI-Thinking-1";
         var azureOpenAIEndPoint     = GetEndPoint();
         var openAIApiKey            = GetKey     ();
         var credential              = new AzureKeyCredential(openAIApiKey);

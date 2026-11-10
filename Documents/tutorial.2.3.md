@@ -48,7 +48,7 @@ Visual Studio Code を起動し、設定を開く
 10. 「HTTP (HTTP またはサーバー送信イベント) MCP プロトコルを実装するリモート HTTP サーバーに接続する」を選択
 ![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_6.png)
 
-11. 「サーバー URL の入力」では \"http://localhost:3001/sse\" と入力して Enter
+11. 「サーバー URL の入力」では \"http://localhost:3001/\" と入力して Enter
 ![Visual Studio Code MCP の設定](./Images/tutorial.2.3/vscode_mcp_7.png)
 
 12. 「サーバー ID の入力」で \"McpServer.Sse\" と入力して Enter
@@ -74,7 +74,7 @@ Visual Studio Code を起動し、設定を開く
     },
     "McpServer.Sse": {
       "type": "http",
-      "url": "http://localhost:3001/sse"
+      "url": "http://localhost:3001/"
     }
   },
   "inputs": []
@@ -144,7 +144,7 @@ mcp\.json ファイルを開き、正常に起動していないものがあれ�
     },
     "McpServer.Sse": {
       "type": "http",
-      "url": "http://localhost:3001/sse"
+      "url": "http://localhost:3001/"
     },
     "github": {
       "type": "http",

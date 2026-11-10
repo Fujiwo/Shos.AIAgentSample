@@ -20,13 +20,13 @@
 ```console
 dotnet --version
 ```
-  8\.0以上であればOK (推奨: 9\.0 以上)
+  10\.0以上であればOK (サンプルはすべて .NET 10 を対象としているため、10\.0 未満ではビルドできません)
 
-- 1\.2 (8\.0未満の場合) \.NET9\.0 のダウンロード
+- 1\.2 (10\.0未満の場合) \.NET 10\.0 のダウンロード
 
 ![Download \.NET](./Images/tutorial.0.1/download_dotnet.png)
 
-- 1\.3 (8\.0未満の場合) \.NET9\.0 のインストール
+- 1\.3 (10\.0未満の場合) \.NET 10\.0 のインストール
 
 ![Install \.NET](./Images/tutorial.0.1/install_dotnet.png)
 
@@ -110,5 +110,9 @@ npx -v
 ![Ollama](./Images/tutorial.0.1/ollama_1.png)
 
 - 3\.5 LLM の選択とダウンロード
+
+  - サンプルコードは既定でクラウドモデル `minimax-m3:cloud` を使います。クラウドモデルの利用には、3\.3 のサインアップ (サインイン) が必要です。
+  - コマンドで確認する場合: `ollama signin` の後に `ollama run minimax-m3:cloud`
+  - ローカル LLM を使う場合は `ollama pull gemma3` などでモデルをダウンロードし、コード中の `ollama.SelectedModel` を変更してください。
 
 ![Ollama](./Images/tutorial.0.1/ollama_2.png)

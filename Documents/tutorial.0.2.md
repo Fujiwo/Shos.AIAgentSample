@@ -69,7 +69,9 @@ Microsoft Azure アカウントがまだない場合、下記を参考に作成
 
 ![チャット](./Images/tutorial.0.2/azure_openai8.png)
 
-「gpt-5-mini」を選び、「確認」
+「MAI-Thinking-1」を選び、「確認」
+
+> **注意**: デプロイ名は、サンプルコードの `deploymentName` (`"MAI-Thinking-1"`) と一致させてください。別のモデルや別のデプロイ名を使う場合は、コード側の `deploymentName` も合わせて変更してください。画面のスクリーンショットは執筆時点のものです。
 
 ![デプロイの作成](./Images/tutorial.0.2/azure_openai9.png)
 

@@ -5,6 +5,8 @@
 
 この手順では、AIエージェントから利用するための HTTP を利用する MCP サーバーを作成します。
 
+> **補足**: プロジェクト名は「Sse」ですが、現在の ModelContextProtocol.AspNetCore では、HTTP トランスポートの標準は **Streamable HTTP** です。クライアントからは `http://localhost:3001/` に接続します。旧来の SSE エンドポイント (`/sse`) は既定で無効になっています。
+
 ○ 新たなプロジェクト \"McpServer.Sse\" の作成
 
 Visual Studio のメニューの「ツール」-「コマンド ライン」-「開発者コマンド プロンプト」
@@ -45,11 +47,12 @@ dotnet add package ModelContextProtocol.AspNetCore --prerelease
 //
 // Model Context Protocol (MCP) サーバーの簡易なサンプル
 // - WebApplication を使って MCP サーバーをホスト
-// - HTTP トランスポートを有効にすることで、SSE（Server-Sent Events）を使ったリアルタイム通信をサポート
+// - HTTP トランスポート (Streamable HTTP) を有効にして、HTTP 経由での通信をサポート
 // - 同一アセンブリ内に定義された Mcp ツールを登録
 //
 // 1. このプログラムを実行するとローカルホストの http://localhost:3001 でサーバーが起動
-// 2. クライアントは MCP のプロトコルに従って HTTP エンドポイント経由で接続し、SSE でリアルタイム通信
+// 2. クライアントは MCP のプロトコル (Streamable HTTP) に従って http://localhost:3001/ に接続する
+//    ※ 旧来の SSE エンドポイント (/sse) は既定では無効。必要な場合は WithHttpTransport(options => options.EnableLegacySse = true) とする
 // 3. ツールは `[McpServerToolType]` クラス内の `[McpServerTool]` 属性が付与されたメソッドとして公開される
 // 4. 各メソッドには `Description` 属性を付与しておくと、ツールの説明がクライアントに提供される
 //
@@ -61,7 +64,7 @@ using System.ComponentModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// MCP サーバーをサービスに追加し、HTTP トランスポート（SSE 対応）とアセンブリ内のツールを登録
+// MCP サーバーをサービスに追加し、HTTP トランスポート (Streamable HTTP) とアセンブリ内のツールを登録
 builder.Services.AddMcpServer()
                 .WithHttpTransport()
                 .WithToolsFromAssembly();

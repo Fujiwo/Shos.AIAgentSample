@@ -128,7 +128,7 @@ static class My
     static IChatClient GetAzureOpenAIClient()
     {
         // 使用するモデルを指定
-        const string deploymentName = "gpt-5-mini";
+        const string deploymentName = "MAI-Thinking-1";
         var azureOpenAIEndPoint     = GetEndPoint();
         var openAIApiKey            = GetKey     ();
         var credential              = new AzureKeyCredential(openAIApiKey);
@@ -227,9 +227,9 @@ static class My
             => new StdioClientTransport(new() {
                 Name      = "time",
                 Command   = "dotnet",
-                // [MCPServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
-                //Arguments = ["run", "--project", @"[MCPServer.Con.csprojのフルパス]"]
-                Arguments = ["run", "--project", @"C:\Source\FCAIAgentSample\MCPServer.Con\MCPServer.Con.csproj"]
+                // [McpServer.Con.csprojのフルパス] の部分は、実際のもので置き換えてください
+                //Arguments = ["run", "--project", @"[McpServer.Con.csprojのフルパス]"]
+                Arguments = ["run", "--project", @"C:\Source\FCAIAgentSample\McpServer.Con\McpServer.Con.csproj"]
             });
     }
     // 新: ここまで
