@@ -14,11 +14,11 @@ static class Toolbox
     public static MainForm? MainForm { get; set; }
 
     // 用紙 (作図領域) のサイズ (幅と高さ) を返す。フォームが未設定なら空のサイズ
-    [Description("Get the paper size (width and height).")]
+    [Description("Get the paper size (width and height). The origin is the top-left corner, X increases to the right and Y increases downward. All coordinates and lengths use the same units as this size.")]
     public static SizeF GetPaperSize() => MainForm?.PaperSize ?? SizeF.Empty;
 
     // 描かれた図形をすべて消去し、結果を文字列で返す
-    [Description("Clear all drawn shapes to make the paper blank.")]
+    [Description("Clear all drawn shapes to make the paper blank. This cannot be undone, so use it only when the user asks to start over.")]
     public static string ClearAll()
     {
         MainForm?.Clear();
@@ -40,7 +40,7 @@ static class Toolbox
     }
 
     // 使用できる色名の一覧を返す (配列のコピーを返し、元の一覧が書き換えられないようにする)
-    [Description("Get the available colors for drawing.")]
+    [Description("Get the available color names for drawing. Colors are opaque (no semi-transparency). 'Transparent' draws nothing visible.")]
     public static string[] GetAvailableColors() => [.. availableColors];
 
     // 使用できる色名 (System.Drawing.Color.FromName で色に変換できる名前)
@@ -196,11 +196,11 @@ static class Toolbox
     // - 戻り値: 描いた図形の内容 ("Drawn: ...") またはエラー ("Error: ...")。AI はこれを見て次の操作を決める
 
     // 直線を描く (start から end まで)
-    [Description("Draw a line.")]
+    [Description("Draw a straight line. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawLine(
-        [Description("The color of the line.")]
+        [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30) of the line.")]
+        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("The starting point of the line.")]
             PointF start,
@@ -210,57 +210,57 @@ static class Toolbox
         => AddFigure(color, () => new LineFigure { ColorName = color, LineWidth = lineWidth, Start = start, End = end });
 
     // 矩形を描く (shape は左上の座標と幅・高さ)
-    [Description("Draw a rectangle.")]
+    [Description("Draw an axis-aligned rectangle. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawRectangle(
-        [Description("The color of the rectangle.")]
+        [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30) of the rectangle.")]
+        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
-        [Description("The shape of rectangle.")]
+        [Description("The position (top-left X, Y) and size (Width, Height) of the rectangle.")]
             RectangleF shape,
-        [Description("The rectangle is filled or not.")]
+        [Description("If true, the inside is filled with the same color as the outline. To give a filled shape an outline of a different color, draw the same shape again with isFilled set to false and a darker color.")]
             bool isFilled
     )
         => AddFigure(color, () => new RectangleFigure { ColorName = color, LineWidth = lineWidth, Shape = shape, IsFilled = isFilled });
 
     // 角丸矩形を描く (radius は角の丸みの幅方向・高さ方向の半径)
-    [Description("Draw a rounded rectangle.")]
+    [Description("Draw an axis-aligned rectangle with rounded corners. Good for buttons, windows, signs and simple bodies. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawRoundedRectangle(
-        [Description("The color of the rounded rectangle.")]
+        [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30) of the rounded rectangle.")]
+        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
-        [Description("The shape of rounded rectangle.")]
+        [Description("The position (top-left X, Y) and size (Width, Height) of the rounded rectangle.")]
             RectangleF shape,
-        [Description("The radius of rounded rectangle.")]
+        [Description("The size (Width, Height) of the rounded corners.")]
             SizeF radius,
-        [Description("The rectangle is filled or not.")]
+        [Description("If true, the inside is filled with the same color as the outline. To give a filled shape an outline of a different color, draw the same shape again with isFilled set to false and a darker color.")]
             bool isFilled
     )
         => AddFigure(color, () => new RoundedRectangleFigure { ColorName = color, LineWidth = lineWidth, Shape = shape, Radius = radius, IsFilled = isFilled });
 
     // 円を描く (中心と半径で指定)
-    [Description("Draw a circle.")]
+    [Description("Draw a circle. Good for eyes, wheels, the sun, fruits and highlights. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawCircle(
-        [Description("The color of the circle.")]
+        [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30) of the circle.")]
+        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("The center point of the circle.")]
             PointF center,
         [Description("The radius of the circle.")]
             float radius,
-        [Description("The circle is filled or not.")]
+        [Description("If true, the inside is filled with the same color as the outline. To give a filled shape an outline of a different color, draw the same shape again with isFilled set to false and a darker color.")]
             bool isFilled
     )
         => AddFigure(color, () => new CircleFigure { ColorName = color, LineWidth = lineWidth, Center = center, Radius = radius, IsFilled = isFilled });
 
     // 楕円を描く (中心と X 方向・Y 方向の半径で指定)
-    [Description("Draw a ellipse.")]
+    [Description("Draw an axis-aligned ellipse (it cannot be rotated; use a closed DrawCurve for a tilted oval). Good for heads, bodies, clouds and shadows. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawEllipse(
-        [Description("The color of the ellipse.")]
+        [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30) of the ellipse.")]
+        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("The center point of the ellipse.")]
             PointF center,
@@ -268,53 +268,53 @@ static class Toolbox
             float radiusX,
         [Description("The radius of the ellipse in the y-direction.")]
             float radiusY,
-        [Description("The ellipse is filled or not.")]
+        [Description("If true, the inside is filled with the same color as the outline. To give a filled shape an outline of a different color, draw the same shape again with isFilled set to false and a darker color.")]
             bool isFilled
     )
         => AddFigure(color, () => new EllipseFigure { ColorName = color, LineWidth = lineWidth, Center = center, RadiusX = radiusX, RadiusY = radiusY, IsFilled = isFilled });
 
     // 点列を直線で結ぶ。isClosed が true なら多角形、false なら折れ線 (塗りつぶしは閉じた場合のみ)
-    [Description("Draw a polyline or polygon with points.")]
+    [Description("Draw a polyline (open) or polygon (closed) by connecting the points with straight lines. Good for buildings, roofs, mountains, stars and other angular shapes. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawPolylineOrPolygon(
-        [Description("The color of the polyline or polygon.")]
+        [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30) of the polyline or polygon.")]
+        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("Points that make up the polyline or polygon.")]
             PointF[] points,
-        [Description("The polyline or polygon is closed or not.")]
+        [Description("If true, the last point is connected to the first point to make a polygon.")]
             bool isClosed,
-        [Description("The polyline or polygon is filled or not.")]
+        [Description("Used only when isClosed is true. If true, the inside is filled with the same color as the outline. To give a filled shape an outline of a different color, draw the same shape again with isFilled set to false and a darker color.")]
             bool isFilled
     )
         => AddFigure(color, () => new PolylineFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed, IsFilled = isFilled });
 
     // 点列を通る滑らかな曲線 (カーディナル スプライン) を描く。isClosed が true なら閉曲線 (塗りつぶしは閉じた場合のみ)
-    [Description("Draw a curve with points.")]
+    [Description("Draw a smooth curve that passes through all the points (cardinal spline). The curve may bulge slightly outside the points. A closed and filled curve is good for organic shapes such as leaves, clouds, hair and animal bodies; use 5 to 12 points placed in order along the outline. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawCurve(
-        [Description("The color of the curve.")]
+        [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30) of the curve.")]
+        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
         [Description("Points that make up the curve.")]
             PointF[] points,
-        [Description("The curve is closed or not.")]
+        [Description("If true, the curve returns to the first point to make a closed shape.")]
             bool isClosed,
-        [Description("The curve is filled or not.")]
+        [Description("Used only when isClosed is true. If true, the inside is filled with the same color as the outline. To give a filled shape an outline of a different color, draw the same shape again with isFilled set to false and a darker color.")]
             bool isFilled
     )
         => AddFigure(color, () => new CurveFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed, IsFilled = isFilled });
 
     // 点列をベジエ曲線でつないだ自由曲線を描く (前の点に近すぎる点は間引かれる。塗りつぶしは無し)
-    [Description("Draw a free-form curve with points.")]
+    [Description("Draw a smooth free-form curve (Bezier) through the points. It cannot be filled, so use it only for lines such as hair, fur, patterns and stems. A point closer than 10 to the previous point is ignored. Shapes drawn later are drawn on top of earlier ones, so draw from back to front.")]
     public static string DrawFreeFormCurve(
-        [Description("The color of the free-form curve.")]
+        [Description("The color name. Must be one of the colors returned by GetAvailableColors.")]
             string color,
-        [Description("The line width (3 to 30) of the free-form curve.")]
+        [Description("The line width (3 to 30). The line is centered on the outline. Guide: 6 to 10 for outer outlines, 3 to 5 for inner lines and small details.")]
             float lineWidth,
-        [Description("Points that make up the free-form curve.")]
+        [Description("Points that make up the free-form curve. Keep a distance of at least 10 between consecutive points.")]
             PointF[] points,
-        [Description("The curve is closed or not.")]
+        [Description("If true, the curve returns to the first point to make a closed shape.")]
             bool isClosed
     )
         => AddFigure(color, () => new FreeFormCurveFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed });
