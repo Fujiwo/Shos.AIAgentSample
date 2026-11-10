@@ -13,8 +13,11 @@ public static class Animator
         var timer = new System.Windows.Forms.Timer { Interval = interval };
         var frame = 0;
         timer.Tick += (_, _) => {
-            if (!callback(frame))
+            if (!callback(frame)) {
                 timer.Stop();
+                timer.Dispose();
+                return;
+            }
             frame++;
         };
         timer.Start();

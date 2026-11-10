@@ -72,15 +72,23 @@ public abstract class ChatAgent : IAsyncDisposable
             return;
 
         var (mcpClients, tools) = await GetToolsAsync();
+        try {
+            Agent   = CreateAgent(tools);
+            Session = await Agent.CreateSessionAsync();
+
+            // システムメッセージを最初に送信
+            await SendSystemMessageAsync();
+        } catch {
+            // 開始に失敗したら MCP クライアントを破棄し、次回の呼び出しで再試行する
+            foreach (var mcpClient in mcpClients)
+                await mcpClient.DisposeAsync();
+            Agent   = null;
+            Session = null;
+            throw;
+        }
+
         this.mcpClients = mcpClients;
-
-        Agent = CreateAgent(tools);
-        Session = await Agent.CreateSessionAsync();
-
-        // システムメッセージを最初に送信 (only for new threads)
-        await SendSystemMessageAsync();
-
-        isFirst = false;
+        isFirst         = false;
 
         AIAgent CreateAgent(IEnumerable<AITool> tools)
                 => new ChatClientAgent(
@@ -130,7 +138,8 @@ public class MyChatAgent : ChatAgent
 1. 要望を読み取り、必要なら不足情報(寸法、方位、視点など)を適宜補ってください。
 2. 図面全体の構成を短くプランニングし、主要要素と使用するツール(API)を考えてください。
 3. 描画時は座標(左上を原点、右方向がX+、下方向がY+)や単位を意識してください。
-4. 線は `DrawLine`、矩形は `DrawRectangle`、円は `DrawCircle`、楕円は `DrawEllipse`、自由曲線や複雑な輪郭は `DrawFreeLine` を用いて描き、必要に応じて `ClearAll` でリセットします。
+4. 線は `DrawLine`、矩形は `DrawRectangle`、角丸矩形は `DrawRoundedRectangle`、円は `DrawCircle`、楕円は `DrawEllipse`、折れ線や多角形は `DrawPolylineOrPolygon`、滑らかな曲線は `DrawCurve`、自由曲線や複雑な輪郭は `DrawFreeFormCurve` を用いて描き、必要に応じて `ClearAll` でリセットします。
+   各ツールは描画結果を返します。`Error` で始まる結果が返った場合は、内容を確認して指定を直してください。
 5. 色は、有効な色 ({GetAvailableColorNameList()}) から指定してください。
 6. 色・線種・重ね順を適切に選んでください。
 7. 線幅は3から30の範囲で指定し、図面の目的に応じて適切な太さを選んでください。
@@ -209,18 +218,26 @@ public class MyChatAgent : ChatAgent
     }
 #endif // AZURE_OPENAI
 
-    // MCP サーバーのツールを取得
-    // - McpClient に接続し、ツール一覧を取得して返す
-    // - 戻り値は (IEnumerable<McpClient>, IEnumerable<McpClientTool>) で、終了時にすべての McpClient について DisposeAsync() を呼ぶ必要がある
+    // CAD 操作用のツールと、MCP サーバーのツールを取得
+    // - Brave Search の MCP サーバーは任意 (接続できない場合は CAD ツールだけで動作する)
+    // - 戻り値は (IEnumerable<McpClient>, IEnumerable<AITool>) で、終了時にすべての McpClient について DisposeAsync() を呼ぶ必要がある
     protected override async Task<(IEnumerable<McpClient>, IEnumerable<AITool>)> GetToolsAsync()
     {
-        IClientTransport clientTransport = GetBraveSearchToolClientTransport();
-        McpClient client = await McpClient.CreateAsync(clientTransport);
-        IList<McpClientTool> mcpTools = await client.ListToolsAsync();
-        foreach (var tool in mcpTools)
-            Debug.WriteLine($"{tool.Name} ({tool.Description})");
+        McpClient? client = null;
+        try {
+            client = await McpClient.CreateAsync(GetBraveSearchToolClientTransport());
+            IList<McpClientTool> mcpTools = await client.ListToolsAsync();
+            foreach (var tool in mcpTools)
+                Debug.WriteLine($"{tool.Name} ({tool.Description})");
 
-        return ([client], [.. GetCadTools(), ..mcpTools.Cast<AITool>()]);
+            return ([client], [.. GetCadTools(), .. mcpTools.Cast<AITool>()]);
+        } catch (Exception ex) {
+            // BRAVE_API_KEY が未設定、npx が見つからない、などの場合
+            Debug.WriteLine($"Brave Search MCP server is not available: {ex.Message}");
+            if (client is not null)
+                await client.DisposeAsync();
+            return ([], GetCadTools());
+        }
 
         // BraveSearch ツールを使うためのクライアント生成
         static IClientTransport GetBraveSearchToolClientTransport()

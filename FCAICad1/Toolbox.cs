@@ -11,10 +11,29 @@ static class Toolbox
     public static SizeF GetPaperSize() => MainForm?.PaperSize ?? new SizeF();
 
     [Description("Clear all drawn shapes to make the paper blank.")]
-    public static void ClearAll() => MainForm?.Clear();
+    public static string ClearAll()
+    {
+        MainForm?.Clear();
+        return "Cleared.";
+    }
+
+    // 色名を検証してから図形を追加し、結果を文字列で返す (結果は AI エージェントに伝わる)
+    static string AddFigure(string color, Func<Figure> createFigure)
+    {
+        if (!availableColors.Contains(color, StringComparer.OrdinalIgnoreCase))
+            return $"Error: '{color}' is not an available color. Use one of the colors from GetAvailableColors.";
+        if (MainForm is null)
+            return "Error: The drawing area is not ready.";
+
+        var figure = createFigure();
+        MainForm.AddFigure(figure);
+        return $"Drawn: {figure}";
+    }
 
     [Description("Get the available colors for drawing.")]
-    public static string[] GetAvailableColors() => [
+    public static string[] GetAvailableColors() => [.. availableColors];
+
+    static readonly string[] availableColors = [
         "MediumAquamarine",
         "MediumBlue",
         "MediumOrchid",
@@ -160,7 +179,7 @@ static class Toolbox
     ];
 
     [Description("Draw a line.")]
-    public static void DrawLine(
+    public static string DrawLine(
         [Description("The color of the line.")]
             string color,
         [Description("The line width (3 to 30) of the line.")]
@@ -170,10 +189,10 @@ static class Toolbox
         [Description("The ending point of the line.")]
             PointF end
     )
-        => MainForm?.AddFigure(new LineFigure { ColorName = color, LineWidth = lineWidth, Start = start, End = end });
+        => AddFigure(color, () => new LineFigure { ColorName = color, LineWidth = lineWidth, Start = start, End = end });
 
     [Description("Draw a rectangle.")]
-    public static void DrawRectangle(
+    public static string DrawRectangle(
         [Description("The color of the rectangle.")]
             string color,
         [Description("The line width (3 to 30) of the rectangle.")]
@@ -183,10 +202,10 @@ static class Toolbox
         [Description("The rectangle is filled or not.")]
             bool isFilled
     )
-        => MainForm?.AddFigure(new RectangleFigure { ColorName = color, LineWidth = lineWidth, Shape = shape, IsFilled = isFilled });
+        => AddFigure(color, () => new RectangleFigure { ColorName = color, LineWidth = lineWidth, Shape = shape, IsFilled = isFilled });
 
     [Description("Draw a rounded rectangle.")]
-    public static void DrawRoundedRectangle(
+    public static string DrawRoundedRectangle(
         [Description("The color of the rounded rectangle.")]
             string color,
         [Description("The line width (3 to 30) of the rounded rectangle.")]
@@ -198,10 +217,10 @@ static class Toolbox
         [Description("The rectangle is filled or not.")]
             bool isFilled
     )
-        => MainForm?.AddFigure(new RoundedRectangleFigure { ColorName = color, LineWidth = lineWidth, Shape = shape, Radius = radius, IsFilled = isFilled });
+        => AddFigure(color, () => new RoundedRectangleFigure { ColorName = color, LineWidth = lineWidth, Shape = shape, Radius = radius, IsFilled = isFilled });
 
     [Description("Draw a circle.")]
-    public static void DrawCircle(
+    public static string DrawCircle(
         [Description("The color of the circle.")]
             string color,
         [Description("The line width (3 to 30) of the circle.")]
@@ -213,10 +232,10 @@ static class Toolbox
         [Description("The circle is filled or not.")]
             bool isFilled
     )
-        => MainForm?.AddFigure(new CircleFigure { ColorName = color, LineWidth = lineWidth, Center = center, Radius = radius, IsFilled = isFilled });
+        => AddFigure(color, () => new CircleFigure { ColorName = color, LineWidth = lineWidth, Center = center, Radius = radius, IsFilled = isFilled });
 
     [Description("Draw a ellipse.")]
-    public static void DrawEllipse(
+    public static string DrawEllipse(
         [Description("The color of the ellipse.")]
             string color,
         [Description("The line width (3 to 30) of the ellipse.")]
@@ -230,10 +249,10 @@ static class Toolbox
         [Description("The ellipse is filled or not.")]
             bool isFilled
     )
-        => MainForm?.AddFigure(new EllipseFigure { ColorName = color, LineWidth = lineWidth, Center = center, RadiusX = radiusX, RadiusY = radiusY, IsFilled = isFilled });
+        => AddFigure(color, () => new EllipseFigure { ColorName = color, LineWidth = lineWidth, Center = center, RadiusX = radiusX, RadiusY = radiusY, IsFilled = isFilled });
 
     [Description("Draw a polyline or polygon with points.")]
-    public static void DrawPolylineOrPolygon(
+    public static string DrawPolylineOrPolygon(
         [Description("The color of the polyline or polygon.")]
             string color,
         [Description("The line width (3 to 30) of the polyline or polygon.")]
@@ -245,10 +264,10 @@ static class Toolbox
         [Description("The polyline or polygon is filled or not.")]
             bool isFilled
     )
-        => MainForm?.AddFigure(new PolylineFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed, IsFilled = isFilled });
+        => AddFigure(color, () => new PolylineFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed, IsFilled = isFilled });
 
     [Description("Draw a curve with points.")]
-    public static void DrawCurve(
+    public static string DrawCurve(
         [Description("The color of the curve.")]
             string color,
         [Description("The line width (3 to 30) of the curve.")]
@@ -260,10 +279,10 @@ static class Toolbox
         [Description("The curve is filled or not.")]
             bool isFilled
     )
-        => MainForm?.AddFigure(new CurveFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed, IsFilled = isFilled });
+        => AddFigure(color, () => new CurveFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed, IsFilled = isFilled });
 
     [Description("Draw a free-form curve with points.")]
-    public static void DrawFreeFormCurve(
+    public static string DrawFreeFormCurve(
         [Description("The color of the free-form curve.")]
             string color,
         [Description("The line width (3 to 30) of the free-form curve.")]
@@ -273,5 +292,5 @@ static class Toolbox
         [Description("The curve is closed or not.")]
             bool isClosed
     )
-        => MainForm?.AddFigure(new FreeFormCurveFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed });
+        => AddFigure(color, () => new FreeFormCurveFigure { ColorName = color, LineWidth = lineWidth, Points = points, IsClosed = isClosed });
 }

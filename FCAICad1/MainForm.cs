@@ -35,10 +35,19 @@ public partial class MainForm : Form
         }
     }
 
-    public void Clear() => model.Clear();
-    public void AddFigure(Figure figure) => model.Add(figure);
+    // AI エージェントのツール呼び出しは UI スレッド以外から行われることがあるため、UI スレッドで実行する
+    public void Clear() => InvokeOnUIThread(model.Clear);
+    public void AddFigure(Figure figure) => InvokeOnUIThread(() => model.Add(figure));
 
-    public void AppendResponse(string response) => responseTextBox.Text = response;
+    public void SetResponse(string response) => responseTextBox.Text = response;
+
+    void InvokeOnUIThread(Action action)
+    {
+        if (InvokeRequired)
+            Invoke(action);
+        else
+            action();
+    }
     public void OnPromptedEnd() => promptButton.Enabled = true;
 
     void OnPromptButtonClick(object sender, EventArgs e)
