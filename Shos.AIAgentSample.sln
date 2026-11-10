@@ -102,6 +102,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}"
 	ProjectSection(SolutionItems) = preProject
 		.mcp.json = .mcp.json
+		LICENSE.txt = LICENSE.txt
+		README.en.md = README.en.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reviews", "Reviews", "{797B7EC8-F122-43AF-9DD6-19E0C4281E7A}"
