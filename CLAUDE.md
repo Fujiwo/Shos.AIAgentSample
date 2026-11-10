@@ -23,16 +23,18 @@ dotnet run --project McpServer.Sse           # http://localhost:3001 で MCP (HT
 
 プロジェクトは「前のステップを拡張した完全なコピー」として並んでおり、共通ライブラリは無い。同じコードが複数プロジェクトに重複しているため、**共通部分（モデル名・パッケージバージョン・チャットクライアント生成など）を変更する場合は全プロジェクトに同じ変更を適用する**のがこのリポジトリの慣例（直近のコミットも一括更新）。
 
-| ステップ | コンソール | Web | 内容 | チュートリアル |
-|---|---|---|---|---|
-| 1 | FCAIAgent1 | FCAIChat1 | Ollama で単発プロンプト | 1.1 |
-| 2 | FCAIAgent2 | FCAIChat2 | Ollama / Azure OpenAI 切替 (`ChatClientType`) | 1.2 |
-| 3 | FCAIAgent3 | FCAIChat3 | `AgentSession` による複数ターン | 1.3 |
-| 4 | FCAIAgent4 | FCAIChat4 | STDIO MCP サーバー (McpServer.Con) のツール利用 | 3.1 |
-| 5 | FCAIAgent5 | FCAIChat5 | 複数 MCP サーバー (time / weather / filesystem) | 3.2 |
-| 最終 | FCAIAgent | — | FCAIAgent5 と同等 | — |
+| ステップ | コンソール | 内容 | チュートリアル |
+|---|---|---|---|
+| 1 | FCAIAgent1 | Ollama で単発プロンプト | 1.1 |
+| 2 | FCAIAgent2 | Ollama / Azure OpenAI 切替 (`ChatClientType`) | 1.2 |
+| 3 | FCAIAgent3 | `AgentSession` による複数ターン | 1.3 |
+| 4 | FCAIAgent4 | STDIO MCP サーバー (McpServer.Con) のツール利用 | 3.1 |
+| 5 | FCAIAgent5 | 複数 MCP サーバー (time / weather / filesystem) | 3.2 |
+| 最終 | FCAIAgent | FCAIAgent5 から「旧/新」コメントを除いた完成形 | — |
 
-`Documents/tutorial.*.md` には各ステップのコードがそのまま掲載されているため、コードを変更したら対応するチュートリアルのコード片も合わせて更新する必要がある。
+Web 版 (FCAIChat1〜5) はチュートリアルとは独立した系列: 1 = SignalR チャット、2 = EF Core で DB 保存、3 = 部分ビュー表示 (1〜3 は LLM を使わない)、4 = AI エージェント + Playwright MCP、5 = Brave Search MCP + ユーザー単位の会話保存・復元。
+
+`Documents/tutorial.*.md` には FCAIAgent1〜5 / McpServer.Con / McpServer.Sse の `Program.cs` 全体がそのまま掲載されている (各ファイルで一番長い ```csharp ブロック)。コードを変更したら、対応するチュートリアルのコード片も同じ内容に更新する。
 
 ### コンソールエージェント (FCAIAgent*)
 
@@ -45,20 +47,21 @@ dotnet run --project McpServer.Sse           # http://localhost:3001 で MCP (HT
 ### MCP サーバー
 
 - `McpServer.Con`: STDIO トランスポート。時刻取得ツール
-- `McpServer.Sse`: ASP.NET Core + `ModelContextProtocol.AspNetCore`、`http://localhost:3001` 固定。天気予報ツール
+- `McpServer.Sse`: ASP.NET Core + `ModelContextProtocol.AspNetCore`、`http://localhost:3001/` 固定。天気予報ツール。名前に反して Streamable HTTP で、旧来の `/sse` エンドポイントは既定で無効 (`EnableLegacySse` の既定値が false)
 - どちらも `[McpServerToolType]` クラスの `[McpServerTool, Description(...)]` メソッドを `.WithToolsFromAssembly()` で自動登録
 
 ### Web チャット (FCAIChat*)
 
 ASP.NET Core Razor Pages + SignalR + Identity + EF Core (SQL Server LocalDB)。
 
-- `Hubs/ChatHub.cs`: メッセージを全クライアントへブロードキャストし DB (`MessagesDbContext`) に保存。メッセージに `@<エージェント名>` が含まれる場合のみエージェントに転送する
-- `AIAgents/ChatAgent.cs`: 抽象 `ChatAgent`（クライアント生成・MCP 接続・セッションのシリアライズ/デシリアライズ）と具象 `MyChatAgent`。SignalR の接続 ID ごとにインスタンスを保持
-- `Services/IThreadStore` / `InMemoryThreadStore`: シリアライズしたセッション (`JsonElement`) を接続 ID 単位で保存し再接続時に復元
+- `Hubs/ChatHub.cs`: メッセージを全クライアントへブロードキャストし DB (`MessagesDbContext`) に保存。メッセージに `@<エージェント名>` が含まれる場合のみエージェントに転送する。Hub は Transient なので、状態 (エージェント) を Hub のフィールドに持たないこと
+- `AIAgents/ChatAgent.cs`: 抽象 `ChatAgent`（クライアント生成・MCP 接続・セッション管理、`IAsyncDisposable`）と具象 `MyChatAgent`
+- `AIAgents/ChatAgentManager.cs`: Singleton。ユーザー (`Context.UserIdentifier`) ごとにエージェントを保持し、そのユーザーの最後の接続が切れたら破棄 (MCP の子プロセスも終了)
+- FCAIChat5 のみ: `Services/IThreadStore` / `InMemoryThreadStore` にユーザー単位でセッション (`JsonElement`) を保存し、再接続時に `RestoreSession` で復元。Hub は `[Authorize]`
 
 ### FCAICad1
 
-Windows Forms の CAD アプリ。`ChatAgent.cs` が `GetPaperSize` / `DrawLine` などを AI 関数ツールとして公開し、自然言語の指示で図形を描画する。Windows 専用。
+Windows Forms の CAD アプリ。`Toolbox.cs` の静的メソッド (`GetPaperSize` / `DrawLine` など) を `AIFunctionFactory.Create` で AI 関数ツールとして公開し、自然言語の指示で図形を描画する。ツールは UI スレッド以外から呼ばれうるため、フォーム操作は `MainForm.InvokeOnUIThread` 経由で行う。Brave Search MCP は任意 (なくても動作)。Windows 専用だが、Linux でも `-p:EnableWindowsTargeting=true` でビルド (コンパイル確認) はできる。
 
 ## その他
 
