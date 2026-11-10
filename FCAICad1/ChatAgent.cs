@@ -26,8 +26,11 @@ using System.Diagnostics;
 
 namespace FCAICad;
 
+// AI エージェントの基底クラス: チャット クライアントの生成、ツール (MCP を含む) の取得、会話のセッション管理を行う
+// 初回の GetResponseAsync で Start が呼ばれ、エージェントとセッションが作成される
 public abstract class ChatAgent : IAsyncDisposable
 {
+    // 終了時に破棄する MCP クライアントと、初回の呼び出しかどうか
     IEnumerable<McpClient> mcpClients           = [];
     bool                   isFirst              = true;
 
@@ -48,6 +51,7 @@ public abstract class ChatAgent : IAsyncDisposable
             await mcpClient.DisposeAsync();
     }
 
+    // ユーザーのプロンプトをエージェントに送り、応答のテキストを返す (初回はエージェントを準備してから送る)
     public async Task<string> GetResponseAsync(string userPrompt)
     {
         await Start();
@@ -57,12 +61,14 @@ public abstract class ChatAgent : IAsyncDisposable
         static ChatMessage ToUserMessage(string userPrompt) => new(ChatRole.User, userPrompt);
     }
 
-    // ファクトリ関数
+    // ファクトリ関数 (派生クラスで、使用する LLM のチャット クライアントを生成する)
     protected abstract IChatClient GetChatClient();
     
+    // エージェントに渡すツールと、それを提供する MCP クライアントを取得する (既定ではツール無し)
     protected virtual Task<(IEnumerable<McpClient>, IEnumerable<AITool>)> GetToolsAsync()
         => Task.FromResult<(IEnumerable<McpClient>, IEnumerable<AITool>)>(([], []));
 
+    // 初回だけ、ツールを取得してエージェントとセッションを作成し、システム メッセージを送る
     async Task Start()
     {
         if (!isFirst)
@@ -87,6 +93,7 @@ public abstract class ChatAgent : IAsyncDisposable
         this.mcpClients = mcpClients;
         isFirst         = false;
 
+        // チャット クライアント・指示・ツールから ChatClientAgent を作成
         AIAgent CreateAgent(IEnumerable<AITool> tools)
                 => new ChatClientAgent(
                     chatClient  : GetChatClient(),
@@ -117,6 +124,7 @@ public abstract class ChatAgent : IAsyncDisposable
     }
 }
 
+// CAD を操作する AI エージェント: Toolbox の CAD ツール (と、使えれば Brave Search の MCP ツール) で図を描く
 public class MyChatAgent : ChatAgent
 {
     // エージェント名と指示
@@ -145,6 +153,7 @@ public class MyChatAgent : ChatAgent
 9. ユーザーから指示があるまでは何も描画しないでください。
 10. ユーザーから指示があった場合は、直ちに描画してください。
 ";
+    // システム プロンプトに埋め込む、使用できる色名のカンマ区切りの一覧
     static string GetAvailableColorNameList()
     {
         var availableColorNames = Toolbox.GetAvailableColors();

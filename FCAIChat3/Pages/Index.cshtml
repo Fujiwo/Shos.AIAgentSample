@@ -4,8 +4,10 @@
     ViewData["Title"] = "Home page";
 }
 
+@* チャット画面 (メッセージの一覧と入力欄) *@
 <div class="container">
     @* 新: ここから メッセージ一覧を入力欄の上に移動し、部分ビュー (_MessagePartial) を使ってふきだしで表示 *@
+    @* メッセージの一覧 (部分ビュー _MessagePartial で 1 件ずつふきだしで表示する) *@
     <div class="row p-1">
         <div class="col-8">
             <div id="messagesList" class="talk1">
@@ -23,14 +25,17 @@
         </div>
     </div>
     @* 新: ここまで *@
+    @* 送信者名 (ログインしているユーザーの名前)。画面には表示せず、chat.js が送信時に読み取る *@
     <div class="row p-1" hidden="hidden">
         <div class="col-2">User</div>
         <div class="col-6"><input type="text" id="userInput" value="@User?.Identity?.Name" /></div>
     </div>
+    @* メッセージの入力欄 *@
     <div class="row p-1">
         <div class="col-2">Message</div>
         <div class="col-6"><input type="text" class="w-100" id="messageInput" /></div>
     </div>
+    @* 送信ボタン *@
     <div class="row p-1">
         <div class="col-8 text-end">
             <input type="button" id="sendButton" value="Send Message" />
@@ -54,6 +59,7 @@
     </div>
     旧: ここまで *@
 </div>
+@* チャット画面のスクリプト (ES モジュールとして読み込む) *@
 @section Scripts {
     <script type="module" src="~/js/chat.js"></script>
 }

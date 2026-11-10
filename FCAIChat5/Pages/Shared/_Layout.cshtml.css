@@ -1,16 +1,19 @@
-﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
+﻿/* _Layout.cshtml 用のスコープ付き CSS (CSS 分離)。ここに書いたスタイルは _Layout.cshtml の要素だけに適用される
+   (静的ファイルのバンドルと縮小については https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification を参照) */
 
+/* ナビゲーション バーのサイト名 (長い場合は折り返す) */
 a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
 }
 
+/* リンクの色 */
 a {
   color: #0077cc;
 }
 
+/* プライマリ ボタンと、選択中のナビゲーション リンクの色 */
 .btn-primary {
   color: #fff;
   background-color: #1b6ec2;
@@ -23,6 +26,7 @@ a {
   border-color: #1861ac;
 }
 
+/* 上下の境界線と影 (ヘッダー・フッターで使う) */
 .border-top {
   border-block-start: 1px solid #e5e5e5;
 }
@@ -35,11 +39,13 @@ a {
   box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 5%);
 }
 
+/* Cookie の同意ボタン (テンプレート由来) */
 button.accept-policy {
   font-size: 1rem;
   line-height: inherit;
 }
 
+/* フッターはページの下端に固定する */
 .footer {
   position: absolute;
   inset-block-end: 0;

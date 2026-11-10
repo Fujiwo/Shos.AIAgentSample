@@ -4,11 +4,11 @@ namespace FCAICad
 {
     partial class MainForm
     {
-        /// <summary>Required designer variable.</summary>
+        /// <summary>必要なデザイナー変数です。</summary>
         IContainer components = null;
 
-        /// <summary>Clean up any resources being used.</summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        /// <summary>使用中のリソースをすべてクリーンアップします。</summary>
+        /// <param name="disposing">マネージド リソースを破棄する場合は true を指定し、その他の場合は false を指定します。</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -16,11 +16,11 @@ namespace FCAICad
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Windows フォーム デザイナーで生成されたコード
 
         /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
+        ///  デザイナー サポートに必要なメソッドです。このメソッドの内容を
+        ///  コード エディターで変更しないでください。
         /// </summary>
         private void InitializeComponent()
         {
@@ -31,7 +31,7 @@ namespace FCAICad
             clearButton = new Button();
             SuspendLayout();
             // 
-            // view
+            // view: 図形を表示するビュー (CAD の用紙)
             // 
             view.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             view.BackColor = Color.White;
@@ -40,7 +40,7 @@ namespace FCAICad
             view.Size = new Size(2363, 1134);
             view.TabIndex = 0;
             // 
-            // promptTextBox
+            // promptTextBox: プロンプト (AI への指示) の入力欄
             // 
             promptTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             promptTextBox.BackColor = Color.FromArgb(255, 255, 192);
@@ -51,7 +51,7 @@ namespace FCAICad
             promptTextBox.Size = new Size(2156, 150);
             promptTextBox.TabIndex = 1;
             // 
-            // promptButton
+            // promptButton: プロンプトを AI エージェントに送るボタン
             // 
             promptButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             promptButton.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 128);
@@ -63,7 +63,7 @@ namespace FCAICad
             promptButton.UseVisualStyleBackColor = true;
             promptButton.Click += OnPromptButtonClick;
             // 
-            // responseTextBox
+            // responseTextBox: AI エージェントの応答を表示する欄
             // 
             responseTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             responseTextBox.BackColor = Color.FromArgb(192, 255, 255);
@@ -75,7 +75,7 @@ namespace FCAICad
             responseTextBox.Size = new Size(2363, 200);
             responseTextBox.TabIndex = 4;
             // 
-            // clearButton
+            // clearButton: すべての図形を消去するボタン
             // 
             clearButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             clearButton.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 128);
@@ -87,7 +87,7 @@ namespace FCAICad
             clearButton.UseVisualStyleBackColor = true;
             clearButton.Click += OnClearButtonClick;
             // 
-            // MainForm
+            // MainForm: メイン フォーム
             // 
             AutoScaleDimensions = new SizeF(20F, 48F);
             AutoScaleMode = AutoScaleMode.Font;

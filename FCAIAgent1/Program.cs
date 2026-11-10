@@ -36,6 +36,7 @@ try {
     AgentResponse response = await agent.RunAsync(My.UserPrompt);
     Console.WriteLine(response.Text);
 } catch (Exception ex) {
+    // 接続できないなどでエージェントの実行に失敗した場合は、エラーメッセージを表示
     Console.WriteLine($"Error running agent: {ex.Message}");
 }
 
@@ -51,6 +52,7 @@ static class My
     // Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
     public static IChatClient GetOllamaClient()
     {
+        // Ollama サーバーの URL (既定のポート番号は 11434)
         var uri    = new Uri("http://localhost:11434");
         var ollama = new OllamaApiClient(uri);
         // 使用するモデルを指定

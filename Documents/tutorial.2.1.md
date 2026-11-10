@@ -49,12 +49,16 @@ dotnet add package ModelContextProtocol --prerelease
 // - 標準入出力（stdio）経由のサーバートランスポートを有効にし、同一アセンブリ内のツールを登録
 // - クライアントは標準入出力を通じて MCP プロトコルに従って通信可能
 
+// 汎用ホストと依存性注入 (DI) 用
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+// MCP サーバー用
 using ModelContextProtocol.Server;
+// Description 属性用
 using System.ComponentModel;
 
 // アプリケーションビルダーを作成し、MCP サーバーを登録して実行
+// 標準出力は MCP の通信に使うため、ログなどを出力しない空のビルダーを使う
 var builder = Host.CreateEmptyApplicationBuilder(settings: null);
 
 builder.Services
@@ -62,6 +66,7 @@ builder.Services
        .WithStdioServerTransport()   // 標準入出力経由のトランスポートを有効化
        .WithToolsFromAssembly();     // このアセンブリ内のツールを自動登録
 
+// ホストをビルドして実行 (クライアントとの接続が終わるまで待機)
 await builder.Build().RunAsync();
 
 // ツール定義: 各メソッドは公開されるツールとして呼び出し可能になる
@@ -80,6 +85,7 @@ public static class TimeTools
         string timezone)
     {
         try {
+            // タイムゾーン ID からタイムゾーンを取得し、現在時刻をそのタイムゾーンの時刻に変換
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
             return TimeZoneInfo.ConvertTime(DateTimeOffset.Now, timeZone).ToString();
         } catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException) {

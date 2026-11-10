@@ -59,9 +59,12 @@ dotnet add package ModelContextProtocol.AspNetCore --prerelease
 // セキュリティと運用に関する注意:
 // - 公開環境では TLS、認証、認可、CORS 設定などを検討する必要がある
 
+// MCP サーバー用
 using ModelContextProtocol.Server;
+// Description 属性用
 using System.ComponentModel;
 
+// ASP.NET Core の Web アプリケーションのビルダーを作成
 var builder = WebApplication.CreateBuilder(args);
 
 // MCP サーバーをサービスに追加し、HTTP トランスポート (Streamable HTTP) とアセンブリ内のツールを登録
@@ -69,6 +72,7 @@ builder.Services.AddMcpServer()
                 .WithHttpTransport()
                 .WithToolsFromAssembly();
 
+// Web アプリケーションをビルド
 var application = builder.Build();
 
 // MCP のルーティングをマップしてサーバーを起動
@@ -85,6 +89,7 @@ public static class WeatherForecastTool
     public static string GetWeatherForecast(
         [Description("天気を予報したい都道府県名")] // 引数に説明を付与
         string location) => location switch {
+            // サンプルなので固定の値を返す (実際には天気予報の API などを呼び出す)
             "北海道" => "晴れ",
             "東京都" => "曇り",
             "石川県" => "雨"  ,

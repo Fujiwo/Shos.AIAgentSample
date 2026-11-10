@@ -8,12 +8,14 @@ namespace FCAIChat.AIAgents;
 /// </summary>
 public sealed class ChatAgentManager : IAsyncDisposable
 {
+    // ユーザーごとのエージェントと、そのユーザーの接続 (SignalR の接続 ID) の一覧
     sealed class Entry(MyChatAgent agent)
     {
         public MyChatAgent     Agent         { get; } = agent;
         public HashSet<string> ConnectionIds { get; } = [];
     }
 
+    // ユーザーのキー → エントリー (entries へのアクセスは gate で排他制御する)
     readonly Dictionary<string, Entry> entries = [];
     readonly SemaphoreSlim             gate    = new(1, 1);
 

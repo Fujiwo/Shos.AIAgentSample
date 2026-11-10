@@ -1,5 +1,6 @@
 ﻿@page
 @model ErrorModel
+@* エラー ページ (本番環境で例外が発生したときに表示される。Program.cs の UseExceptionHandler("/Error") を参照) *@
 @{
     ViewData["Title"] = "Error";
 }
@@ -7,6 +8,7 @@
 <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
 
+@* リクエスト ID があれば表示する (エラーの原因を調べるときの手がかりになる) *@
 @if (Model.ShowRequestId)
 {
     <p>
@@ -14,6 +16,7 @@
     </p>
 }
 
+@* 開発環境 (Development) に切り替えると、詳しいエラー情報が表示されることの説明 *@
 <h3>Development Mode</h3>
 <p>
     Swapping to the <strong>Development</strong> environment displays detailed information about the error that occurred.

@@ -1,9 +1,13 @@
 ﻿@model FCAIChat.Data.Message
 
+@* 部分ビューなので、レイアウトは使わない *@
 @{
     Layout = null;
 }
 
+@* 自分 (ログインしているユーザー) のメッセージは右に、それ以外 (他のユーザーやエージェント) のメッセージは左に、ふきだしで表示する
+   - 本文は HTML エンコードしてから改行 (&#xA;) を <br> に置き換える (HTML タグがそのまま埋め込まれないようにするため)
+   - 送信日時 (UTC) は hidden で隠しておき、chat.js がローカル時刻に変換してから表示する *@
 @if (Model.UserName == User?.Identity?.Name) {
     <div class="talk_right">
         <p>
@@ -21,4 +25,5 @@
         </p>
     </div>
 }
+@* 次のメッセージとの間隔をあける *@
 <br><br><br><br>

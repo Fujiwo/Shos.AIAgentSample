@@ -1,7 +1,9 @@
 @page
 @model FCAIChat.Pages.Messages.RenderPartialModel
+@* レイアウト (_Layout) を付けずに、部分ビューの HTML だけを返す *@
 @{
     Layout = null;
 }
 
+@* クエリー文字列で受け取ったメッセージ 1 件を、部分ビュー _MessagePartial で描画する *@
 <partial name="_MessagePartial" model="Model.Message" />

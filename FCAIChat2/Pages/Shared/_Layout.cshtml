@@ -1,14 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@* 全ページ共通のレイアウト (ヘッダー・ナビゲーション バー・フッター)。各ページの内容は RenderBody() の位置に表示される *@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FCAIChat</title>
     <script type="importmap"></script>
+    @* Bootstrap とサイト共通の CSS *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
+    @* ナビゲーション バー (ログイン状態の表示は _LoginPartial) *@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
@@ -33,21 +36,25 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @* 各ページの内容 *@
             @RenderBody()
         </main>
     </div>
 
+    @* フッター *@
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2025 - FCAIChat - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
 
+    @* jQuery・Bootstrap・SignalR のクライアント ライブラリ (SignalR は CDN から読み込む) とサイト共通のスクリプト *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js" integrity="sha512-kkMt8UThSmWcdXLYFaGZ/U6vyWSNLZMUWQ5SMeF80pGqrEkH5ei9D/3MbVQpB8p7D5C3A4vlX7BpsWTT2BfB6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
+    @* 各ページの Scripts セクション (Index.cshtml では chat.js を読み込む) *@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

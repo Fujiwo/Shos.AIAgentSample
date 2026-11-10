@@ -3,20 +3,20 @@ using System.Text.Json;
 
 namespace FCAIChat.Services;
 
-/// <summary>Interface for storing and retrieving AgentSession data</summary>
+/// <summary>会話の状態 (AgentSession をシリアライズしたもの) を保存・取得するストアのインターフェイス</summary>
 public interface IThreadStore
 {
-    /// <summary>Saves a serialized thread for a specific user</summary>
-    /// <param name="userKey">The key of the conversation (the signed-in user ID)</param>
-    /// <param name="serializedThread">The serialized thread as JsonElement</param>
+    /// <summary>ユーザーの会話の状態を保存する</summary>
+    /// <param name="userKey">会話のキー (ログインしているユーザーの ID)</param>
+    /// <param name="serializedThread">シリアライズした会話の状態 (JsonElement)</param>
     Task SaveThreadAsync(string userKey, JsonElement serializedThread);
 
-    /// <summary>Retrieves a serialized thread for a specific user</summary>
-    /// <param name="userKey">The key of the conversation (the signed-in user ID)</param>
-    /// <returns>The serialized thread as JsonElement, or null if not found</returns>
+    /// <summary>ユーザーの会話の状態を取得する</summary>
+    /// <param name="userKey">会話のキー (ログインしているユーザーの ID)</param>
+    /// <returns>シリアライズした会話の状態 (JsonElement)。保存されていなければ null</returns>
     Task<JsonElement?> GetThreadAsync(string userKey);
 
-    /// <summary>Deletes a stored thread for a specific user</summary>
-    /// <param name="userKey">The key of the conversation (the signed-in user ID)</param>
+    /// <summary>ユーザーの会話の状態を削除する</summary>
+    /// <param name="userKey">会話のキー (ログインしているユーザーの ID)</param>
     Task DeleteThreadAsync(string userKey);
 }

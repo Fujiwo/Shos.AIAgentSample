@@ -1,4 +1,5 @@
 ﻿// 新: このステップで追加したファイル (AI エージェント本体)
+// このファイルで使う NuGet パッケージを追加するコマンド
 /*
 dotnet add package Microsoft.Agents.AI --prerelease
 dotnet add package Azure.AI.OpenAI
@@ -20,8 +21,11 @@ using System.Diagnostics;
 
 namespace FCAIChat.AIAgents;
 
+// AI エージェントの基底クラス (チャットクライアントの生成・MCP サーバーへの接続・会話のセッションの管理を行う)
+// エージェント名・指示・使うモデル (チャットクライアント)・MCP のツールは、派生クラスで決める
 public abstract class ChatAgent : IAsyncDisposable
 {
+    // 接続中の MCP クライアント (破棄するときに使う) と、エージェントを開始済みかどうか
     IEnumerable<McpClient> mcpClients           = [];
     bool                   isStarted            = false;
     // 同じエージェントへの同時呼び出し (同じユーザーの複数タブなど) を直列化する
@@ -37,6 +41,7 @@ public abstract class ChatAgent : IAsyncDisposable
     // エージェントのシステムロールに与える文脈的な指示
     protected abstract string SystemPrompt { get; }
 
+    // エージェントを破棄する (MCP クライアントを破棄して、MCP サーバーのプロセスを終了する)
     public async ValueTask DisposeAsync()
     {
         // 実行中の呼び出しが終わるのを待ってから、MCP クライアントを破棄
@@ -53,6 +58,7 @@ public abstract class ChatAgent : IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
+    // ユーザーのプロンプトに対するエージェントの応答を取得する (最初の呼び出し時にエージェントを開始する)
     public async Task<string> GetResponseAsync(string userPrompt)
     {
         await gate.WaitAsync();
@@ -71,12 +77,14 @@ public abstract class ChatAgent : IAsyncDisposable
         }
     }
 
-    // ファクトリ関数
+    // ファクトリ関数: エージェントが使うチャットクライアントを生成する (派生クラスで実装する)
     protected abstract IChatClient GetChatClient();
 
+    // エージェントが使う MCP のツールを取得する (既定ではツールなし。派生クラスでオーバーライドする)
     protected virtual Task<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)> GetMcpToolsAsync()
         => Task.FromResult<(IEnumerable<McpClient>, IEnumerable<McpClientTool>)>(([], []));
 
+    // MCP クライアントを破棄する (破棄に失敗しても、残りの MCP クライアントの破棄を続ける)
     protected static async Task DisposeMcpClientsAsync(IEnumerable<McpClient> mcpClients)
     {
         foreach (var mcpClient in mcpClients) {
@@ -88,6 +96,7 @@ public abstract class ChatAgent : IAsyncDisposable
         }
     }
 
+    // エージェントを開始する (MCP のツールを取得し、エージェントとセッションを作成する)。開始済みなら何もしない
     async Task StartAsync()
     {
         if (isStarted)
@@ -112,6 +121,7 @@ public abstract class ChatAgent : IAsyncDisposable
         this.mcpClients = mcpClients;
         isStarted       = true;
 
+        // チャットクライアントと MCP のツールを使う ChatClientAgent を作成
         AIAgent CreateAgent(IEnumerable<McpClientTool> tools)
             => new ChatClientAgent(
                 chatClient  : GetChatClient(),
@@ -138,6 +148,7 @@ public abstract class ChatAgent : IAsyncDisposable
     }
 }
 
+// このアプリで使う AI エージェント (Azure OpenAI のモデルと、MCP サーバーのツールを使う)
 public class MyChatAgent : ChatAgent
 {
     // エージェント名と指示
@@ -147,6 +158,7 @@ public class MyChatAgent : ChatAgent
     // エージェントのシステムロールに与える文脈的な指示
     protected override string SystemPrompt => "あなたはAIエージェントです";
 
+    // Azure OpenAI のチャットクライアントを生成する
     protected override IChatClient GetChatClient()
     {
         // 使用するモデルを指定
@@ -164,6 +176,7 @@ public class MyChatAgent : ChatAgent
                                                   .Build();
         return chatClient;
 
+        // Azure OpenAI のエンドポイントを環境変数から取得
         static string GetEndPoint()
         {
             const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
@@ -177,6 +190,7 @@ public class MyChatAgent : ChatAgent
             //return @"[Azure OpenAI のエンドポイント]";
         }
 
+        // Azure OpenAI の APIキーを環境変数から取得
         static string GetKey()
         {
             const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";

@@ -14,12 +14,14 @@ namespace FCAIChat.AIAgents;
 // 新: 会話の状態を保存するストアを受け取る
 public sealed class ChatAgentManager(IThreadStore threadStore) : IAsyncDisposable
 {
+    // ユーザーごとのエージェントと、そのユーザーの接続 (SignalR の接続 ID) の一覧
     sealed class Entry(MyChatAgent agent)
     {
         public MyChatAgent     Agent         { get; } = agent;
         public HashSet<string> ConnectionIds { get; } = [];
     }
 
+    // ユーザーのキー → エントリー (entries へのアクセスは gate で排他制御する)
     readonly Dictionary<string, Entry> entries = [];
     readonly SemaphoreSlim             gate    = new(1, 1);
     // 新: ここから
@@ -72,8 +74,10 @@ public sealed class ChatAgentManager(IThreadStore threadStore) : IAsyncDisposabl
             Task? pendingRelease;
             await gate.WaitAsync();
             try {
+                // 前のエージェントを保存・破棄している途中でなければ、エージェントを取得 (なければ作成) する
                 if (!pendingReleases.TryGetValue(userKey, out pendingRelease)) {
                     if (!entries.TryGetValue(userKey, out var entry)) {
+                        // エージェントを作成し、保存してある会話の状態があれば復元する
                         var agent = new MyChatAgent();
                         var serializedSession = await threadStore.GetThreadAsync(userKey);
                         if (serializedSession.HasValue)
@@ -119,6 +123,7 @@ public sealed class ChatAgentManager(IThreadStore threadStore) : IAsyncDisposabl
             gate.Release();
         }
 
+        // 保存・破棄が終わるのを待ち、終わったら保存・破棄の途中の一覧から取り除く
         if (release is null)
             return;
         try {
@@ -133,6 +138,7 @@ public sealed class ChatAgentManager(IThreadStore threadStore) : IAsyncDisposabl
             }
         }
 
+        // 会話の状態を保存してから、エージェントを破棄する (保存に失敗しても破棄する)
         async Task SaveAndDisposeAsync(MyChatAgent agent)
         {
             try {

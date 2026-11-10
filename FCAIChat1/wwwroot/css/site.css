@@ -1,3 +1,4 @@
+/* ページ全体: フッターを下端に配置するための基準位置と、画面の幅に応じた文字サイズ */
 html {
   position: relative;
   min-block-size: 100%;
@@ -8,10 +9,12 @@ html {
   }
 }
 
+/* 下端に固定したフッター (高さ 60px) と内容が重ならないように、余白をとる */
 body {
   margin-block-end: 60px;
 }
 
+/* ボタンや入力欄にフォーカスしたときの枠の表示 */
 .btn:focus,
 .btn:active:focus,
 .btn-link.nav-link:focus,
@@ -20,6 +23,7 @@ body {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+/* フローティング ラベルの入力欄のプレースホルダー (フォーカスしていないときは右寄せ) */
 .form-floating > :is(.form-control-plaintext, .form-control) {
   &::placeholder {
     color: var(--bs-secondary-color);
@@ -31,6 +35,7 @@ body {
   }
 }
 
+/* メッセージの送信日時 */
 .utc-time {
   font-size: 0.875rem;
   color: var(--bs-secondary-color);

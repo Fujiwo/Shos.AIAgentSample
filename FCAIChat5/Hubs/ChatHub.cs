@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace FCAIChat.Hubs;
 
+// チャットの SignalR Hub (ブラウザーの chat.js と /chatHub でリアルタイムに通信する)
 // Hub は呼び出しごとに生成される (Transient) ため、エージェントは ChatAgentManager (Singleton) から取得する
 // 新: ここから
 // ログインしているユーザーだけが利用できる
@@ -42,11 +43,13 @@ public class ChatHub(MessagesDbContext dbContext, ChatAgentManager chatAgentMana
     // 新: 送信者名はサーバー側で取得するので、引数では受け取らない
     public async Task SendMessage(string prompt)
     {
+        // まず、ユーザーのメッセージを DB に保存して全クライアントに送信
         // 旧:
         //await SendAsync(user, prompt);
         // 新:
         await SendAsync(UserName, prompt);
 
+        // エージェント宛てなら、そのユーザーのエージェントに問い合わせ、応答をエージェントからのメッセージとして送信
         var (isForAgent, promptForAgent) = GetPromptForAgent(prompt);
         if (isForAgent) {
             var chatAgent = await chatAgentManager.AcquireAsync(UserKey, Context.ConnectionId);
@@ -65,6 +68,7 @@ public class ChatHub(MessagesDbContext dbContext, ChatAgentManager chatAgentMana
             await Clients.All.SendAsync("ReceiveMessage", user, content, createdAt.ToString("o"));
         }
 
+        // プロンプトがエージェント宛てかどうかを判定し、エージェント宛てなら宛先 ("@Agent") を取り除いたプロンプトを返す
         static (bool isForAgent, string prompt) GetPromptForAgent(string prompt)
         {
             // "@Agent" のような宛先が含まれていればエージェント宛て (大文字・小文字は区別しない)
@@ -75,6 +79,7 @@ public class ChatHub(MessagesDbContext dbContext, ChatAgentManager chatAgentMana
         }
     }
 
+    // クライアントの接続が切れたときに SignalR から呼ばれる
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         // ユーザーの接続がすべて切れたら、会話を保存してエージェントを破棄する (再接続時に復元される)

@@ -36,6 +36,7 @@ using Azure;
 using Azure.AI.OpenAI;
 
 // 使用するチャットクライアント種別
+// Ollama を使う場合は My.ChatClientType.Ollama に変更する
 const My.ChatClientType chatClientType = My.ChatClientType.AzureOpenAI;
 using IChatClient       chatClient     = My.GetChatClient(chatClientType);
 
@@ -52,6 +53,7 @@ AIAgent agent = new ChatClientAgent(
 //    AgentResponse response = await agent.RunAsync(My.UserPrompt);
 //    Console.WriteLine(response.Text);
 //} catch (Exception ex) {
+//    // 接続できないなどでエージェントの実行に失敗した場合は、エラーメッセージを表示
 //    Console.WriteLine($"Error running agent: {ex.Message}");
 //}
 // 旧: ここまで
@@ -64,11 +66,13 @@ AgentSession session = await agent.CreateSessionAsync();
 ChatMessage systemMessage = new(ChatRole.System, My.SystemPrompt);
 await My.RunAsync(agent, systemMessage, session);
 
+// 対話の開始と終了方法を表示
 Console.WriteLine($"(Interactive chat started. Type '{My.ExitPrompt}' to quit.)\n");
 
 // 対話ループ: ユーザー入力を受け取り exit で終了
 for (; ;) {
     var (isValid, userMessage) = My.GetUserMessage();
+    // 空行または exit が入力されたら対話を終了
     if (!isValid)
         break;
     await My.RunAsync(agent, userMessage, session);
@@ -83,6 +87,7 @@ static class My
     public const string Instructions = "あなたはAIエージェントです";
     // 新: ここから エージェントのシステムロールに与える文脈的な指示
     public const string SystemPrompt = "あなたはAIエージェントです";
+    // 対話を終了するときに入力する文字列
     public const string ExitPrompt   = "exit";
     // 新: ここまで
     // 旧: ここから
@@ -93,6 +98,7 @@ static class My
     // Ollama を使う場合のクライアント生成(ローカルの Ollama サーバーに接続)
     static IChatClient GetOllamaClient()
     {
+        // Ollama サーバーの URL (既定のポート番号は 11434)
         var uri    = new Uri("http://localhost:11434");
         var ollama = new OllamaApiClient(uri);
         // 使用するモデルを指定
@@ -113,10 +119,12 @@ static class My
     {
         // 使用するモデルを指定
         const string deploymentName = "MAI-Thinking-1";
+        // エンドポイントと API キーを環境変数から取得し、API キーによる認証情報を作成
         var azureOpenAIEndPoint     = GetEndPoint();
         var openAIApiKey            = GetKey     ();
         var credential              = new AzureKeyCredential(openAIApiKey);
 
+        // Azure OpenAI に接続するクライアントを作成
         var azureOpenAIClient       = new AzureOpenAIClient(new Uri(azureOpenAIEndPoint), credential);
         // IChatClient インターフェイスに変換して、ツール呼び出しを有効にしてビルド
         IChatClient chatClient      = azureOpenAIClient.GetChatClient(deploymentName)
@@ -126,6 +134,7 @@ static class My
                                                        .Build();
         return chatClient;
 
+        // Azure OpenAI のエンドポイントを環境変数から取得 (未設定の場合は例外)
         static string GetEndPoint()
         {
             const string AzureOpenAIEndpointEnvironmentVariable = "AZURE_OPENAI_ENDPOINT";
@@ -139,6 +148,7 @@ static class My
             //return @"[Azure OpenAI のエンドポイント]";
         }
 
+        // Azure OpenAI の API キーを環境変数から取得 (未設定の場合は例外)
         static string GetKey()
         {
             const string AzureOpenAIApiKeyEnvironmentVariable = "AZURE_OPENAI_API_KEY";
@@ -158,6 +168,7 @@ static class My
         => chatClientType switch {
             My.ChatClientType.Ollama      => My.GetOllamaClient     (),
             My.ChatClientType.AzureOpenAI => My.GetAzureOpenAIClient(),
+            // 未対応の種別の場合は例外
             _ => throw new NotSupportedException($"Chat client type '{chatClientType}' is not supported.")
         };
 
@@ -168,6 +179,7 @@ static class My
         var (isValid, userPrompt) = GetUserPrompt();
         return (isValid, new ChatMessage(ChatRole.User, userPrompt));
 
+        // コンソールから 1 行読み取る (空行または ExitPrompt の場合は isValid が false)
         static (bool isValid, string userPrompt) GetUserPrompt()
         {
             Console.Write("You: ");
@@ -185,9 +197,11 @@ static class My
     public static async Task RunAsync(AIAgent agent, ChatMessage chatMessage, AgentSession? session = null)
     {
         try {
+            // エージェントにメッセージを送信して応答を待つ (session を渡すと、それまでの会話の履歴を踏まえて応答する)
             var response = await agent.RunAsync(chatMessage, session);
             Console.WriteLine($"Agent: {response.Text ?? string.Empty}\n");
         } catch (Exception ex) {
+            // 接続できないなどでエージェントの実行に失敗した場合は、エラーメッセージを表示
             Console.WriteLine($"Error running agent: {ex.Message}");
         }
     }
@@ -196,7 +210,9 @@ static class My
     // チャットクライアントの種別
     public enum ChatClientType
     {
+        // Azure OpenAI (Azure 上のモデル)
         AzureOpenAI,
+        // Ollama (Ollama サーバー経由のモデル)
         Ollama
     }
 }

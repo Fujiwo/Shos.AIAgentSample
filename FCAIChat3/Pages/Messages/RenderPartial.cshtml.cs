@@ -5,12 +5,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FCAIChat.Pages.Messages;
 
+// chat.js から fetch で呼ばれ、メッセージ 1 件分の HTML (部分ビュー) を返すページ (/Messages/RenderPartial)
 public class RenderPartialModel : PageModel
 {
     // Query から複合型をバインドして受け取る（SupportsGet = true）
     [BindProperty(SupportsGet = true)]
     public Message Message { get; set; } = new();
 
+    // ページの表示時 (GET) に呼ばれる
     public void OnGet()
     {
         // Message.CreatedAt が Unspecified の場合は UTC として扱う（Z を付けるため）

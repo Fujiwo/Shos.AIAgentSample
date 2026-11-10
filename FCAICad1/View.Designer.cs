@@ -29,7 +29,7 @@
         {
             SuspendLayout();
             // 
-            // View
+            // View: 図形を表示するユーザー コントロール
             // 
             AutoScaleDimensions = new SizeF(20F, 48F);
             AutoScaleMode = AutoScaleMode.Font;

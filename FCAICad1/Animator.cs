@@ -1,5 +1,6 @@
 ﻿namespace FCAICad;
 
+/// <summary>WinForms のタイマーを使った簡単なアニメーション</summary>
 public static class Animator
 {
     /// <summary>1 フレームの時間を指定してアニメーション機能を提供</summary>
@@ -7,9 +8,11 @@ public static class Animator
     /// <param name="callback">
     /// bool callback(int frame) の形でコールバックを指定
     /// frame は 0 から 1 ずつ増加
+    /// false を返すとアニメーションを終了
     /// </param>
     public static void Animate(int interval, Func<int, bool> callback)
     {
+        // WinForms のタイマーは UI スレッドで Tick が発生するため、コールバック内でコントロールを操作できる
         var timer = new System.Windows.Forms.Timer { Interval = interval };
         var frame = 0;
         timer.Tick += (_, _) => {

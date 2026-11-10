@@ -2,9 +2,11 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
+@* ナビゲーション バーに表示するログイン状態 (ログイン中はユーザー名とログアウト、未ログインなら登録とログイン) *@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
+    @* ログイン中: ユーザー名 (アカウント管理ページへのリンク) とログアウト ボタン *@
     <li class="nav-item">
         <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
     </li>
@@ -16,6 +18,7 @@
 }
 else
 {
+    @* 未ログイン: ユーザー登録とログインのリンク *@
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
     </li>

@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <!-- .NET 10 を対象にし、null 許容参照型と暗黙的な using を有効にする (UserSecretsId はユーザー シークレットの ID) -->
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -7,7 +8,9 @@
     <UserSecretsId>aspnet-FCAIChat-ecb85b14-ebd2-4744-bec9-be8f021688b7</UserSecretsId>
   </PropertyGroup>
 
+  <!-- 使用する NuGet パッケージ (ASP.NET Core Identity、Entity Framework Core (SQL Server) など) -->
   <ItemGroup>
+    <!-- AI エージェント (Microsoft Agent Framework / Azure OpenAI) 用 (次の 3 つ) -->
     <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
     <PackageReference Include="Microsoft.Agents.AI" Version="1.28.0" />
     <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.28.0" />
@@ -23,6 +26,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <!-- MCP クライアント用 -->
     <PackageReference Include="ModelContextProtocol" Version="2.4.0" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
   </ItemGroup>
